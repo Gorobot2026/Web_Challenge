@@ -4,91 +4,96 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GO ROBOT CHALLENGE 2026 - WEDO & iDekTep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
 :root{
- --bg1:#07020e;--bg2:#10182a;--text:#f7f7ff;--dim:#9aa8bd;
- --purple:#c724ff;--pink:#ff2a55;--blue:#0088ff;--cyan:#00f2ff;--green:#00ffaa;
- --gold:#ffd66b;--silver:#d9e2ec;--bronze:#e8a464;
+ --page:#e9edf2;--ink:#14213d;--panel:#fff;--line:#dde3ea;--text:#1b2433;--dim:#6b788b;
+ --idek:#3a5bd9;--wedo:#12907f;
+ --gold:#d4a017;--silver:#8f9bab;--bronze:#b5733a;
 }
-html,body{margin:0;min-height:100%;font-family:Arial,'Noto Sans Thai',sans-serif;color:var(--text)}
-body{padding:22px;background:radial-gradient(circle at 20% 0%,rgba(199,36,255,.22),transparent 35%),radial-gradient(circle at 85% 10%,rgba(0,242,255,.16),transparent 35%),linear-gradient(180deg,var(--bg1),var(--bg2) 60%,#04050a);background-attachment:fixed;overflow-x:hidden}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(circle at 50% 20%,black,transparent 80%)}
-.page{position:relative;z-index:1;max-width:1800px;margin:auto}
-.header{text-align:center;margin-bottom:18px}
-.brand-row{display:flex;align-items:center;justify-content:center;gap:14px}
-.logo{width:46px;height:46px;filter:drop-shadow(0 0 10px rgba(199,36,255,.7))}
-.title{font-size:clamp(28px,4.5vw,58px);font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,var(--pink),var(--purple),var(--cyan),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 28px rgba(199,36,255,.28)}
-.main-sub{margin-top:8px;color:#d9d9ef;font-size:14px;letter-spacing:4px;font-weight:800}
-.status{text-align:center;color:var(--dim);margin:10px 0 20px;font-size:13px;letter-spacing:2px}
-.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);margin-right:7px;box-shadow:0 0 8px var(--green),0 0 16px rgba(0,255,170,.5);animation:pulse 1.4s ease-in-out infinite}
-@keyframes pulse{50%{opacity:.35;transform:scale(.75)}}
-.boards{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
-.board{border-radius:18px;overflow:hidden;backdrop-filter:blur(10px);box-shadow:0 18px 55px rgba(0,0,0,.5)}
-.board.idek{background:rgba(20,5,40,.78);border:1px solid rgba(199,36,255,.42);box-shadow:0 0 0 1px rgba(199,36,255,.1),0 18px 55px rgba(0,0,0,.5)}
-.board.wedo{background:rgba(10,25,47,.82);border:1px solid rgba(0,242,255,.34);box-shadow:0 0 0 1px rgba(0,242,255,.1),0 18px 55px rgba(0,0,0,.5)}
-.board-title{padding:16px 18px;text-align:center;font-size:clamp(20px,2vw,28px);font-weight:900;letter-spacing:2px;text-transform:uppercase}
-.idek .board-title{background:linear-gradient(90deg,rgba(199,36,255,.24),rgba(255,42,85,.1));color:#f3c5ff;border-bottom:1px solid rgba(199,36,255,.35)}
-.wedo .board-title{background:linear-gradient(90deg,rgba(0,242,255,.18),rgba(0,136,255,.13));color:#bdf8ff;border-bottom:1px solid rgba(0,242,255,.3)}
-.board-tag{font-size:12px;letter-spacing:3px;opacity:.8;margin-top:3px}
-.table-header,.team{display:grid;align-items:stretch}
-.idek .table-header,.idek .team{grid-template-columns:120px minmax(190px,1fr) 125px 145px 145px}
-.wedo .table-header,.wedo .team{grid-template-columns:130px minmax(200px,1fr) 130px 150px}
-.table-header{font-size:17px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
-.idek .table-header{background:rgba(199,36,255,.12);color:#ebb3ff}
-.wedo .table-header{background:rgba(0,242,255,.09);color:#8cecff}
-.table-header>div,.team>div{display:flex;align-items:center;justify-content:center;text-align:center;padding:7px;border-right:1px solid rgba(255,255,255,.055)}
-.table-header>div:last-child,.team>div:last-child{border-right:none}
-.table-header>div{min-height:46px}
-.team{border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.012)}
-.team:nth-child(even){background:rgba(255,255,255,.027)}
-.team>div{min-height:70px}
-.idek .team:hover{background:rgba(199,36,255,.08)}
-.wedo .team:hover{background:rgba(0,242,255,.065)}
-.team.top-1{background:linear-gradient(90deg,rgba(255,214,107,.14),rgba(255,214,107,.025))}
-.team.top-2{background:linear-gradient(90deg,rgba(217,226,235,.10),rgba(217,226,235,.02))}
-.team.top-3{background:linear-gradient(90deg,rgba(232,164,100,.12),rgba(232,164,100,.02))}
-.team-name-cell{flex-direction:column;gap:2px}.team-name{font-size:19px;font-weight:900}.member{font-size:30px;font-weight:700}.score{font-size:30px;font-weight:900;font-family:Consolas,monospace}.time{font-size:30px;font-weight:900;font-family:Consolas,monospace;color:#c7bfd0}.rank{font-family:Consolas,monospace;font-weight:900}.rank-badge{width:52px;height:52px;display:inline-flex;align-items:center;justify-content:center;border-radius:13px;font-size:30px}
-.idek .rank-badge{background:rgba(199,36,255,.14);border:1px solid rgba(199,36,255,.4);color:#e599ff}.wedo .rank-badge{background:rgba(0,242,255,.11);border:1px solid rgba(0,242,255,.34);color:var(--cyan)}
-.top-1 .rank-badge{background:linear-gradient(145deg,#ffd66b,#b8860b);color:#241a00;border:none;box-shadow:0 0 16px rgba(255,214,107,.55)}
-.top-2 .rank-badge{background:linear-gradient(145deg,#d9e2ec,#8a97a6);color:#1a1f26;border:none}.top-3 .rank-badge{background:linear-gradient(145deg,#e8a464,#9c5a26);color:#2a1600;border:none}
-.top-1 .team-name,.top-1 .score{color:var(--gold)}.top-2 .team-name,.top-2 .score{color:var(--silver)}.top-3 .team-name,.top-3 .score{color:var(--bronze)}
-.crown{width:24px;height:24px}.loading{padding:42px;text-align:center;font-size:17px;letter-spacing:1px}.idek .loading{color:#d98cff}.wedo .loading{color:var(--cyan)}
-.fullscreen-btn{position:fixed;right:16px;top:16px;z-index:9999;border:none;border-radius:22px;padding:10px 15px;cursor:pointer;color:white;font-weight:800;background:linear-gradient(135deg,var(--purple),var(--blue));box-shadow:0 0 18px rgba(199,36,255,.5)}
-@media(max-width:1150px){.boards{grid-template-columns:1fr}.board{width:100%}}
-@media(max-width:700px){body{padding:10px}.idek .table-header,.idek .team{grid-template-columns:72px minmax(112px,1fr) 68px 78px 80px}.wedo .table-header,.wedo .team{grid-template-columns:80px minmax(112px,1fr) 72px 82px}.table-header{font-size:12px;letter-spacing:0}.table-header>div,.team>div{padding:4px}.team>div{min-height:66px}.team-name{font-size:14px}.member{font-size:20px}.score{font-size:20px}.time{font-size:20px}.rank-badge{width:36px;height:36px;font-size:20px}.crown{width:17px;height:17px}.fullscreen-btn{top:8px;right:8px;padding:8px 10px}}
+html,body{margin:0;min-height:100%}
+body{font-family:'Prompt','Noto Sans Thai',Tahoma,sans-serif;background:var(--page);color:var(--text);font-variant-numeric:tabular-nums}
+.topbar{background:var(--ink);color:#fff;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:4px solid #f2b705}
+.topbar h1{margin:0;font-size:clamp(22px,3vw,38px);font-weight:700;line-height:1.1}
+.topbar p{margin:4px 0 0;font-size:15px;color:#aab6cc;font-weight:400}
+.right{display:flex;align-items:center;gap:18px;text-align:right}
+.live{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:500}
+.dot{width:10px;height:10px;border-radius:50%;background:#ff4d4d;animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
+#updateTime{font-size:13px;color:#aab6cc;display:block;font-weight:400}
+.fs{border:1px solid rgba(255,255,255,.28);background:transparent;color:#fff;width:40px;height:40px;border-radius:6px;font-size:18px;cursor:pointer}
+.fs:hover{background:rgba(255,255,255,.12)}
+.fs:focus-visible{outline:2px solid #f2b705;outline-offset:2px}
+.page{max-width:1800px;margin:0 auto;padding:26px 32px 40px}
+.boards{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+.board{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden;box-shadow:0 1px 2px rgba(20,33,61,.08)}
+.board-title{display:flex;align-items:baseline;gap:12px;padding:16px 22px;border-top:5px solid var(--c);border-bottom:1px solid var(--line)}
+.board-title h2{margin:0;font-size:28px;font-weight:700;color:var(--c)}
+.board-title span{font-size:15px;color:var(--dim)}
+.idek{--c:var(--idek)}.wedo{--c:var(--wedo)}
+.idek .head,.idek .team{grid-template-columns:76px minmax(150px,1.1fr) minmax(140px,1.1fr) 100px 100px}
+.wedo .head,.wedo .team{grid-template-columns:76px minmax(150px,1.1fr) minmax(140px,1.1fr) 110px}
+.head,.team{display:grid;align-items:center}
+.head{background:#f4f6f9;color:var(--dim);font-size:15px;font-weight:500;border-bottom:1px solid var(--line)}
+.head>div{padding:11px 14px}
+.team{min-height:68px;border-bottom:1px solid var(--line);border-left:5px solid transparent}
+.team:last-child{border-bottom:none}
+.team>div{padding:8px 14px}
+.team-name{font-size:22px;font-weight:600}
+.member{font-size:20px;color:#3c4a5f}
+.score{font-size:30px;font-weight:700;text-align:right}
+.time{font-size:24px;color:var(--dim);text-align:right}
+.head .r{text-align:right}
+.rank{display:flex}
+.rank-badge{width:42px;height:42px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--dim);background:#eef1f5}
+.top-1{border-left-color:var(--gold);background:#fdf6df}
+.top-2{border-left-color:var(--silver);background:#f1f3f6}
+.top-3{border-left-color:var(--bronze);background:#faf0e6}
+.top-1 .rank-badge{background:var(--gold);color:#fff}
+.top-2 .rank-badge{background:var(--silver);color:#fff}
+.top-3 .rank-badge{background:var(--bronze);color:#fff}
+.loading{padding:40px;text-align:center;color:var(--dim);font-size:17px}
+@media(max-width:1150px){.boards{grid-template-columns:1fr}}
+@media(max-width:700px){
+ .topbar{padding:12px 14px}.topbar p{display:none}.page{padding:12px 10px 28px}
+ .idek .head,.idek .team{grid-template-columns:50px minmax(80px,1fr) minmax(70px,1fr) 56px 62px}
+ .wedo .head,.wedo .team{grid-template-columns:50px minmax(80px,1fr) minmax(70px,1fr) 64px}
+ .head{font-size:12px}.head>div,.team>div{padding:6px}
+ .team{min-height:60px}.team-name{font-size:15px}.member{font-size:14px}.score{font-size:20px}.time{font-size:15px}
+ .rank-badge{width:32px;height:32px;font-size:15px}.board-title h2{font-size:22px}.fs{display:none}
+}
+@media(prefers-reduced-motion:reduce){.dot{animation:none}}
 </style>
 </head>
 <body>
-<button class="fullscreen-btn" onclick="toggleFullscreen()" title="เต็มจอ">⛶</button>
+<header class="topbar">
+  <div>
+    <h1>GO ROBOT CHALLENGE 2026</h1>
+    <p>ตารางคะแนนสด รุ่น WEDO และ iDekTep</p>
+  </div>
+  <div class="right">
+    <div class="live"><span class="dot"></span>คะแนนสด<span id="updateTime"></span></div>
+    <button class="fs" onclick="toggleFullscreen()" title="เต็มจอ" aria-label="เต็มจอ">⛶</button>
+  </div>
+</header>
+
 <div class="page">
-  <header class="header">
-    <div class="brand-row">
-      <svg class="logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5z" stroke="#c724ff" stroke-width="1.5" stroke-linejoin="round"/>
-        <circle cx="12" cy="11" r="3" stroke="#00f2ff" stroke-width="1.5"/>
-        <path d="M12 14v4M9 20h6" stroke="#ff2a55" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <div class="title">GO ROBOT CHALLENGE 2026</div>
-    </div>
-    <div class="main-sub">LIVE SCORE BOARD • WEDO & iDEKTEP</div>
-  </header>
-
-  <div class="status"><span class="dot"></span>LIVE SCORE BOARD <span id="updateTime"></span></div>
-
   <main class="boards">
     <section class="board idek">
-      <div class="board-title">iDEKTEP<div class="board-tag">SCORE BOARD</div></div>
-      <div class="table-header">
-        <div>TEAM</div><div>MEMBER</div><div>RANKINGS</div><div>SCORE</div><div>TIME</div>
+      <div class="board-title"><h2>iDekTep</h2><span>ตารางคะแนน</span></div>
+      <div class="head">
+        <div>อันดับ</div><div>ทีม</div><div>สมาชิก</div><div class="r">คะแนน</div><div class="r">เวลา</div>
       </div>
       <div id="idektepData"><div class="loading">กำลังโหลดข้อมูล iDEKTEP...</div></div>
     </section>
 
     <section class="board wedo">
-      <div class="board-title">WEDO<div class="board-tag">SCORE BOARD</div></div>
-      <div class="table-header">
-        <div>TEAM</div><div>MEMBER</div><div>RANKINGS</div><div>SCORE</div>
+      <div class="board-title"><h2>WEDO</h2><span>ตารางคะแนน</span></div>
+      <div class="head">
+        <div>อันดับ</div><div>ทีม</div><div>สมาชิก</div><div class="r">คะแนน</div>
       </div>
       <div id="wedoData"><div class="loading">กำลังโหลดข้อมูล WEDO...</div></div>
     </section>
@@ -97,12 +102,6 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background-ima
 <script>
 const IDEKTEP_API_URL="https://script.google.com/macros/s/AKfycbwEKF6Pabk1pbEYdihWp1ouxwdCpoHjikhH4Q5F7AqFX4zharAWgB6_7JOME9H1KhDJIQ/exec";
 const WEDO_API_URL="https://script.google.com/macros/s/AKfycbzLrGq-lSyBgOlyqXDPlSHn_m0iW4PAWVr-DaGfDKY9iIWPL2hbkNP2gYb4CkoU-ZFndw/exec";
-
-function crownSVG(rank){
- const colors={1:{main:'#ffd66b',dark:'#b8860b'},2:{main:'#d9e2ec',dark:'#8a97a6'},3:{main:'#e8a464',dark:'#9c5a26'}};
- const c=colors[rank]; if(!c)return '';
- return `<svg class="crown" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 8l4 3 5-6 5 6 4-3-2 10H5L3 8z" fill="${c.main}" stroke="${c.dark}" stroke-width=".6" stroke-linejoin="round"/><circle cx="3" cy="7" r="1.4" fill="${c.main}"/><circle cx="12" cy="4.2" r="1.4" fill="${c.main}"/><circle cx="21" cy="7" r="1.4" fill="${c.main}"/><rect x="5" y="18.2" width="14" height="2.2" rx=".6" fill="${c.main}"/></svg>`;
-}
 
 function cleanRows(raw,withTime){
  if(!Array.isArray(raw)) return [];
@@ -114,6 +113,11 @@ function cleanRows(raw,withTime){
  })).filter(r=>r.team&&r.team!=='TEAM'&&!r.team.includes('GO ROBOT')&&!r.team.includes('SCORE BOARD'));
 }
 
+function rowHtml(r,rank,withTime){
+ const top=rank<=3?`top-${rank}`:'';
+ return `<div class="team ${top}"><div class="rank"><span class="rank-badge">${rank}</span></div><div class="team-name">${escapeHtml(r.team)||'-'}</div><div class="member">${escapeHtml(r.member)||'-'}</div><div class="score">${escapeHtml(r.score)||'-'}</div>${withTime?`<div class="time">${escapeHtml(r.time)||'-'}</div>`:''}</div>`;
+}
+
 function renderIdektep(raw){
  const board=document.getElementById('idektepData');
  const rows=cleanRows(raw,true);
@@ -123,22 +127,14 @@ function renderIdektep(raw){
    const ta=parseFloat(a.time); const tb=parseFloat(b.time);
    return (Number.isFinite(ta)?ta:Infinity)-(Number.isFinite(tb)?tb:Infinity);
  });
- board.innerHTML=rows.length?'':'<div class="loading">ไม่พบข้อมูล</div>';
- rows.forEach((r,i)=>{
-   const rank=i+1, top=rank<=3?`top-${rank}`:'';
-   board.insertAdjacentHTML('beforeend',`<div class="team ${top}"><div class="team-name-cell">${crownSVG(rank)}<div class="team-name">${escapeHtml(r.team)||'-'}</div></div><div class="member">${escapeHtml(r.member)||'-'}</div><div class="rank"><span class="rank-badge">${rank}</span></div><div class="score">${escapeHtml(r.score)||'-'}</div><div class="time">${escapeHtml(r.time)||'-'}</div></div>`);
- });
+ board.innerHTML=rows.length?rows.map((r,i)=>rowHtml(r,i+1,true)).join(''):'<div class="loading">ไม่พบข้อมูล</div>';
 }
 
 function renderWedo(raw){
  const board=document.getElementById('wedoData');
  const rows=cleanRows(raw,false);
  rows.sort((a,b)=>(parseFloat(b.score.replace(/,/g,''))||0)-(parseFloat(a.score.replace(/,/g,''))||0));
- board.innerHTML=rows.length?'':'<div class="loading">ไม่พบข้อมูล</div>';
- rows.forEach((r,i)=>{
-   const rank=i+1, top=rank<=3?`top-${rank}`:'';
-   board.insertAdjacentHTML('beforeend',`<div class="team ${top}"><div class="team-name-cell">${crownSVG(rank)}<div class="team-name">${escapeHtml(r.team)||'-'}</div></div><div class="member">${escapeHtml(r.member)||'-'}</div><div class="rank"><span class="rank-badge">${rank}</span></div><div class="score">${escapeHtml(r.score)||'-'}</div></div>`);
- });
+ board.innerHTML=rows.length?rows.map((r,i)=>rowHtml(r,i+1,false)).join(''):'<div class="loading">ไม่พบข้อมูล</div>';
 }
 
 function escapeHtml(value){
@@ -193,7 +189,7 @@ async function loadAll(){
      }
    }
 
-   document.getElementById('updateTime').textContent=' • อัปเดต '+new Date().toLocaleTimeString('th-TH');
+   document.getElementById('updateTime').textContent='อัปเดต '+new Date().toLocaleTimeString('th-TH');
  }catch(error){
    console.error('LOAD ERROR:',error);
  }finally{
