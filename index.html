@@ -237,6 +237,87 @@ body{padding:16px 20px 30px;color:var(--text-main)}
 .group-table td:last-child{font-weight:700;color:#fff}
 .group-table .nil{color:#5f7595}
 @media(max-width:900px){.groups-grid{grid-template-columns:1fr}.group-name{font-size:19px}.group-table td{font-size:15px;padding:10px 5px}}
+
+/* ===== ปรับข้อความตาราง Group ให้ใหญ่และอ่านง่าย ===== */
+.groups-grid .group-card .group-head,
+.groups-grid .group-card .group-name,
+.groups-grid .group-card .group-badge,
+.groups-grid .group-card .group-table th,
+.groups-grid .group-card .group-table td {
+    text-shadow: 0 1px 2px rgba(0,0,0,.65);
+}
+
+.groups-grid .group-card .group-head {
+    padding: 14px 18px;
+}
+
+.groups-grid .group-card .group-badge {
+    width: 50px;
+    height: 50px;
+    font-size: 27px;
+    font-weight: 800;
+    color: #ffffff !important;
+}
+
+.groups-grid .group-card .group-name {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    letter-spacing: .7px;
+}
+
+.groups-grid .group-card .group-table th {
+    padding: 13px 10px;
+    font-size: 17px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    background: rgba(8, 27, 55, .35);
+}
+
+.groups-grid .group-card .group-table td {
+    padding: 15px 10px;
+    font-size: 21px !important;
+    font-weight: 600;
+    color: #ffffff !important;
+}
+
+.groups-grid .group-card .group-table td:first-child {
+    font-weight: 800 !important;
+    color: #ffffff !important;
+}
+
+.groups-grid .group-card .group-table td:last-child {
+    font-weight: 800 !important;
+    color: #ffffff !important;
+}
+
+.groups-grid .group-card .group-table .nil {
+    color: #dbe8f7 !important;
+    font-weight: 700 !important;
+}
+
+@media (max-width: 900px) {
+    .groups-grid .group-card .group-name {
+        font-size: 23px !important;
+    }
+
+    .groups-grid .group-card .group-badge {
+        width: 44px;
+        height: 44px;
+        font-size: 23px;
+    }
+
+    .groups-grid .group-card .group-table th {
+        font-size: 15px !important;
+        padding: 11px 6px;
+    }
+
+    .groups-grid .group-card .group-table td {
+        font-size: 18px !important;
+        padding: 12px 6px;
+    }
+}
+
 </style>
 </head>
 <body>
