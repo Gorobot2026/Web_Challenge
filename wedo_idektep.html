@@ -39,22 +39,22 @@ body{font-family:'Prompt','Noto Sans Thai',Tahoma,sans-serif;background:var(--bg
 .board-title span{font-size:15px;color:var(--dim);margin-left:auto}
 .idek{--c:var(--purple)}.wedo{--c:var(--yellow)}
 .head,.team{display:grid;align-items:center}
-.idek .head,.idek .team{grid-template-columns:64px 90px minmax(120px,1fr) 150px 150px}
-.wedo .head,.wedo .team{grid-template-columns:56px 70px minmax(90px,1fr) 84px}
-.head{color:var(--dim);font-size:15px;font-weight:500;border-bottom:2px solid var(--c)}
+.idek .head,.idek .team{grid-template-columns:72px 130px 330px 1fr 1fr}
+.wedo .head,.wedo .team{grid-template-columns:56px 80px minmax(110px,1fr) 90px}
+.head{color:var(--dim);font-size:17px;font-weight:500;border-bottom:2px solid var(--c)}
 .head>div{padding:10px 14px}
 .head .r{text-align:right}
 .head .c{text-align:center}
 .head small{display:block;font-size:11px;font-weight:400;opacity:.7}
-.team{min-height:70px;border-bottom:1px solid var(--line);border-left:6px solid transparent}
+.team{min-height:84px;border-bottom:1px solid var(--line);border-left:6px solid transparent}
 .team:last-child{border-bottom:none}
 .team:nth-child(even){background:rgba(255,255,255,.03)}
 .team>div{padding:8px 14px}
-.team-name{font-size:23px;font-weight:700}
-.member{font-size:20px;color:#cdd7f5}
+.team-name{font-size:30px;font-weight:700}
+.member{font-size:30px;color:#cdd7f5}
 .score{font-size:32px;font-weight:800;text-align:right}
 .rank{display:flex}
-.rank-badge{width:44px;height:44px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;font-size:21px;font-weight:800;color:var(--dim);background:rgba(255,255,255,.07)}
+.rank-badge{width:50px;height:50px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:var(--dim);background:rgba(255,255,255,.07)}
 .top-1{border-left-color:var(--gold);background:linear-gradient(90deg,rgba(255,194,14,.18),transparent 75%)!important}
 .top-2{border-left-color:var(--silver);background:linear-gradient(90deg,rgba(185,196,220,.14),transparent 75%)!important}
 .top-3{border-left-color:var(--bronze);background:linear-gradient(90deg,rgba(217,138,78,.16),transparent 75%)!important}
@@ -66,8 +66,8 @@ body{font-family:'Prompt','Noto Sans Thai',Tahoma,sans-serif;background:var(--bg
 
 /* iDekTep: คะแนนและเวลาแต่ละรอบ + ไฮไลต์รอบที่ดีที่สุด */
 .team>.rd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;margin:0 6px;padding:6px 4px;border-radius:10px;border:1px solid transparent;position:relative}
-.rd .rs{font-size:28px;font-weight:800;line-height:1.1}
-.rd .rt{font-size:16px;color:var(--dim)}
+.rd .rs{font-size:38px;font-weight:800;line-height:1.1}
+.rd .rt{font-size:22px;color:var(--dim)}
 .team>.rd.best{background:rgba(165,107,255,.22);border-color:var(--purple)}
 .rd.best .rt{color:#e3d4ff}
 .rd.best:after{content:"★ ดีที่สุด";position:absolute;top:-7px;right:6px;font-size:10px;font-weight:700;background:var(--purple);color:#fff;border-radius:6px;padding:0 6px;line-height:16px}
@@ -75,8 +75,8 @@ body{font-family:'Prompt','Noto Sans Thai',Tahoma,sans-serif;background:var(--bg
 /* WEDO: ย่อขนาดลง */
 .wedo .team{min-height:56px}
 .wedo .head>div,.wedo .team>div{padding:6px 10px}
-.wedo .team-name{font-size:18px}
-.wedo .member{font-size:15px}
+.wedo .team-name{font-size:22px}
+.wedo .member{font-size:20px}
 .wedo .score{font-size:26px}
 .wedo .rank-badge{width:36px;height:36px;font-size:17px;border-radius:9px}
 .wedo .board-title{padding:12px 18px}
