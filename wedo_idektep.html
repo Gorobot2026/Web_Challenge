@@ -31,7 +31,7 @@ body{font-family:'Prompt','Noto Sans Thai',Tahoma,sans-serif;background:var(--bg
 .fs:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
 .stripe{height:7px;background:linear-gradient(90deg,var(--orange) 0 20%,var(--pink) 20% 40%,var(--blue) 40% 60%,var(--green) 60% 80%,var(--yellow) 80% 100%)}
 .page{max-width:1800px;margin:0 auto;padding:28px 36px 44px}
-.boards{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(0,1fr);gap:28px;align-items:start}
+.boards{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:28px;align-items:start}
 .board{background:var(--panel);border-radius:16px;overflow:hidden}
 .board-title{display:flex;align-items:center;gap:14px;padding:18px 22px;background:var(--panel2)}
 .board-title:before{content:"";width:8px;height:34px;border-radius:4px;background:var(--c)}
@@ -40,7 +40,7 @@ body{font-family:'Prompt','Noto Sans Thai',Tahoma,sans-serif;background:var(--bg
 .idek{--c:var(--purple)}.wedo{--c:var(--yellow)}
 .head,.team{display:grid;align-items:center}
 .idek .head,.idek .team{grid-template-columns:72px 130px 330px 1fr 1fr}
-.wedo .head,.wedo .team{grid-template-columns:56px 80px minmax(110px,1fr) 90px}
+.wedo .head,.wedo .team{grid-template-columns:64px 100px minmax(120px,1fr) 110px}
 .head{color:var(--dim);font-size:17px;font-weight:500;border-bottom:2px solid var(--c)}
 .head>div{padding:10px 14px}
 .head .r{text-align:right}
@@ -72,15 +72,12 @@ body{font-family:'Prompt','Noto Sans Thai',Tahoma,sans-serif;background:var(--bg
 .rd.best .rt{color:#e3d4ff}
 .rd.best:after{content:"★ ดีที่สุด";position:absolute;top:-7px;right:6px;font-size:10px;font-weight:700;background:var(--purple);color:#fff;border-radius:6px;padding:0 6px;line-height:16px}
 
-/* WEDO: ย่อขนาดลง */
-.wedo .team{min-height:56px}
-.wedo .head>div,.wedo .team>div{padding:6px 10px}
-.wedo .team-name{font-size:22px}
-.wedo .member{font-size:20px}
-.wedo .score{font-size:26px}
-.wedo .rank-badge{width:36px;height:36px;font-size:17px;border-radius:9px}
-.wedo .board-title{padding:12px 18px}
-.wedo .board-title h2{font-size:24px}
+/* WEDO: ขนาดสมดุลกับ iDekTep */
+.wedo .head{min-height:64px}
+.wedo .team{min-height:92px}
+.wedo .team-name{font-size:30px}
+.wedo .member{font-size:28px}
+.wedo .score{font-size:38px}
 
 @media(max-width:1150px){.boards{grid-template-columns:1fr}}
 @media(max-width:700px){
@@ -90,6 +87,10 @@ body{font-family:'Prompt','Noto Sans Thai',Tahoma,sans-serif;background:var(--bg
  .wedo .head,.wedo .team{grid-template-columns:40px 56px minmax(60px,1fr) 56px}
  .head{font-size:12px}.head>div,.team>div{padding:6px}
  .team{min-height:60px}.team-name{font-size:15px}.member{font-size:14px}.score{font-size:20px}
+ .wedo .head{min-height:0}
+ .wedo .team{min-height:60px}
+ .wedo .team-name{font-size:15px}
+ .wedo .member{font-size:14px}
  .wedo .score{font-size:18px}
  .rank-badge,.wedo .rank-badge{width:32px;height:32px;font-size:15px;border-radius:8px}
  .board-title h2,.wedo .board-title h2{font-size:22px}
