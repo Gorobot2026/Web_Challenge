@@ -459,6 +459,178 @@ body{padding:16px 20px 30px;color:var(--text-main)}
   .playoff-view .match-side.right .team-pair::before,
   .playoff-view .match-side.right .team-pair::after{display:none}
 }
+
+/* =====================================================
+   TOURNAMENT : CYBER ANGULAR THEME (ใหม่)
+   ===================================================== */
+#tournament-view{--neon:#2edcff;--neon2:#1e7bff;--gold1:#ffe27a;--gold2:#ff9d00}
+
+/* ---------- หัวข้อ + คำอธิบาย ---------- */
+#tournament-view .section-title{
+  font-family:'Orbitron','Kanit',sans-serif;letter-spacing:.1em;color:#eaffff;
+  border-bottom:none;position:relative;text-shadow:0 0 14px rgba(46,220,255,.35);
+}
+#tournament-view .section-title::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:linear-gradient(90deg,var(--neon),transparent 75%);box-shadow:0 0 8px var(--neon);
+}
+#tournament-view .description-text{
+  border-radius:0;border-left:4px solid var(--neon);
+  background:linear-gradient(90deg,rgba(46,220,255,.14),rgba(15,52,96,.35));
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%);
+}
+
+/* ---------- กรอบสายการแข่งขัน ---------- */
+#tournament-view .bracket-wrapper{
+  border-radius:6px;border:1px solid rgba(46,220,255,.35);padding:70px 30px 30px;
+  background:
+    radial-gradient(circle at 50% 60%,rgba(30,123,255,.18),transparent 55%),
+    linear-gradient(180deg,rgba(14,32,66,.92),rgba(7,18,40,.95));
+  box-shadow:0 0 40px rgba(30,123,255,.15),0 18px 50px rgba(0,0,0,.4);
+}
+#tournament-view .bracket-wrapper::before,
+#tournament-view .bracket-wrapper::after{
+  content:"";position:absolute;width:52px;height:52px;pointer-events:none;
+  filter:drop-shadow(0 0 6px var(--neon));z-index:3;
+}
+#tournament-view .bracket-wrapper::before{top:0;left:0;border-top:4px solid var(--neon);border-left:4px solid var(--neon)}
+#tournament-view .bracket-wrapper::after{bottom:0;right:0;border-bottom:4px solid var(--neon);border-right:4px solid var(--neon)}
+#tournament-view .bracket-content{min-height:640px}
+
+/* เส้นเชื่อม (วาดโดย JS) */
+#tournament-view #bracket-svg path{
+  stroke:var(--neon);stroke-width:2.5;
+  filter:drop-shadow(0 0 4px rgba(46,220,255,.7));
+}
+
+/* ป้ายหัวคอลัมน์ */
+#tournament-view .bracket-col-title{
+  font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.2em;color:#cfeeff;
+  top:-44px;left:50%;transform:translateX(-50%);white-space:nowrap;
+  padding:7px 22px;background:rgba(46,220,255,.14);
+  clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+}
+
+/* ---------- กล่องทีม QF + SF (เหลี่ยม) ---------- */
+#tournament-view .sou8-left .bracket-team,
+#tournament-view .semi-left .semi-box{
+  --po:polygon(var(--tc) 0,100% 0,100% calc(100% - var(--tc)),calc(100% - var(--tc)) 100%,0 100%,0 var(--tc));
+  --pi:polygon(calc(var(--tc) - 2px) 0,100% 0,100% calc(100% - var(--tc) + 2px),calc(100% - var(--tc) + 2px) 100%,0 100%,0 calc(var(--tc) - 2px));
+  --ad:90deg;
+}
+#tournament-view .sou8-right .bracket-team,
+#tournament-view .semi-right .semi-box{
+  --po:polygon(0 0,calc(100% - var(--tc)) 0,100% var(--tc),100% 100%,var(--tc) 100%,0 calc(100% - var(--tc)));
+  --pi:polygon(0 0,calc(100% - var(--tc) + 2px) 0,100% calc(var(--tc) - 2px),100% 100%,calc(var(--tc) - 2px) 100%,0 calc(100% - var(--tc) + 2px));
+  --ad:270deg;
+}
+#tournament-view .bracket-team,
+#tournament-view .semi-box{
+  --tc:14px;
+  position:relative;isolation:isolate;
+  min-width:210px;height:64px;min-height:0;padding:0 26px;
+  display:flex;align-items:center;justify-content:center;
+  background:none;border:none;border-radius:0;box-shadow:none;
+  font-family:'Kanit',sans-serif;font-size:21px;font-weight:700;line-height:1.1;
+  letter-spacing:.4px;color:#fff;text-align:center;word-break:break-word;
+  text-shadow:0 2px 6px rgba(0,0,0,.6);
+  filter:drop-shadow(0 0 7px rgba(46,220,255,.25));
+  transition:transform .25s ease,filter .25s ease;
+}
+#tournament-view .semi-box{--tc:16px;min-width:220px;height:76px;font-size:23px}
+#tournament-view .bracket-team::before,
+#tournament-view .semi-box::before{
+  content:"";position:absolute;inset:0;z-index:-2;
+  background:linear-gradient(135deg,#6af0ff,#1d6fd8 55%,#4fd8ff);
+  clip-path:var(--po);
+}
+#tournament-view .bracket-team::after,
+#tournament-view .semi-box::after{
+  content:"";position:absolute;inset:2px;z-index:-1;
+  background:
+    linear-gradient(var(--ad),var(--neon) 0 6px,transparent 6px),
+    repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 2px,transparent 2px 9px),
+    linear-gradient(135deg,#1b4180 0%,#0d2147 100%);
+  clip-path:var(--pi);
+}
+/* ยังว่าง */
+#tournament-view .bracket-team.empty,
+#tournament-view .semi-box.empty{color:#6b86a8;filter:none}
+#tournament-view .bracket-team.empty::before,
+#tournament-view .semi-box.empty::before{background:linear-gradient(135deg,#3f6794,#27496f)}
+#tournament-view .bracket-team.empty::after,
+#tournament-view .semi-box.empty::after{
+  background:
+    linear-gradient(var(--ad),#4a6d96 0 6px,transparent 6px),
+    repeating-linear-gradient(135deg,rgba(255,255,255,.03) 0 2px,transparent 2px 9px),
+    linear-gradient(135deg,#112848 0%,#0a1a33 100%);
+}
+/* ผู้เข้ารอบจริง */
+#tournament-view .semi-box.filled{filter:drop-shadow(0 0 12px rgba(46,220,255,.5))}
+#tournament-view .bracket-team:not(.empty):hover,
+#tournament-view .semi-box.filled:hover{
+  border:none;box-shadow:none;transform:scale(1.04);
+  filter:drop-shadow(0 0 16px rgba(46,220,255,.65));
+}
+#tournament-view .bracket-team.empty:hover{transform:none;box-shadow:none;border:none}
+
+/* ---------- แท่นรางวัล (เหลี่ยม) ---------- */
+#tournament-view .podium-container{height:390px;gap:12px}
+#tournament-view .podium-step{
+  --pc:#e6edf3;--pc2:#8a97a5;--f1:#2b3340;--f2:#121821;
+  width:170px;padding:24px 12px 0;
+  background:none;border:none;border-radius:0;box-shadow:none;isolation:isolate;
+  filter:drop-shadow(0 -4px 14px rgba(0,0,0,.4));
+}
+#tournament-view .podium-step::before{
+  content:"";position:absolute;inset:0;z-index:-2;
+  background:linear-gradient(180deg,var(--pc),var(--pc2));
+  clip-path:polygon(24px 0,calc(100% - 24px) 0,100% 24px,100% 100%,0 100%,0 24px);
+}
+#tournament-view .podium-step::after{
+  content:"";position:absolute;inset:2px 2px 0 2px;z-index:-1;
+  background:
+    repeating-linear-gradient(135deg,rgba(255,255,255,.03) 0 2px,transparent 2px 9px),
+    linear-gradient(180deg,var(--f1),var(--f2));
+  clip-path:polygon(22px 0,calc(100% - 22px) 0,100% 22px,100% 100%,0 100%,0 22px);
+}
+#tournament-view .step-1{
+  --pc:#ffe27a;--pc2:#ff9d00;--f1:#4a3600;--f2:#1c1403;
+  width:200px;height:330px;filter:drop-shadow(0 0 22px rgba(255,196,0,.4));
+}
+#tournament-view .step-2{height:250px}
+#tournament-view .step-3{--pc:#f0a15a;--pc2:#b5601a;--f1:#3d2410;--f2:#170d05;height:250px}
+#tournament-view .podium-step:hover{filter:brightness(1.15) drop-shadow(0 0 18px rgba(46,220,255,.35))}
+#tournament-view .podium-team{font-family:'Kanit',sans-serif;font-size:22px;font-weight:800;min-height:60px}
+#tournament-view .step-1 .podium-team{font-size:30px}
+#tournament-view .podium-btn{
+  border-radius:0;height:42px;bottom:22px;width:84%;
+  font-size:16px;font-weight:700;letter-spacing:.06em;
+  clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);
+}
+
+/* ---------- จอเล็ก ---------- */
+@media(max-width:1500px){
+  #tournament-view .bracket-team{min-width:170px;height:56px;font-size:18px}
+  #tournament-view .semi-box{min-width:180px;height:66px;font-size:20px}
+  #tournament-view .podium-step{width:140px}
+  #tournament-view .step-1{width:170px}
+  #tournament-view .podium-team{font-size:18px}
+  #tournament-view .step-1 .podium-team{font-size:24px}
+}
+@media(max-width:768px){
+  #tournament-view .bracket-wrapper{padding:60px 16px 24px}
+  #tournament-view .bracket-team{min-width:120px;height:46px;font-size:13px;padding:0 14px;--tc:9px}
+  #tournament-view .semi-box{min-width:130px;height:54px;font-size:14px;padding:0 14px;--tc:10px}
+  #tournament-view .podium-step{width:100px;padding:18px 6px 0}
+  #tournament-view .step-1{width:120px}
+  #tournament-view .step-2,#tournament-view .step-3{height:210px}
+  #tournament-view .step-1{height:280px}
+  #tournament-view .podium-team{font-size:13px}
+  #tournament-view .step-1 .podium-team{font-size:17px}
+  #tournament-view .podium-btn{font-size:11px;height:32px}
+  #tournament-view .bracket-col-title{font-size:10px;padding:5px 12px;top:-40px}
+}
 </style>
 </head>
 <body>
