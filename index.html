@@ -864,6 +864,7 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
         <div id="tournament-view" class="view">
             <h2 class="section-title">🏆 สายการแข่งขัน (Tournament Bracket)</h2>
             <p class="description-text">แผนผังสายการแข่งขันในรอบน็อคเอาท์ และทำเนียบผู้ชนะ</p>
+            <div id="tournament-data-warning" hidden role="status" style="background:#38251b;color:#ffe2ae;border:1px solid #ae7e40;padding:8px 14px;margin-bottom:12px;border-radius:6px;font-size:13px"></div>
 
             <div class="bracket-wrapper">
                 <svg id="bracket-svg"></svg>
@@ -1473,25 +1474,33 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
             }, 30);
         }
 
+        // Match the exact JSON keys returned by Apps Script.
+        // Never treat a missing value as a confirmed match result.
         function updateTournament(tData) {
-            if (!tData) return;
+            if (!tData || typeof tData !== 'object') return;
             const mapIds = {
-                'qf1': 't-qf1', 'qf2': 't-qf2', 'qf3': 't-qf3', 'qf4': 't-qf4',
-                'qf5': 't-qf5', 'qf6': 't-qf6', 'qf7': 't-qf7', 'qf8': 't-qf8',
-                'sf1': 't-sf1', 'sf2': 't-sf2', 'sf3': 't-sf3', 'sf4': 't-sf4',
-                'final1': 't-f1', 'final2': 't-f2',
-                'third1': 't-t1', 'third2': 't-t2',
-                'winner': 't-winner', 'runner1': 't-runner1', 'runner2': 't-runner2'
+                qf1:'t-qf1', qf2:'t-qf2', qf3:'t-qf3', qf4:'t-qf4',
+                qf5:'t-qf5', qf6:'t-qf6', qf7:'t-qf7', qf8:'t-qf8',
+                sf1:'t-sf1', sf2:'t-sf2', sf3:'t-sf3', sf4:'t-sf4',
+                final1:'t-f1', final2:'t-f2', third1:'t-t1', third2:'t-t2',
+                winner:'t-winner', runner1:'t-runner1', runner2:'t-runner2'
             };
-
-            for (const [key, elementId] of Object.entries(mapIds)) {
-                const el = document.getElementById(elementId);
-                if (el && tData[key] !== undefined) {
-                    const text = tData[key].trim() || "-";
-                    animateScrambleText(el, text);
-                }
+            for (const [key, id] of Object.entries(mapIds)) {
+                const el = document.getElementById(id);
+                if (!el) continue;
+                const val = tData[key];
+                const value = typeof val === 'string' || typeof val === 'number'
+                    ? String(val).trim() : '';
+                const shown = value || '-';
+                if (el.dataset.lastValue === shown) continue;
+                el.dataset.lastValue = shown;
+                el.textContent = shown;
+                el.classList.toggle('empty', shown === '-');
+                el.classList.toggle('filled', shown !== '-');
             }
-            setTimeout(drawBracketLines, 500);
+            if (document.getElementById('tournament-view').classList.contains('active')) {
+                requestAnimationFrame(drawBracketLines);
+            }
         }
 
 function esc(v){
@@ -1623,6 +1632,21 @@ function renderPlayoff(data){
                 }
 
                 console.log("ข้อมูลที่ได้รับ:", data);
+                if (!data || data.success === false) {
+                    throw new Error(data && (data.message || data.error) || 'Apps Script ส่งข้อมูลไม่สำเร็จ');
+                }
+                if (data.tournament) updateTournament(data.tournament);
+                if (data.sourceErrors && data.sourceErrors.length) {
+                    console.warn('Google Sheets มีสูตรผิดพลาด:', data.sourceErrors);
+                    const warn = document.getElementById('tournament-data-warning');
+                    if (warn) {
+                        warn.hidden = false;
+                        warn.textContent = '⚠️ ตรวจสอบสูตรในชีต: ' + data.sourceErrors.map(x => x.sheet + '!' + x.cell + ' (' + x.error + ')').join(', ');
+                    }
+                } else {
+                    const warn = document.getElementById('tournament-data-warning');
+                    if (warn) warn.hidden = true;
+                }
                 renderPlayoff(data);
 
                 if (data.standings) {
