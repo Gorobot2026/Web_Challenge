@@ -789,6 +789,57 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
   #tournament-view .sou8-left .bracket-team,#tournament-view .sou8-right .bracket-team,
   #tournament-view .semi-left .semi-box,#tournament-view .semi-right .semi-box{min-width:90px}
 }
+
+/* MATCH DISPLAY — maximize the four cards in the available screen */
+@media(min-width:901px){
+ body:has(#matches-view.active){height:100dvh;overflow:hidden;padding-bottom:8px;display:flex;flex-direction:column}
+ body:has(#matches-view.active) .container{max-width:none;width:100%;flex:1;min-height:0;display:flex;flex-direction:column}
+ body:has(#matches-view.active) .sticky-wrapper{flex:0 0 auto}
+ body:has(#matches-view.active) #matches-view.active{flex:1;min-height:0;display:flex;flex-direction:column}
+ body:has(#matches-view.active) #matches-view .section-title,
+ body:has(#matches-view.active) #matches-view .description-text{display:none}
+ body:has(#matches-view.active) #matches-content{flex:1;min-height:0;display:flex;flex-direction:column}
+ body:has(#matches-view.active) .matches-grid{flex:1;min-height:0;margin-top:4px;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:12px}
+ body:has(#matches-view.active) .match-card{min-height:0;padding:clamp(12px,1.35vh,22px);display:flex;flex-direction:column;justify-content:space-evenly}
+ body:has(#matches-view.active) .match-header{margin-bottom:5px;padding-bottom:6px}
+ body:has(#matches-view.active) .match-title{font-size:clamp(18px,2.5vh,33px)}
+ body:has(#matches-view.active) .match-content{margin:4px 0;align-items:center}
+ body:has(#matches-view.active) .team-box{font-size:clamp(18px,2.45vh,32px);padding:clamp(8px,1.3vh,18px)}
+ body:has(#matches-view.active) .badge{font-size:clamp(12px,1.7vh,20px)}
+ body:has(#matches-view.active) .score-row{margin-top:4px;padding-top:6px}
+ body:has(#matches-view.active) .score-value{font-size:clamp(24px,3.8vh,46px)}
+ body:has(#matches-view.active) .pagination-container{flex:0 0 auto;margin:4px 0 0;padding:0;gap:12px}
+}
+.match-tools{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-left:auto}
+.match-gear{font:600 15px Kanit,sans-serif;background:#17365d;border:1px solid #3974ae;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer}
+.match-settings{position:fixed;z-index:4000;top:90px;right:24px;width:min(380px,calc(100vw - 36px));padding:20px;background:#101c35;border:1px solid #39a9e8;border-radius:12px;box-shadow:0 16px 45px #000a;color:#eef8ff}
+.match-settings[hidden]{display:none}
+.match-settings label{display:block;margin:12px 0 5px}
+.match-settings select,.match-settings input{width:100%;background:#0b172d;color:white;border:1px solid #386088;border-radius:7px;padding:9px;font:inherit}
+.match-settings button{margin-top:13px;background:#206fa5;border:0;color:white;border-radius:7px;padding:8px 14px;cursor:pointer}
+.match-auto-status{color:#a8c9e8;font-size:13px}
+
+/* Match Result fills the actual screen; the other tabs keep their existing fullscreen fit. */
+@media (min-width:901px){
+ body.is-fs #matches-view.active{
+  position:fixed!important;inset:0!important;top:0!important;left:0!important;
+  width:100vw!important;height:100dvh!important;max-width:none!important;
+  margin:0!important;padding:12px 16px 14px!important;
+  transform:none!important;display:flex!important;flex-direction:column;
+  overflow:hidden;box-sizing:border-box;
+ }
+ body.is-fs #matches-view.active #matches-content{flex:1;min-height:0;display:flex;flex-direction:column}
+ body.is-fs #matches-view.active .matches-grid{flex:1;min-height:0;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:14px;margin:5px 0}
+ body.is-fs #matches-view.active .match-card{min-height:0;display:flex;flex-direction:column;justify-content:space-around;padding:clamp(16px,2vh,28px)}
+ body.is-fs #matches-view.active .match-title{font-size:clamp(23px,3.3vh,38px)}
+ body.is-fs #matches-view.active .team-box{font-size:clamp(23px,3.5vh,40px);padding:clamp(10px,1.8vh,24px)}
+ body.is-fs #matches-view.active .badge{font-size:clamp(14px,2vh,24px)}
+ body.is-fs #matches-view.active .score-label{font-size:clamp(13px,1.7vh,20px)}
+ body.is-fs #matches-view.active .score-value{font-size:clamp(32px,5.2vh,62px)}
+ body.is-fs #matches-view.active .pagination-container{margin:3px 0 0;min-height:39px}
+ body.is-fs #matches-view.active .match-tools{flex:0 0 auto;margin:0 0 2px;min-height:36px}
+ body.is-fs #matches-view.active .match-gear{font-size:14px}
+}
 </style>
 </head>
 <body>
@@ -848,6 +899,20 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
         <div id="matches-view" class="view">
             <h2 class="section-title">⚽ ตารางการเเเข่งขัน</h2>
             <p class="description-text">ดูรายละเอียดผลการแข่งขัน สกอร์ และผลลัพธ์ของแต่ละทีม</p>
+            <div class="match-tools"><span id="match-auto-status" class="match-auto-status">เลื่อนหน้า: ปิด</span><button type="button" id="match-gear" class="match-gear" onclick="toggleMatchSettings()">⚙ ตั้งค่าการเลื่อนหน้า</button></div>
+            <div id="match-settings" class="match-settings" hidden>
+              <strong>⚙ ตั้งค่าการเปลี่ยนหน้าผลการแข่งขัน</strong>
+              <label for="match-mode">รูปแบบการเลื่อนหน้า</label>
+              <select id="match-mode" onchange="setMatchMode(this.value)">
+                <option value="off">ปิดการเลื่อนอัตโนมัติ</option>
+                <option value="time">เลื่อนตามเวลา</option>
+                <option value="complete">ครบ 4 แมตช์ แล้วรอเวลาที่กำหนด</option>
+              </select>
+              <label for="match-minutes">เวลารอ (นาที)</label>
+              <input id="match-minutes" type="number" min="0.05" max="120" step="0.5" value="1" onchange="setMatchMinutes(this.value)">
+              <p style="margin-top:10px;color:#a8c9e8;font-size:12px">โหมดครบ 4 แมตช์จะเริ่มจับเวลาหลังจากทั้ง 4 คู่มีผล WIN / LOSE / DRAW จาก Google Sheets</p>
+              <button type="button" onclick="toggleMatchSettings()">ปิดหน้าต่าง</button>
+            </div>
             <div id="matches-content"><div class="loader"><div class="loader-spinner"></div>กำลังโหลดข้อมูล...</div></div>
         </div>
 
@@ -1012,7 +1077,55 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
         let currentMatchPage = 1;
         const MATCHES_PER_PAGE = 4;
         let autoPageTimer = null;
-        const AUTO_PAGE_DELAY = 10000;
+        const MATCH_SETTINGS_KEY = 'gorobot_match_rotation_v1';
+        let matchSettings = {mode:'off',minutes:1};
+        try {const x=JSON.parse(localStorage.getItem(MATCH_SETTINGS_KEY)||'{}');if(['off','time','complete'].includes(x.mode)) matchSettings.mode=x.mode;if(Number(x.minutes)>0) matchSettings.minutes=Math.min(120,Number(x.minutes));}catch(e){}
+        let matchDeadline = 0;
+        let matchCompletionKey = '';
+        function toggleMatchSettings(){
+            const box=document.getElementById('match-settings');box.hidden=!box.hidden;
+        }
+        function setMatchMode(mode){matchSettings.mode=mode;saveMatchSettings();}
+        function setMatchMinutes(value){matchSettings.minutes=Math.min(120,Math.max(.05,Number(value)||1));saveMatchSettings();}
+        function saveMatchSettings(){
+            localStorage.setItem(MATCH_SETTINGS_KEY,JSON.stringify(matchSettings));
+            matchDeadline=0;matchCompletionKey='';
+            startAutoPageAdvance();
+        }
+        function matchFinished(m){
+            const statuses=[m.leftResult,m.rightResult];
+            if(statuses.includes('WIN')||statuses.includes('LOSE')||statuses.includes('DRAW'))return true;
+            return false; // Require an explicit result from Google Sheets; a 0-0 placeholder is not a completed match.
+        }
+        function refreshMatchStatus(){
+            const el=document.getElementById('match-auto-status');if(!el)return;
+            const titles={off:'ปิด',time:'ตามเวลา',complete:'ครบ 4 แมตช์'};
+            const sec=matchDeadline?Math.max(0,Math.ceil((matchDeadline-Date.now())/1000)):0;
+            el.textContent='เลื่อนหน้า: '+titles[matchSettings.mode]+(matchDeadline?' · อีก '+Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'):'');
+        }
+        function evaluateMatchRotation(){
+            if(matchSettings.mode==='off'||!document.getElementById('matches-view').classList.contains('active'))return;
+            const pages=Math.ceil(globalMatches.length/MATCHES_PER_PAGE);
+            if(pages<=1){matchDeadline=0;refreshMatchStatus();return;}
+            const items=globalMatches.slice((currentMatchPage-1)*MATCHES_PER_PAGE,currentMatchPage*MATCHES_PER_PAGE);
+            const finished=items.length===4&&items.every(matchFinished);
+            const key=currentMatchPage+':'+items.map(m=>[m.matchTitle,m.leftScore,m.rightScore,m.leftResult,m.rightResult].join('|')).join(';');
+            if(matchSettings.mode==='complete'){
+                if(!finished){matchDeadline=0;matchCompletionKey='';refreshMatchStatus();return;}
+                if(matchCompletionKey!==key){matchCompletionKey=key;matchDeadline=Date.now()+matchSettings.minutes*60000;}
+            }else if(!matchDeadline){matchDeadline=Date.now()+matchSettings.minutes*60000;}
+            if(matchDeadline&&Date.now()>=matchDeadline){
+                currentMatchPage=currentMatchPage>=pages?1:currentMatchPage+1;
+                matchDeadline=0;matchCompletionKey='';
+                document.getElementById('matches-content').innerHTML=renderMatchCardsPaginated(globalMatches);
+            }
+            refreshMatchStatus();
+        }
+        document.addEventListener('DOMContentLoaded',()=>{
+            document.getElementById('match-mode').value=matchSettings.mode;
+            document.getElementById('match-minutes').value=matchSettings.minutes;
+            refreshMatchStatus();
+        });
 
         // สลับมุมมองแท็บภายในหน้าเดิม
         function switchView(viewId, btn) {
@@ -1225,6 +1338,8 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
             const view = document.querySelector('.view.active');
             if (!inFs || !view) { window.__fsScale = 1; return; }
 
+            if (view.id === 'matches-view') { clearFs(view); window.__fsScale = 1; return; }
+
             view.style.transform = 'none';
             const h = view.offsetHeight;
             const s = Math.min(window.innerWidth / FS_W, window.innerHeight / h) * 0.98;
@@ -1370,16 +1485,14 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
 
         function startAutoPageAdvance() {
             stopAutoPageAdvance();
-            autoPageTimer = setInterval(() => {
-                const totalPages = Math.ceil(globalMatches.length / MATCHES_PER_PAGE);
-                if (totalPages <= 1) return;
-                currentMatchPage = currentMatchPage >= totalPages ? 1 : currentMatchPage + 1;
-                document.getElementById('matches-content').innerHTML = renderMatchCardsPaginated(globalMatches);
-            }, AUTO_PAGE_DELAY);
+            matchDeadline=0;matchCompletionKey='';
+            autoPageTimer=setInterval(evaluateMatchRotation,1000);
+            refreshMatchStatus();
         }
-
         function stopAutoPageAdvance() {
-            if (autoPageTimer) { clearInterval(autoPageTimer); autoPageTimer = null; }
+            if(autoPageTimer){clearInterval(autoPageTimer);autoPageTimer=null;}
+            matchDeadline=0;matchCompletionKey='';
+            refreshMatchStatus();
         }
 
         function changeMatchPage(delta) {
