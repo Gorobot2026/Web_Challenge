@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -236,6 +235,29 @@ body:before{
  background:rgba(var(--cr),.2);
 }
 
+/* RANK BUTTON */
+
+.rank-btn{
+ margin-left:12px;
+ font-family:'Orbitron','Kanit',sans-serif;
+ font-weight:700;
+ font-size:14px;
+ letter-spacing:.1em;
+ color:#1a0b33;
+ background:linear-gradient(135deg,#e0c7ff,#b17dff);
+ border:0;
+ padding:7px 22px;
+ cursor:pointer;
+ clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+}
+
+.rank-btn:hover{filter:brightness(1.12)}
+
+.rank-btn.on{
+ background:linear-gradient(135deg,#bbf7d0,#86efac);
+ color:#14532d;
+}
+
 /* TABLE */
 
 .head,.team{
@@ -388,10 +410,7 @@ body:before{
  margin-top:2px;
 }
 
-/* ============================================
-   BEST ROUND - LIGHT GREEN
-   ไฮไลต์รอบดีที่สุดสีเขียวอ่อน
-   ============================================ */
+/* BEST ROUND - LIGHT GREEN */
 
 .idek .team>.rd.best{
  background:rgba(134,239,172,.20);
@@ -521,6 +540,8 @@ body:before{
  .board-title h2{font-size:20px}
  .board-title span{font-size:11px;padding:4px 14px}
 
+ .rank-btn{font-size:11px;padding:5px 12px;margin-left:6px}
+
  .rd .rs{font-size:16px}
  .rd .rt{font-size:12px}
 
@@ -612,6 +633,11 @@ body:before{
  .board-title:before{
   height:27px;
   width:7px;
+ }
+
+ .rank-btn{
+  font-size:clamp(11px,.9vw,14px);
+  padding:6px 18px;
  }
 
  .head{
@@ -781,6 +807,7 @@ body::-webkit-scrollbar{display:none}
    <div class="board-title">
     <h2>iDekTep</h2>
     <span>ตารางคะแนน</span>
+    <button class="rank-btn" id="rankBtn" onclick="toggleRank()">RANK</button>
    </div>
 
    <div class="head">
@@ -890,6 +917,12 @@ function renderWedo(raw){
 
 /* iDEKTEP */
 
+/* rankMode = false : เรียงตามรหัสทีม IDT, รอบ 2 ถูกซ่อน (โชว์แค่ตัวหน้า), ไม่ไฮไลต์
+   rankMode = true  : เรียงตามคะแนนที่ดีที่สุด, โชว์รอบ 2 เต็ม, ไฮไลต์รอบที่ดีที่สุด */
+
+let rankMode=false;
+let idektepRaw=[];
+
 function cleanIdektep(raw){
  if(!Array.isArray(raw))return [];
 
@@ -931,19 +964,37 @@ function bestRound(rounds){
  return best;
 }
 
+/* ซ่อนค่า: คะแนน 245 -> 2xx , เวลา 3.45.12 -> 3.xx.xx */
+
+function maskScore(v){
+ const s=String(v??'').trim();
+ return s?escapeHtml(s.charAt(0))+'x'.repeat(Math.max(s.length-1,1)):'-';
+}
+
+function maskTime(v){
+ const s=String(v??'').trim();
+ return s?escapeHtml(s.charAt(0))+'.xx.xx':'-';
+}
+
 function idekRowHtml(r,rank){
 
- const cells=r.rounds.map((x,i)=>`
-  <div class="rd${i===r.best?' best':''}">
-   <span class="rs">${escapeHtml(x.score)||'-'}</span>
-   <span class="rt">${escapeHtml(x.time)||'-'}</span>
-  </div>
- `).join('');
+ const cells=r.rounds.map((x,i)=>{
+  const hide=!rankMode&&i===1;
+  const isBest=rankMode&&i===r.best;
+  const sc=hide?maskScore(x.score):(escapeHtml(x.score)||'-');
+  const tm=hide?maskTime(x.time):(escapeHtml(x.time)||'-');
+
+  return `
+  <div class="rd${isBest?' best':''}">
+   <span class="rs">${sc}</span>
+   <span class="rt">${tm}</span>
+  </div>`;
+ }).join('');
 
  return `
- <div class="team ${rankClass(rank)}">
+ <div class="team ${rankMode?rankClass(rank):''}">
   <div class="rank">
-   <span class="rank-badge">${rank}</span>
+   <span class="rank-badge">${rankMode?rank:'-'}</span>
   </div>
   <div class="team-name">${escapeHtml(r.team)||'-'}</div>
   <div class="member">${escapeHtml(r.member)||'-'}</div>
@@ -952,9 +1003,11 @@ function idekRowHtml(r,rank){
 }
 
 function renderIdektep(raw){
+ if(raw)idektepRaw=raw;
+
  const board=document.getElementById('idektepData');
 
- const rows=cleanIdektep(raw).map(r=>{
+ const rows=cleanIdektep(idektepRaw).map(r=>{
   const b=bestRound(r.rounds);
 
   return {
@@ -965,11 +1018,25 @@ function renderIdektep(raw){
   };
  });
 
- rows.sort((a,b)=>cmp(b.bs,a.bs)||cmp(a.bt,b.bt));
+ if(rankMode){
+  rows.sort((a,b)=>cmp(b.bs,a.bs)||cmp(a.bt,b.bt));
+ }else{
+  rows.sort((a,b)=>a.team.localeCompare(b.team,undefined,{numeric:true,sensitivity:'base'}));
+ }
 
  board.innerHTML=rows.length
  ?rows.map((r,i)=>idekRowHtml(r,i+1)).join('')
  :'<div class="loading">ไม่พบข้อมูล</div>';
+}
+
+function toggleRank(){
+ rankMode=!rankMode;
+
+ const btn=document.getElementById('rankBtn');
+ btn.classList.toggle('on',rankMode);
+ btn.textContent=rankMode?'ซ่อนอันดับ':'RANK';
+
+ renderIdektep();
 }
 
 /* API */
