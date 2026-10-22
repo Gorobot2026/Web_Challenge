@@ -416,7 +416,7 @@ body:before{
  background:rgba(134,239,172,.20);
  border:2px solid #86efac;
  box-shadow:inset 0 0 0 1px rgba(134,239,172,.15);
- padding-top:22px;
+ padding-top:8px;
 }
 
 .idek .rd.best .rs{
@@ -430,16 +430,17 @@ body:before{
 
 .idek .rd.best:after{
  content:"★ ดีที่สุด";
- position:absolute;
- top:5px;
- right:7px;
- font-size:10px;
+ order:-1;
+ align-self:center;
+ flex-shrink:0;
+ white-space:nowrap;
+ font-size:13px;
  font-weight:700;
  background:#86efac;
  color:#14532d;
- padding:1px 9px;
- line-height:16px;
- clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);
+ padding:1px 14px;
+ line-height:20px;
+ clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);
 }
 
 /* WEDO */
@@ -550,13 +551,13 @@ body:before{
   padding:4px 2px;
  }
 
- .idek .team>.rd.best{padding:9px 3px 3px}
+ .idek .team>.rd.best{padding:3px}
 
  .idek .rd.best:after{
-  content:"★";
-  font-size:9px;
-  padding:0 5px;
-  right:2px;
+  content:"★ ดีที่สุด";
+  font-size:10px;
+  line-height:14px;
+  padding:0 6px;
  }
 }
 
@@ -726,11 +727,11 @@ body:before{
  }
 
  .idek .team>.rd.best{
-  padding:11px 7px 3px;
+  padding:3px 7px;
  }
 
  .idek .rd .rs{
-  font-size:clamp(17px,1.55vw,27px);
+  font-size:clamp(18px,min(1.9vw,3.4vh),32px);
   line-height:1.06;
   padding:0;
   margin:0;
@@ -738,18 +739,16 @@ body:before{
  }
 
  .idek .rd .rt{
-  font-size:clamp(12px,.9vw,16px);
+  font-size:clamp(13px,min(1.1vw,2vh),19px);
   line-height:1.15;
   margin:0;
   flex-shrink:0;
  }
 
  .idek .rd.best:after{
-  top:2px;
-  right:4px;
-  line-height:12px;
-  font-size:9px;
-  padding:0 7px;
+  font-size:clamp(10px,min(.85vw,1.6vh),13px);
+  line-height:1.5;
+  padding:0 12px;
  }
 
  .wedo .head{min-height:0}
@@ -761,7 +760,7 @@ body:before{
  .idek .head,.idek .team{
   grid-template-columns:60px 85px minmax(130px,1fr) 120px 120px;
  }
- .idek .team>.rd.best{padding:9px 3px 3px}
+ .idek .team>.rd.best{padding:3px}
 }
 
 @media(prefers-reduced-motion:reduce){
