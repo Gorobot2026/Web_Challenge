@@ -907,6 +907,319 @@ body::-webkit-scrollbar{display:none}
 @keyframes shock{0%{width:20px;height:20px;opacity:.95}100%{width:70vmin;height:70vmin;opacity:0}}
 .pod.p1 .tn{font-size:clamp(18px,min(5.4vh,4vw),58px)}
 
+/* ===== CHAMPIONSHIP ARENA · podium redesign ===== */
+#reveal{
+ background:
+  radial-gradient(ellipse at 50% 84%,rgba(80,49,157,.48),transparent 49%),
+  radial-gradient(ellipse at 17% 35%,rgba(10,126,200,.2),transparent 43%),
+  radial-gradient(ellipse at 83% 30%,rgba(173,93,236,.17),transparent 40%),
+  linear-gradient(180deg,#020615 0%,#07122b 62%,#02050e 100%);
+}
+#reveal:before{inset:-45%;opacity:.65;animation-duration:34s}
+#reveal:after{background-size:52px 52px;opacity:.35;mask-image:linear-gradient(to bottom,transparent 15%,#000 100%)}
+.rv-floor{position:absolute;z-index:1;left:-12%;right:-12%;bottom:-19vh;height:47vh;pointer-events:none;
+ transform:perspective(600px) rotateX(63deg);transform-origin:bottom;
+ background:repeating-linear-gradient(90deg,rgba(80,170,255,.14) 0 2px,transparent 2px 9%),
+ repeating-linear-gradient(0deg,rgba(80,170,255,.16) 0 2px,transparent 2px 18%);
+ border-top:2px solid rgba(130,192,255,.32);opacity:.45}
+.rv-ambient{position:absolute;z-index:1;bottom:0;pointer-events:none;width:45vw;height:100vh;
+ background:linear-gradient(0deg,rgba(49,148,255,.2),transparent 70%);opacity:.65;
+ clip-path:polygon(47% 100%,53% 100%,100% 0,0 0);filter:blur(8px);transform-origin:bottom center}
+.rv-ambient.left{left:-18vw;transform:rotate(-19deg)}
+.rv-ambient.right{right:-18vw;transform:rotate(19deg);background:linear-gradient(0deg,rgba(187,83,255,.24),transparent 70%)}
+.rv-head{margin-top:clamp(20px,3vh,38px);width:92vw}
+.rv-head small{display:inline-block;color:#bdeaff;letter-spacing:.3em;font-size:clamp(9px,1.35vh,14px);
+ border:1px solid rgba(84,186,255,.42);background:rgba(25,75,142,.24);padding:5px 21px;border-radius:99px}
+.rv-head h2{font-family:'Orbitron','Kanit',sans-serif;letter-spacing:.08em;font-size:clamp(25px,5.4vh,61px);
+ background:linear-gradient(180deg,#fff 12%,#d1e3ff 42%,#8a7aff 90%);
+ -webkit-background-clip:text;background-clip:text;text-shadow:0 14px 50px rgba(90,115,255,.32)}
+.rv-head p{color:#c5d8ff;letter-spacing:.035em;font-weight:500}
+.rv-subline{height:2px;width:min(350px,38vw);margin:.7vh auto 0;
+ background:linear-gradient(90deg,transparent,#53a8ff,#bb8fff,transparent);box-shadow:0 0 15px #6c72ff}
+.rv-hero-word{position:absolute;left:0;right:0;bottom:33vh;text-align:center;z-index:1;pointer-events:none;
+ font-family:'Orbitron',sans-serif;letter-spacing:.19em;font-size:clamp(45px,12.5vw,210px);font-weight:900;
+ color:rgba(131,152,241,.035);user-select:none;white-space:nowrap}
+.rv-ctrl button{border-radius:9px;background:rgba(7,16,42,.65);backdrop-filter:blur(8px);transition:background .2s,border .2s}
+.rv-ctrl button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.rv-stage{width:min(1320px,97vw);gap:clamp(9px,1.5vw,26px);padding-bottom:clamp(22px,4vh,44px);
+ perspective:1300px;align-items:flex-end}
+.pod{align-items:center;max-width:440px}
+.pod.p1{--c:255,200,75;--h:clamp(125px,32vh,370px);flex:1.12}
+.pod.p2{--c:183,209,235;--h:clamp(104px,23vh,285px)}
+.pod.p3{--c:238,151,91;--h:clamp(85px,17vh,230px)}
+.pod-halo{position:absolute;left:50%;bottom:calc(var(--h) + 35px);width:72%;aspect-ratio:1;z-index:-1;
+ border:2px solid rgba(var(--c),.55);box-shadow:0 0 38px rgba(var(--c),.25),inset 0 0 35px rgba(var(--c),.12);
+ border-radius:50%;transform:translate(-50%,25%) rotateX(64deg);opacity:0}
+.pod.up .pod-halo{opacity:1;animation:podHalo 4s ease-in-out infinite}
+@keyframes podHalo{50%{transform:translate(-50%,20%) rotateX(62deg) scale(1.14);opacity:.5}}
+.pod-rays{position:absolute;inset:-20% -15% 0;z-index:-2;opacity:0;pointer-events:none;
+ background:repeating-conic-gradient(from 0deg at 50% 66%,rgba(var(--c),.21) 0deg,transparent 7deg,transparent 23deg);
+ mask-image:radial-gradient(ellipse at 50% 65%,transparent 5%,#000 33%,transparent 73%)}
+.pod.p1.up .pod-rays{opacity:.5;animation:rvspin 25s linear infinite}
+.pcard{width:100%;min-height:clamp(122px,19vh,215px);margin-bottom:clamp(7px,1.2vh,14px);
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(1px,.38vh,6px);
+ padding:clamp(9px,1.3vw,21px);border-radius:clamp(9px,1.1vw,18px);position:relative;overflow:hidden;
+ background:linear-gradient(145deg,rgba(28,36,78,.97),rgba(5,12,35,.97) 65%);
+ border:1.5px solid rgba(var(--c),.8);box-shadow:0 0 28px rgba(var(--c),.21),inset 0 1px rgba(255,255,255,.22)}
+.pcard:before{content:"";position:absolute;top:0;left:12%;right:12%;height:3px;
+ background:linear-gradient(90deg,transparent,rgb(var(--c)),transparent);box-shadow:0 0 19px rgb(var(--c))}
+.pcard:after{content:"";position:absolute;width:85%;aspect-ratio:1;border-radius:50%;top:-130%;left:8%;pointer-events:none;
+ background:radial-gradient(circle,rgba(var(--c),.22),transparent 70%)}
+.pcard .crown{position:absolute;top:3px;left:8px;font-size:clamp(16px,2.9vh,32px);filter:drop-shadow(0 0 12px #f9bc54)}
+.pcard .medal{font-family:'Kanit',sans-serif;color:rgb(var(--c));font-size:clamp(11px,1.9vh,20px);
+ letter-spacing:.08em;font-weight:700}
+.pcard .tn{font-weight:800;text-align:center;font-size:clamp(17px,3vh,38px);line-height:1.1;
+ text-shadow:0 2px 17px rgba(var(--c),.27);max-width:100%;overflow-wrap:anywhere}
+.pod.p1 .tn{font-size:clamp(19px,3.6vh,45px)}
+.pcard .mb{font-size:clamp(11px,1.55vh,17px);line-height:1.25;max-height:2.6em;overflow:hidden;
+ color:#bfcbed;text-align:center;max-width:100%}
+.pod-stats{display:flex;gap:clamp(6px,1vw,14px);align-items:center;justify-content:center;flex-wrap:wrap;margin-top:2px}
+.pod-stats >span{font-size:clamp(10px,1.45vh,15px);color:#a7bbd7}
+.pcard .sc{font-family:'Orbitron',sans-serif;font-size:clamp(17px,3vh,34px);line-height:1;color:rgb(var(--c))}
+.pcard .tm{font-family:'Orbitron','Kanit',sans-serif;font-size:clamp(11px,1.9vh,18px);color:#ecf2ff}
+.pod-top{height:clamp(12px,2vh,24px);width:106%;flex-shrink:0;z-index:2;position:relative;
+ background:linear-gradient(180deg,rgba(60,83,141,.55),rgba(18,29,69,.93));border:1px dashed rgba(255,255,255,.21);
+ border-radius:7px 7px 2px 2px;transform:skewX(-5deg)}
+.pod.up .pod-top{border:2px solid rgb(var(--c));background:linear-gradient(90deg,rgba(var(--c),.58),rgba(var(--c),.95),rgba(var(--c),.55));
+ box-shadow:0 0 30px rgba(var(--c),.65),0 7px 24px rgba(var(--c),.34)}
+.pblock{width:100%;position:relative;overflow:hidden;border:1.5px dashed rgba(255,255,255,.19);
+ border-bottom:3px solid rgba(255,255,255,.18);border-radius:0 0 6px 6px;
+ padding:clamp(6px,1vh,12px) 0 0;align-items:center;flex-direction:column;justify-content:center;
+ color:rgba(255,255,255,.2);background:linear-gradient(148deg,rgba(40,66,130,.3),rgba(5,13,40,.74))}
+.pblock:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.55;
+ background:repeating-linear-gradient(-42deg,transparent 0 22px,rgba(255,255,255,.038) 22px 24px)}
+.pblock:after{content:"";position:absolute;bottom:0;left:8%;right:8%;height:4px;opacity:.25;
+ background:rgb(var(--c));box-shadow:0 0 25px rgb(var(--c))}
+.pblock b{font-size:clamp(55px,12vh,145px);line-height:1;letter-spacing:-.09em;position:relative;
+ text-shadow:0 0 40px rgba(var(--c),.28)}
+.pod-rank-label{font-family:'Orbitron',sans-serif;font-size:clamp(8px,1.5vh,15px);letter-spacing:.28em;
+ color:rgba(255,255,255,.38);font-weight:800}
+.pod.up .pblock{background:linear-gradient(145deg,rgba(var(--c),.75) 0%,rgba(var(--c),.26) 38%,rgba(8,17,46,.98) 100%);
+ border:2px solid rgb(var(--c));border-bottom:4px solid rgb(var(--c));
+ box-shadow:0 0 32px rgba(var(--c),.38),inset 0 0 40px rgba(var(--c),.2)}
+.pod.up .pblock:after{opacity:1}
+.pod.up .pod-rank-label{color:rgba(255,255,255,.86)}
+.pod.p1.up .pblock{box-shadow:0 0 70px rgba(255,200,75,.5),inset 0 0 55px rgba(255,200,75,.26)}
+.pod.tease .pod-top{border-color:#ffdc7f;box-shadow:0 0 25px rgba(255,196,0,.45);animation:tease .7s ease-in-out infinite}
+.pod.tease .pblock{animation:tease .7s ease-in-out infinite}
+.rv-stage.suspense .pod.p1:not(.up) .pod-halo{opacity:.5;animation:podHalo 1.2s ease-in-out infinite}
+.rv-stage.focus .pod:not(.p1){opacity:.52;filter:saturate(.6) brightness(.75)}
+.rv-count{color:#f8e5a7;text-shadow:0 0 60px #ffc84b}
+.rv-count span:after{border-color:#ffca5e}
+@media(max-width:720px){
+ .rv-ctrl{top:8px;right:8px;gap:5px}.rv-ctrl button{padding:5px 8px;font-size:11px}
+ .rv-head{margin-top:48px}.rv-head small{font-size:8px;letter-spacing:.1em}
+ .rv-head h2{font-size:clamp(21px,4.2vw,36px)}.rv-head p{font-size:12px}
+ .rv-stage{gap:6px;width:99vw;padding-bottom:2.5vh}
+ .pod.p1{--h:clamp(105px,28vh,270px)}.pod.p2{--h:clamp(82px,20vh,210px)}.pod.p3{--h:clamp(66px,15vh,165px)}
+ .pcard{min-height:clamp(118px,23vh,178px);padding:7px 4px;border-radius:8px}
+ .pcard .crown{position:static;font-size:15px;line-height:1}
+ .pcard .medal{font-size:10px}.pcard .tn,.pod.p1 .tn{font-size:clamp(13px,3vw,20px)}
+ .pcard .mb{font-size:10px}.pod-stats{gap:3px}.pod-stats >span{font-size:9px}
+ .pcard .sc{font-size:clamp(14px,3vw,21px)}.pcard .tm{font-size:9px}
+ .pblock b{font-size:clamp(38px,9vh,70px)}.pod-rank-label{font-size:8px;letter-spacing:0}
+}
+@media(max-height:530px) and (min-width:721px){
+ .rv-head{margin-top:8px}.rv-head small{font-size:10px;padding:3px 14px}.rv-head h2{font-size:28px}.rv-head p{font-size:16px}
+ .pcard{min-height:94px;padding:6px}.pcard .mb{display:none}.pod.p1{--h:30vh}.pod.p2{--h:22vh}.pod.p3{--h:15vh}
+ .pcard .tn,.pod.p1 .tn{font-size:18px}.pblock b{font-size:52px}
+}
+@media(prefers-reduced-motion:reduce){.pod.up .pod-halo,.pod.p1.up .pod-rays,.rv-ambient{animation:none}}
+
+/* ===== BLACK METAL 3D AWARDS STAGE · based on supplied podium reference ===== */
+#reveal{
+ background:radial-gradient(ellipse at 50% 86%,rgba(125,98,58,.19),transparent 52%),
+ radial-gradient(ellipse at 50% 30%,rgba(255,217,133,.07),transparent 58%),
+ linear-gradient(180deg,#090b0e 0%,#16191b 66%,#08090a 100%)}
+#reveal:before{opacity:.28;filter:saturate(.18)}
+#reveal:after{opacity:.15;mask-image:linear-gradient(to bottom,transparent,#000)}
+.rv-floor{bottom:-22vh;height:56vh;opacity:.5;border-color:rgba(255,235,185,.12);
+ background:repeating-linear-gradient(90deg,rgba(214,204,180,.1) 0 1px,transparent 1px 8%),
+ repeating-linear-gradient(0deg,rgba(214,204,180,.11) 0 1px,transparent 1px 16%)}
+.rv-ambient.left{background:linear-gradient(0deg,rgba(228,222,209,.17),transparent 70%);opacity:.5}
+.rv-ambient.right{background:linear-gradient(0deg,rgba(255,204,145,.17),transparent 70%);opacity:.5}
+.rv-head small{color:#ffe1a3;background:rgba(41,37,31,.83);border-color:rgba(242,197,118,.36)}
+.rv-head h2{background:linear-gradient(180deg,#fffdf4,#f7dc99 47%,#9f7b38 100%);-webkit-background-clip:text;background-clip:text;
+ text-shadow:0 12px 35px rgba(250,193,89,.08)}
+.rv-head p{color:#ebd7b2}
+.rv-subline{background:linear-gradient(90deg,transparent,#ffe09b,transparent);box-shadow:0 0 20px rgba(255,196,97,.45)}
+.rv-hero-word{color:rgba(255,210,131,.028)}
+.rv-ctrl button{color:#ffedc8;border-color:rgba(255,216,154,.5);background:rgba(14,12,10,.8)}
+.rv-ctrl button:hover{background:rgba(150,108,42,.4)}
+.rv-stage{width:min(1360px,97vw);gap:clamp(8px,1.5vw,24px);padding-bottom:clamp(14px,2.8vh,35px);overflow:visible;
+ perspective:1100px}
+.pod{--fig-h:clamp(112px,19vh,215px);--c:255,199,102;max-width:450px;justify-content:flex-end}
+.pod.p1{--c:249,199,88;--h:clamp(65px,11vh,140px);--fig-h:clamp(140px,28vh,295px);flex:1.1}
+.pod.p2{--c:201,217,229;--h:clamp(48px,8vh,102px);--fig-h:clamp(112px,22vh,235px)}
+.pod.p3{--c:233,157,117;--h:clamp(48px,8vh,102px);--fig-h:clamp(112px,22vh,235px)}
+.pod-arch{display:none;position:absolute;z-index:-1;pointer-events:none;
+ bottom:calc(var(--h) + 11px);left:14%;width:72%;height:clamp(175px,42vh,425px);
+ border-radius:50% 50% 0 0 / 32% 32% 0 0;border:2px solid rgba(255,216,140,.18);border-bottom:0;
+ background:repeating-linear-gradient(90deg,#17191a 0 5px,#363534 5px 7px,#0f1112 7px 14px);
+ box-shadow:inset 0 0 50px rgba(0,0,0,.88),0 0 90px rgba(237,180,78,.09)}
+.pod.p1 .pod-arch{display:block}
+.pod-figure{position:relative;display:flex;flex-shrink:0;width:100%;height:var(--fig-h);align-items:center;justify-content:center;
+ margin-bottom:-4px;isolation:isolate;pointer-events:none}
+.pod-figure:after{content:"";position:absolute;z-index:-1;bottom:2%;left:14%;right:14%;height:21%;border-radius:50%;
+ background:radial-gradient(ellipse,rgba(var(--c),.16),transparent 71%);filter:blur(9px);opacity:0}
+.pod.up .pod-figure:after{opacity:1}
+.laurel{position:absolute;inset:0;width:100%;height:100%;overflow:visible;color:rgb(var(--c));
+ filter:drop-shadow(0 3px 1px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(var(--c),.2));
+ opacity:.08;transform:scale(.82);transition:opacity 1.15s ease,transform 1.15s cubic-bezier(.18,1.24,.3,1)}
+.laurel .leaf{stroke:rgba(255,255,255,.36);stroke-width:.7}
+.laurel .stem{fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}
+.pod.up .laurel{opacity:1;transform:scale(1)}
+.pod.p1.up .laurel{filter:drop-shadow(0 0 15px rgba(255,212,92,.4))}
+.pod-number{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);
+ font-family:'Orbitron',sans-serif;font-size:clamp(75px,15vh,165px);font-weight:900;letter-spacing:-.12em;line-height:1.1;
+ color:rgba(255,255,255,.11);text-shadow:0 4px 2px rgba(0,0,0,.4);transition:filter .55s,transform .85s}
+.pod.p1 .pod-number{font-size:clamp(95px,20vh,220px)}
+.pod.up .pod-number{background:linear-gradient(160deg,#fff 2%,rgb(var(--c)) 31%,#fff9de 42%,rgb(var(--c)) 59%,#5a3825 97%);
+ background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+ filter:drop-shadow(0 4px 1px rgba(0,0,0,.85)) drop-shadow(0 0 17px rgba(var(--c),.47));
+ animation:metalRise 1.1s cubic-bezier(.18,1.24,.3,1) both}
+@keyframes metalRise{from{transform:translate(-50%,-35%) scale(.52) rotateY(-32deg);opacity:.05}
+ to{transform:translate(-50%,-50%) scale(1) rotateY(0);opacity:1}}
+.pod-crown{position:absolute;z-index:3;top:-6%;left:50%;transform:translateX(-50%);font-size:clamp(20px,4vh,48px);
+ opacity:0;color:#f7ce65;text-shadow:0 0 22px rgba(255,219,108,.8)}
+.pod.p1.up .pod-crown{opacity:1;animation:crownFloat 2.8s ease-in-out infinite}
+@keyframes crownFloat{50%{transform:translate(-50%,-6px) scale(1.1)}}
+.pod-sparkle{position:absolute;z-index:4;pointer-events:none;width:4px;height:4px;background:#fff7cc;border-radius:50%;opacity:0;
+ box-shadow:0 0 0 2px rgba(var(--c),.2),0 0 13px 6px rgba(var(--c),.6)}
+.pod-sparkle:after{content:"";position:absolute;width:1px;height:26px;left:1.5px;top:-11px;background:linear-gradient(transparent,#fff,transparent)}
+.pod-sparkle.s1{left:28%;top:31%}.pod-sparkle.s2{left:70%;top:51%;animation-delay:.9s}
+.pod.up .pod-sparkle{animation:diamondTwinkle 2.5s ease-in-out infinite}
+@keyframes diamondTwinkle{0%,100%{opacity:0;transform:scale(.4)}35%{opacity:1;transform:scale(1.2)}64%{opacity:0}}
+.pod-top{width:104%;height:clamp(22px,3.5vh,40px);border-radius:50% / 70%;transform:translateY(46%);flex-shrink:0;
+ border:3px solid rgba(153,151,146,.48);
+ background:radial-gradient(ellipse at 48% 31%,#656361 0%,#36383a 32%,#0b0d0e 75%);
+ box-shadow:inset 0 4px 9px rgba(255,255,255,.23),0 8px 8px rgba(0,0,0,.88);z-index:5}
+.pod.up .pod-top{border:3px solid rgb(var(--c));background:radial-gradient(ellipse at 45% 29%,#777269,#3c3b39 36%,#0b0e10 75%);
+ box-shadow:inset 0 5px 9px rgba(255,255,255,.25),0 5px 0 rgb(var(--c)),0 13px 12px rgba(0,0,0,.7),0 0 25px rgba(var(--c),.32)}
+.pblock{height:var(--h);width:100%;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:12px 6px 2px;
+ position:relative;overflow:hidden;border-radius:0 0 24px 24px;border:2px solid #252729;border-bottom:5px solid #717171;
+ background:linear-gradient(90deg,#050607 0%,#282a2b 10%,#090b0c 28%,#434547 50%,#101214 72%,#454647 92%,#080a0b 100%);
+ box-shadow:inset 0 0 15px rgba(255,255,255,.08),0 22px 20px rgba(0,0,0,.7)}
+.pblock:before{content:"";inset:4px 0 0;background:repeating-linear-gradient(90deg,transparent 0 12px,rgba(255,255,255,.055) 12px 13px,transparent 13px 28px);
+ opacity:.5}
+.pblock:after{content:"";position:absolute;bottom:6px;left:0;right:0;height:5px;
+ background:linear-gradient(90deg,#262323,rgb(var(--c)),#fff4d1,rgb(var(--c)),#262323);opacity:.3;
+ box-shadow:0 0 11px rgba(var(--c),.25)}
+.pod.up .pblock{border-color:#4a4440;border-bottom:5px solid rgb(var(--c));color:rgb(var(--c));
+ background:linear-gradient(90deg,#040405 0%,#383a3a 9%,#0d0e0f 31%,#444647 51%,#080a0b 75%,#363837 90%,#060707 100%);
+ box-shadow:inset 0 0 14px rgba(var(--c),.13),0 16px 26px rgba(0,0,0,.8),0 0 19px rgba(var(--c),.2)}
+.pod.p1.up .pblock{box-shadow:inset 0 0 14px rgba(var(--c),.14),0 20px 28px rgba(0,0,0,.8),0 0 24px rgba(var(--c),.27)}
+.pod.up .pblock:after{opacity:1}
+.pod-rank-label{position:relative;z-index:2;font-size:clamp(9px,1.5vh,16px);letter-spacing:.25em;color:#898989;
+ text-shadow:0 1px 4px #000}
+.pod.up .pod-rank-label{color:#f5e6c6}
+.pcard{width:92%;min-height:clamp(86px,13vh,140px);margin-bottom:clamp(7px,1vh,12px);padding:clamp(7px,.95vw,14px);
+ background:linear-gradient(145deg,rgba(36,36,37,.98),rgba(8,9,11,.98));border:1px solid rgba(var(--c),.45);
+ box-shadow:inset 0 1px 1px rgba(255,255,255,.12),0 9px 28px rgba(0,0,0,.6),0 0 18px rgba(var(--c),.14)}
+.pcard:before{height:2px}.pcard .crown{display:none}
+.pcard .medal{font-family:'Kanit',sans-serif;letter-spacing:.08em;font-size:clamp(10px,1.5vh,16px)}
+.pcard .tn,.pod.p1 .tn{font-size:clamp(16px,2.7vh,32px);line-height:1.05}
+.pcard .mb{font-size:clamp(10px,1.45vh,17px);color:#c4c7ca}
+.pcard .sc{font-size:clamp(16px,2.7vh,28px)}
+.pcard .tm{font-size:clamp(10px,1.6vh,17px)}
+.pod-halo{display:none}.pod-rays{opacity:.08;filter:saturate(.3)}
+.beam{background:linear-gradient(to top,rgba(var(--c),.16),transparent 80%)}
+.pod.tease .pblock{animation:metalTease .7s ease-in-out infinite}
+.pod.tease .pod-top{animation:metalTease .7s ease-in-out infinite}
+@keyframes metalTease{50%{box-shadow:0 0 27px rgba(var(--c),.55),inset 0 0 17px rgba(var(--c),.19)}}
+.rv-stage.focus .pod:not(.p1){opacity:.54;filter:brightness(.7)}
+.mrow{--c:249,199,88;border-left-color:rgba(var(--c),.9);
+ background:linear-gradient(90deg,rgba(119,89,38,.35),rgba(24,24,26,.93));}
+.mrow.lock .mr{color:#ffe3ad;text-shadow:0 0 16px #dfb663}
+.mrow-pending{--c:85,87,90;border-left-style:dashed}
+.mrow-pending.in:not(.out){opacity:.44}
+.mrow-pending.out{opacity:0}
+.mrow-pending .mn{color:#b4b5ba;font-style:italic}
+.mrow-pending .ms{color:#a6a8ad}
+@media(max-width:720px){
+ .rv-stage{gap:5px}
+ .pod.p1{--h:clamp(49px,10vh,100px);--fig-h:clamp(92px,21vh,190px)}
+ .pod.p2,.pod.p3{--h:clamp(44px,8vh,85px);--fig-h:clamp(80px,17vh,160px)}
+ .pod.p1 .pod-number{font-size:clamp(65px,18vh,145px)}
+ .pod-number{font-size:clamp(56px,14vh,115px)}
+ .pod-arch{height:clamp(125px,29vh,270px)}
+ .pcard{min-height:clamp(91px,20vh,145px);padding:5px 3px}
+ .pcard .medal{font-size:9px}.pcard .tn,.pod.p1 .tn{font-size:clamp(12px,2.7vw,17px)}
+ .pcard .mb{font-size:9px}.pcard .sc{font-size:clamp(12px,2.8vw,19px)}
+ .pod-crown{font-size:clamp(16px,3vh,29px)}
+ .pod-rank-label{font-size:7px}.pblock{border-radius:0 0 12px 12px}
+}
+@media(max-height:530px) and (min-width:721px){
+ .pod.p1{--h:10vh;--fig-h:25vh}.pod.p2,.pod.p3{--h:8vh;--fig-h:19vh}
+ .pcard{min-height:76px}.pod-arch{height:35vh}
+ .pod-number{font-size:15vh}.pod.p1 .pod-number{font-size:20vh}
+}
+@media(prefers-reduced-motion:reduce){.pod.up .laurel,.pod.up .pod-number,.pod.up .pod-sparkle{animation:none}}
+
+/* ===== ROYAL VIOLET · purple stage theme ===== */
+#reveal{
+ background:
+  radial-gradient(ellipse at 50% 78%,rgba(133,56,236,.43),transparent 54%),
+  radial-gradient(ellipse at 17% 29%,rgba(94,31,181,.22),transparent 44%),
+  radial-gradient(ellipse at 83% 23%,rgba(216,76,246,.16),transparent 43%),
+  linear-gradient(180deg,#090315 0%,#160a31 53%,#070310 100%)}
+#reveal:before{opacity:.48;filter:none;
+ background:conic-gradient(from 20deg at 50% 65%,transparent 0 10%,rgba(184,116,255,.16) 12%,transparent 17% 35%,
+ rgba(215,120,255,.11) 38%,transparent 43% 61%,rgba(112,61,255,.19) 65%,transparent 70% 86%,
+ rgba(185,107,255,.13) 89%,transparent 93%)}
+#reveal:after{opacity:.26}
+.rv-floor{border-color:rgba(187,131,255,.28);
+ background:repeating-linear-gradient(90deg,rgba(163,93,255,.16) 0 1px,transparent 1px 8%),
+ repeating-linear-gradient(0deg,rgba(164,91,255,.14) 0 1px,transparent 1px 16%)}
+.rv-ambient.left{opacity:.8;background:linear-gradient(0deg,rgba(118,45,230,.37),transparent 73%)}
+.rv-ambient.right{opacity:.8;background:linear-gradient(0deg,rgba(203,74,244,.3),transparent 73%)}
+.rv-hero-word{color:rgba(198,151,255,.05)}
+.rv-head small{color:#e9d6ff;background:rgba(55,22,97,.55);border-color:rgba(181,106,255,.63);
+ box-shadow:0 0 21px rgba(171,81,255,.16)}
+.rv-head h2{background:linear-gradient(180deg,#fff 5%,#f2d9ff 43%,#ae75ff 96%);-webkit-background-clip:text;background-clip:text;
+ text-shadow:0 15px 40px rgba(178,84,255,.18)}
+.rv-head p{color:#e2caff}
+.rv-subline{background:linear-gradient(90deg,transparent,#955aff,#e7a2ff,#955aff,transparent);
+ box-shadow:0 0 22px rgba(178,91,255,.8)}
+.rv-ctrl button{color:#eddbff;border-color:rgba(180,108,255,.65);background:rgba(27,12,50,.82)}
+.rv-ctrl button:hover{background:rgba(119,48,184,.55)}
+.rv-ctrl button:focus-visible{outline-color:#e8bdff}
+.rv-count{color:#f9e8ff;text-shadow:0 0 65px #9b54ff,0 0 12px #fff}
+.rv-count span:after{border-color:#bf7bff;box-shadow:0 0 26px rgba(186,113,255,.7)}
+.pod.p1 .pod-arch{border-color:rgba(192,126,255,.55);
+ background:repeating-linear-gradient(90deg,#110d20 0 5px,#38294f 5px 7px,#0d091b 7px 14px);
+ box-shadow:inset 0 0 55px rgba(0,0,0,.9),0 0 80px rgba(170,78,255,.25)}
+.pod-figure:before{content:"";position:absolute;z-index:-1;left:4%;right:4%;top:10%;bottom:4%;
+ background:radial-gradient(ellipse,rgba(165,79,255,.25),transparent 65%);filter:blur(16px);opacity:0}
+.pod.up .pod-figure:before{opacity:1}
+.pod.p1.up .laurel{filter:drop-shadow(0 0 14px rgba(255,210,108,.4)) drop-shadow(0 0 27px rgba(155,67,255,.35))}
+.pod.up .pod-number{filter:drop-shadow(0 4px 1px rgba(0,0,0,.85)) drop-shadow(0 0 16px rgba(var(--c),.35))
+ drop-shadow(0 0 18px rgba(178,86,255,.32))}
+.pod.up .pod-top{box-shadow:inset 0 5px 9px rgba(255,255,255,.22),0 5px 0 rgb(var(--c)),
+ 0 12px 14px rgba(0,0,0,.7),0 0 32px rgba(151,66,255,.4)}
+.pblock{background:linear-gradient(90deg,#050408 0%,#33273f 10%,#0a0712 28%,#43364e 51%,#0b0715 73%,#41374a 92%,#050408 100%)}
+.pod.up .pblock{background:linear-gradient(90deg,#050408 0%,#3b2b4b 9%,#0b0714 31%,#4c3959 51%,#080610 74%,#392b49 91%,#060408 100%);
+ box-shadow:inset 0 0 17px rgba(174,88,255,.17),0 16px 26px rgba(0,0,0,.8),0 0 29px rgba(149,60,255,.24)}
+.pod.p1.up .pblock{box-shadow:inset 0 0 20px rgba(172,83,255,.23),0 20px 28px rgba(0,0,0,.8),0 0 40px rgba(163,76,255,.28)}
+.pblock:before{background:repeating-linear-gradient(90deg,transparent 0 12px,rgba(211,165,255,.055) 12px 13px,transparent 13px 28px)}
+.pcard{background:linear-gradient(145deg,rgba(44,26,68,.98),rgba(10,6,24,.98));
+ box-shadow:inset 0 1px rgba(255,255,255,.13),0 9px 28px rgba(0,0,0,.65),
+ 0 0 20px rgba(160,65,255,.22)}
+.pcard .mb{color:#d3c2e1}.pcard .tm{color:#f0e2ff}
+.beam{background:linear-gradient(to top,rgba(163,73,255,.33),transparent 85%)}
+.pod.up .beam{opacity:.65}.pod.p1.up .beam{animation:beamPulse 2.3s ease-in-out infinite}
+.mrow{--c:174,106,255;border-left-color:rgba(var(--c),.93);
+ background:linear-gradient(90deg,rgba(115,52,195,.4),rgba(19,10,39,.94))}
+.mrow .mr{color:#d9b6ff}.mrow.lock .mr{color:#f4dfff;text-shadow:0 0 18px #ac64ff}
+.mrow .ms{color:#f9ebff}.mrow .ms small{color:#cbb6de}
+.mrow-pending{--c:88,73,115}
+.mrow-pending .mn{color:#b5a5c6}.mrow-pending .ms{color:#b0a0c2}
+.rv-list{filter:drop-shadow(0 0 32px rgba(146,65,255,.13))}
+
+/* ให้ปุ่ม RANK สอดคล้องกับเวทีม่วง โดยไม่เปลี่ยนสีไฮไลต์คะแนนดีที่สุด */
+.rank-btn{background:linear-gradient(135deg,#f0d8ff,#a76bff);color:#2b0c48}
+.rank-btn.on{background:linear-gradient(135deg,#c59bff,#7a35dc);color:#fff}
+
 </style>
 </head>
 
@@ -982,6 +1295,10 @@ body::-webkit-scrollbar{display:none}
 <div id="reveal">
  <canvas id="fx"></canvas>
  <div class="rv-flash" id="rvFlash"></div>
+ <div class="rv-floor" aria-hidden="true"></div>
+ <div class="rv-ambient left" aria-hidden="true"></div>
+ <div class="rv-ambient right" aria-hidden="true"></div>
+ <div class="rv-hero-word" aria-hidden="true">CHAMPIONS</div>
  <div class="rv-ctrl">
   <button id="rvSound" onclick="rvToggleSound()">🔊</button>
   <button onclick="rvSkip()">ข้าม ⏭</button>
@@ -990,6 +1307,7 @@ body::-webkit-scrollbar{display:none}
   <small>GO ROBOT CHALLENGE 2026</small>
   <h2>iDekTep · TOP 3</h2>
   <p id="rvSub"></p>
+  <div class="rv-subline"></div>
  </div>
  <div class="rv-scan"></div>
  <i class="hc c1"></i><i class="hc c2"></i><i class="hc c3"></i><i class="hc c4"></i>
@@ -1277,7 +1595,7 @@ function toggleFullscreen(){
 /* ===== RANK REVEAL ===== */
 
 const $=id=>document.getElementById(id);
-let revealing=false,pendingRaw=null,soundOn=true,skipped=false,rejects=[];
+let revealing=false,pendingRaw=null,soundOn=true,skipped=false,rejects=[],revealGeneration=0;
 const SKIP={};
 
 const wait=ms=>new Promise((res,rej)=>{
@@ -1293,7 +1611,13 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&revealing)rvSkip()}
 function rvToggleSound(){
  soundOn=!soundOn;
  $('rvSound').textContent=soundOn?'🔊':'🔇';
- if(AC&&bus)bus.gain.setValueAtTime(soundOn?1:0,AC.currentTime);
+ $('rvSound').setAttribute('aria-label',soundOn?'ปิดเสียงประกาศอันดับ':'เปิดเสียงประกาศอันดับ');
+ if(AC&&bus){
+  const t=AC.currentTime;
+  bus.gain.cancelScheduledValues(t);
+  bus.gain.setValueAtTime(bus.gain.value,t);
+  bus.gain.linearRampToValueAtTime(soundOn?1:0,t+.08);
+ }
 }
 
 /* ---------- AUDIO (สังเคราะห์เสียงเอง ไม่ต้องใช้ไฟล์) ---------- */
@@ -1306,8 +1630,10 @@ function initAudio(){
    const C=window.AudioContext||window.webkitAudioContext;
    if(!C)return;
    AC=new C();
-   master=AC.createGain();master.gain.value=.9;
+   master=AC.createGain();master.gain.value=.66;
    const cp=AC.createDynamicsCompressor();
+   cp.threshold.value=-19;cp.knee.value=14;cp.ratio.value=7;
+   cp.attack.value=.005;cp.release.value=.23;
    master.connect(cp);cp.connect(AC.destination);
    noiseBuf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);
    const d=noiseBuf.getChannelData(0);
@@ -1344,52 +1670,97 @@ function tone(type,f,t,a,d,peak,f2,dest){
 }
 function noise(t,dur,type,f,f2,peak,dest){
  const s=AC.createBufferSource(),fl=AC.createBiquadFilter(),g=AC.createGain();
- s.buffer=noiseBuf;fl.type=type;fl.frequency.setValueAtTime(f,t);
+ s.buffer=noiseBuf;s.loop=dur>noiseBuf.duration;
+ fl.type=type;fl.frequency.setValueAtTime(f,t);
  if(f2)fl.frequency.exponentialRampToValueAtTime(f2,t+dur);
  env(g,t,.005,peak,dur);
  s.connect(fl);fl.connect(g);g.connect(dest||bus);
  s.start(t);s.stop(t+dur+.05);
 }
 function snare(t,v){
- noise(t,.13,'highpass',1800,null,v);
- tone('triangle',190,t,.002,.08,v*.5,120);
+ noise(t,.13,'bandpass',1500,2200,v*.8);
+ tone('triangle',142,t,.002,.08,v*.48,90);
 }
 
-/* กลองรัว: อัตราและความดังเพิ่มขึ้นเรื่อยๆ */
+/* Cinematic snare: ค่อย ๆ รัวเร็วและหนักขึ้นแบบงานประกาศรางวัล */
 def('roll',(dur,r0,r1,v0,v1)=>{
  const t0=AC.currentTime+.02;
  let t=t0;
  while(t<t0+dur){
   const p=(t-t0)/dur;
-  snare(t,v0+(v1-v0)*p);
+  snare(t,(v0+(v1-v0)*p)*.75);
   t+=1/(r0+(r1-r0)*p);
  }
 });
 
 def('tick',n=>{
  const t=AC.currentTime;
- tone('sine',n===1?1320:880,t,.003,.28,.5);
- tone('sine',90,t,.003,.22,.7,50);
+ tone('triangle',n===1?740:550,t,.003,.16,.16,n===1?520:370);
+ tone('sine',82,t,.003,.27,.32,49);
 });
 
-def('whoosh',()=>noise(AC.currentTime,.55,'bandpass',250,3500,.5));
+/* เสียงหัวใจเต้นสองจังหวะ: ตุ้บ-ตุ้บ แบบลุ้นผล */
+function heartAt(t,v){
+ tone('sine',100,t,.004,.19,v,48);
+ tone('triangle',148,t,.004,.09,v*.23,83);
+ tone('sine',93,t+.19,.004,.17,v*.78,43);
+ tone('triangle',137,t+.19,.004,.08,v*.19,77);
+}
+def('heartbeat',(dur=3,slow=.83,fast=.48)=>{
+ const start=AC.currentTime+.02;
+ for(let t=start;t<start+dur;){
+  const progress=(t-start)/dur;
+  heartAt(t,.26+progress*.27);
+  t+=slow+(fast-slow)*progress;
+ }
+});
+
+/* ดนตรีค้างต่ำ ๆ เป็นคอร์ดไมเนอร์ ช่วยสร้างความกดดัน */
+def('tension',(dur=2.6)=>{
+ const t=AC.currentTime+.01;
+ [110,130.81,164.81,220].forEach((freq,i)=>{
+  const osc=AC.createOscillator(),gain=AC.createGain(),filter=AC.createBiquadFilter();
+  osc.type=i===3?'sine':'triangle';osc.frequency.value=freq;
+  filter.type='lowpass';filter.frequency.setValueAtTime(430,t);
+  filter.frequency.linearRampToValueAtTime(1550,t+dur);
+  gain.gain.setValueAtTime(.0001,t);
+  gain.gain.linearRampToValueAtTime(i===0?.055:.028,t+Math.min(.7,dur*.3));
+  gain.gain.setValueAtTime(i===0?.055:.028,t+Math.max(.7,dur*.72));
+  gain.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  osc.connect(filter);filter.connect(gain);gain.connect(bus);
+  osc.start(t);osc.stop(t+dur+.03);
+ });
+});
+
+def('whoosh',()=>{
+ const t=AC.currentTime;
+ noise(t,.57,'bandpass',280,4300,.35);
+ tone('sine',120,t,.003,.43,.13,245);
+});
 
 def('boom',big=>{
  const t=AC.currentTime;
- tone('sine',big?140:110,t,.003,big?.9:.55,big?1:.8,35);
- noise(t,big?1.1:.5,'lowpass',big?2500:1500,150,big?.7:.45);
+ tone('sine',big?105:90,t,.003,big?1.2:.7,big?.78:.5,37);
+ tone('triangle',big?165:130,t,.003,big?.42:.3,big?.3:.18,56);
+ noise(t,big?1.1:.57,'lowpass',big?3100:1900,130,big?.55:.34);
+ if(big){
+  noise(t+.06,.85,'bandpass',2700,600,.16);
+  tone('sine',44,t+.06,.009,1.5,.35,34);
+ }
 });
 
 def('riser',d=>{
  const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain(),f=AC.createBiquadFilter();
  o.type='sawtooth';
- o.frequency.setValueAtTime(70,t);o.frequency.exponentialRampToValueAtTime(700,t+d);
+ o.frequency.setValueAtTime(92,t);o.frequency.exponentialRampToValueAtTime(460,t+d);
  f.type='lowpass';
- f.frequency.setValueAtTime(300,t);f.frequency.exponentialRampToValueAtTime(5000,t+d);
+ f.frequency.setValueAtTime(280,t);f.frequency.exponentialRampToValueAtTime(3800,t+d);
  g.gain.setValueAtTime(.0001,t);
- g.gain.exponentialRampToValueAtTime(.22,t+d);
- g.gain.linearRampToValueAtTime(0,t+d+.05);
+ g.gain.exponentialRampToValueAtTime(.13,t+d*.86);
+ g.gain.setValueAtTime(.13,t+d*.92);
+ g.gain.linearRampToValueAtTime(0,t+d+.04);
  o.connect(f);f.connect(g);g.connect(bus);o.start(t);o.stop(t+d+.1);
+ noise(t,d,'bandpass',350,4500,.075);
 });
 
 def('drone',d=>{
@@ -1399,7 +1770,7 @@ def('drone',d=>{
   o.type='sawtooth';o.frequency.value=fr;
   l.type='lowpass';l.frequency.value=380;
   g.gain.setValueAtTime(.0001,t);
-  g.gain.linearRampToValueAtTime(.09,t+2);
+  g.gain.linearRampToValueAtTime(.045,t+Math.min(1.5,d*.35));
   g.gain.linearRampToValueAtTime(.0001,t+d);
   o.connect(l);l.connect(g);g.connect(bus);o.start(t);o.stop(t+d+.1);
  });
@@ -1412,8 +1783,8 @@ function brass(f,t,d){
   l.type='lowpass';
   l.frequency.setValueAtTime(900,t);l.frequency.linearRampToValueAtTime(3500,t+.08);
   g.gain.setValueAtTime(.0001,t);
-  g.gain.linearRampToValueAtTime(.09,t+.03);
-  g.gain.setValueAtTime(.09,t+d*.6);
+  g.gain.linearRampToValueAtTime(.055,t+.045);
+  g.gain.setValueAtTime(.055,t+d*.65);
   g.gain.exponentialRampToValueAtTime(.0001,t+d);
   o.connect(l);l.connect(g);g.connect(bus);o.start(t);o.stop(t+d+.05);
  });
@@ -1421,19 +1792,21 @@ function brass(f,t,d){
 
 def('fanfare',()=>{
  const t=AC.currentTime;
- [[0,[523,659]],[.17,[523,659]],[.34,[523,659]],[.58,[523,659,784,1047]]]
- .forEach(([dt,ns],i)=>ns.forEach(f=>brass(f,t+dt,i<3?.15:1.9)));
+ /* ทำนองชัยชนะ C major แบบเวทีแชมป์ ไม่ใช้ไฟล์เสียงภายนอก */
+ [[0,[392,523]],[.24,[440,587]],[.48,[494,659]],[.78,[523,659,784]],
+  [1.5,[523,659,784,1047]]].forEach(([dt,ns],i)=>ns.forEach(f=>brass(f,t+dt,i<3?.2:i===3?.65:2)));
+ for(let i=0;i<7;i++)tone('sine',1047+i*115,t+.8+i*.11,.004,.4,.035);
 });
 
 def('sparkle',()=>{
  const t=AC.currentTime;
- for(let i=0;i<14;i++)tone('sine',2200+Math.random()*3000,t+i*.1+Math.random()*.05,.002,.25,.12);
+ for(let i=0;i<14;i++)tone('sine',1600+Math.random()*1800,t+i*.1+Math.random()*.05,.002,.24,.047);
 });
 
 def('ding',()=>{
  const t=AC.currentTime;
- tone('sine',1047,t,.003,.6,.25);
- tone('sine',1568,t+.05,.003,.6,.18);
+ tone('sine',880,t,.003,.55,.17);
+ tone('sine',1320,t+.05,.003,.7,.12);
 });
 
 def('blip',f=>tone('square',f,AC.currentTime,.002,.07,.1));
@@ -1445,7 +1818,7 @@ def('lock',k=>{
 });
 
 function pop(i){
- if(AC&&soundOn)tone('sine',480+i*45,AC.currentTime,.002,.12,.22,900,master);
+ if(AC&&bus&&soundOn)tone('sine',480+i*45,AC.currentTime,.002,.12,.12,900);
 }
 
 /* ---------- CONFETTI ---------- */
@@ -1502,21 +1875,44 @@ function scramble(el,final,dur){
  step();
 }
 
+/* พวงมาลัยลอเรลวาดด้วย SVG ในไฟล์เดียว ไม่ใช้รูปภายนอก */
+function laurelMarkup(){
+ const leaves=[
+  [118,178,-36],[102,166,-48],[89,150,-60],[79,131,-73],
+  [74,112,-88],[75,94,-103],[82,76,-118],[93,58,-137],[109,44,-153]
+ ];
+ const left=`<path class="stem" d="M142 193 C77 174 45 104 111 37"/>`+
+  leaves.map(([x,y,a])=>`<ellipse class="leaf" cx="${x}" cy="${y}" rx="8" ry="16" transform="rotate(${a} ${x} ${y})"/>`).join('');
+ return `<svg class="laurel" viewBox="0 0 284 210" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+  <g>${left}</g><g transform="translate(284 0) scale(-1 1)">${left}</g>
+  <path class="stem" d="M128 190 L156 202 M156 190 L128 202"/>
+ </svg>`;
+}
+
 function buildStage(top){
  const n=top.length,order=n===3?[2,1,3]:n===2?[2,1]:[1];
  const f=(cls,t)=>`<div class="${cls}" data-f="${escapeHtml(t)}">${escapeHtml(t)}</div>`;
+ const metal=['','🥇 CHAMPION','🥈 RUNNER-UP','🥉 THIRD PLACE'];
  $('rvStage').className='rv-stage';
  $('rvStage').innerHTML=order.map(k=>{
   const r=top[k-1],x=r.rounds[r.best];
   return `
   <div class="pod p${k}" id="pod${k}">
-   <div class="beam"></div><div class="shock"></div>
+   <div class="pod-arch"></div>
+   <div class="beam"></div><div class="shock"></div><div class="pod-halo"></div><div class="pod-rays"></div>
    <div class="pcard">
-    ${k===1?'<div class="crown">👑</div>':''}
-    <div class="medal">อันดับ ${k}</div>
-    ${f('tn',r.team)}${f('mb',r.member)}${f('sc',x.score)}${f('tm',x.time)}
+    <div class="medal">${metal[k]}</div>
+    ${f('tn',r.team)}${f('mb',r.member)}
+    <div class="pod-stats"><span>คะแนน</span>${f('sc',x.score)}<span>เวลา</span>${f('tm',x.time)}</div>
    </div>
-   <div class="pblock"><b>?</b></div>
+   <div class="pod-figure">
+    ${laurelMarkup()}
+    ${k===1?'<span class="pod-crown">♛</span>':''}
+    <span class="pod-number">?</span>
+    <i class="pod-sparkle s1"></i><i class="pod-sparkle s2"></i>
+   </div>
+   <div class="pod-top"></div>
+   <div class="pblock"><span class="pod-rank-label">${k===1?'GRAND CHAMPION':`RANK 0${k}`}</span></div>
   </div>`;
  }).join('');
 }
@@ -1537,9 +1933,11 @@ function shake(){
 /* ---------- อันดับ 4-10: โผล่ตามรหัสทีม -> จัดเรียง -> ล็อกอันดับ -> เลือนหาย ---------- */
 
 async function showMid(mid){
- const L=$('rvList'),N=mid.length,last=3+N;
+ const runId=revealGeneration;
+ const L=$('rvList'),N=7,last=10;
  const bt=r=>r.rounds[r.best];
  const order=[...mid].sort((a,b)=>a.team.localeCompare(b.team,undefined,{numeric:true,sensitivity:'base'}));
+ const pending=Array.from({length:Math.max(0,N-mid.length)},(_,i)=>mid.length+i+4);
 
  L.className='rv-list on';
  L.innerHTML=order.map(r=>`
@@ -1548,29 +1946,38 @@ async function showMid(mid){
    <span class="mn">${escapeHtml(r.team)}</span>
    <span class="mm">${escapeHtml(r.member)}</span>
    <span class="ms"><span class="sv">- - -</span><small class="st">- - -</small></span>
+  </div>`).join('')+pending.map(rank=>`
+  <div class="mrow mrow-pending" data-rank="${rank}">
+   <b class="mr">${rank}</b>
+   <span class="mn">รอผลการแข่งขัน</span>
+   <span class="mm">ยังไม่มีทีมที่ได้อันดับนี้</span>
+   <span class="ms">—<small>ยังไม่ประกาศผล</small></span>
   </div>`).join('');
 
  const rows=[...L.children];
- $('rvSub').textContent=`ทีมอันดับ 4 – ${last}`;
- await wait(300);
+ $('rvSub').textContent='กำลังเปิดอันดับ 4 – 10...';
+ await wait(700);
 
  /* 1) เข้าฉาก */
  S.swish();
  rows.forEach((e,i)=>{
-  e.style.transitionDelay=i*110+'ms';
+  e.style.transitionDelay=i*150+'ms';
   e.classList.add('in');
-  setTimeout(()=>S.blip(420+i*70),i*110);
+  setTimeout(()=>{if(!skipped&&runId===revealGeneration)S.blip(380+i*55)},i*150);
  });
- await wait(N*110+800);
+ await wait(N*150+900);
 
  /* 2) จัดเรียง */
- $('rvSub').textContent='กำลังจัดอันดับ...';
- S.roll(1.6,10,28,.04,.22);
- await wait(500);
+ $('rvSub').textContent='กำลังตรวจสอบคะแนนและเวลาที่ดีที่สุด...';
+ S.tension(2.4);
+ S.roll(2.4,6,24,.04,.2);
+ S.heartbeat(2.4,.85,.57);
+ await wait(1150);
 
  const first=new Map(rows.map(e=>[e,e.getBoundingClientRect().top]));
- const by=new Map(rows.map(e=>[e.dataset.team,e]));
- mid.forEach(r=>L.appendChild(by.get(r.team)));
+ const by=new Map(rows.filter(e=>e.dataset.team).map(e=>[e.dataset.team,e]));
+ const placeholders=rows.filter(e=>e.classList.contains('mrow-pending'));
+ [...mid.map(r=>by.get(r.team)),...placeholders].forEach(e=>L.appendChild(e));
  S.swish();
  rows.forEach(e=>{
   e.style.transition='none';
@@ -1578,55 +1985,61 @@ async function showMid(mid){
  });
  void L.offsetWidth;
  rows.forEach((e,i)=>{
-  e.style.transition=`transform 1.1s cubic-bezier(.34,1.45,.64,1) ${i*50}ms`;
+  e.style.transition=`transform 1.35s cubic-bezier(.34,1.4,.64,1) ${i*65}ms`;
   e.style.transform='';
  });
 
- /* 3) ล็อกอันดับทีละแถว */
+ /* 3) เปิดผลจริงทีละอันดับ เว้นช่วงนานขึ้นเพื่อสร้างความลุ้น */
+ $('rvSub').textContent='ลุ้นผลอันดับ 4 – 10...';
+ const lockStart=1500,lockStep=620;
+ S.heartbeat(1.6+mid.length*.62,.74,.47);
  mid.forEach((r,k)=>setTimeout(()=>{
-  const e=by.get(r.team);if(!e)return;
+  const e=by.get(r.team);if(!e||skipped||runId!==revealGeneration)return;
   e.classList.add('lock');
   e.querySelector('.mr').textContent=k+4;
-  scramble(e.querySelector('.sv'),String(bt(r).score),500);
-  scramble(e.querySelector('.st'),String(bt(r).time),500);
+  scramble(e.querySelector('.sv'),String(bt(r).score),780);
+  scramble(e.querySelector('.st'),String(bt(r).time),780);
   S.lock(k);
- },700+k*170));
- await wait(700+N*170+900);
+ },lockStart+k*lockStep));
+ await wait(lockStart+Math.max(0,mid.length-1)*lockStep+1350);
 
- $('rvSub').textContent=`อันดับ 4 – ${last}`;
- await wait(1800);
+ $('rvSub').textContent=`ผลอันดับ 4 – ${last}`;
+ await wait(3100);
 
  /* 4) เลือนหาย */
  S.swish();
  rows.forEach((e,i)=>{
   e.style.transition='';
-  e.style.transitionDelay=i*80+'ms';
+  e.style.transitionDelay=i*120+'ms';
   e.classList.add('out');
  });
- await wait(700+N*80+300);
+ await wait(950+N*120+350);
  L.className='rv-list';L.innerHTML='';
 }
 
 async function showPod(k){
+ const runId=revealGeneration;
  const p=$('pod'+k);
  S.whoosh();
  await wait(300);
  p.classList.remove('tease');
  p.classList.add('up');
- p.querySelector('.pblock b').textContent=k;
+ p.querySelector('.pod-number').textContent=k;
  $('rvStage').classList.remove('focus');
- setTimeout(()=>p.querySelectorAll('[data-f]').forEach(el=>scramble(el,el.dataset.f,k===1?900:650)),250);
+ setTimeout(()=>{
+  if(runId===revealGeneration)p.querySelectorAll('[data-f]').forEach(el=>scramble(el,el.dataset.f,k===1?900:650));
+ },250);
  S.boom(k===1);shake();
  const rect=p.getBoundingClientRect(),cxp=rect.left+rect.width/2;
  if(k===1){
-  flash(.95);S.fanfare();
-  setTimeout(()=>S.sparkle(),700);
+  flash(.84);S.fanfare();
+  setTimeout(()=>{if(runId===revealGeneration)S.sparkle()},700);
   burst(160,cxp,innerHeight*.55,Math.PI*1.1);
-  setTimeout(()=>{burst(90,innerWidth*.08,innerHeight,.9);burst(90,innerWidth*.92,innerHeight,.9)},350);
-  setTimeout(()=>burst(100,cxp,innerHeight*.5,Math.PI),1400);
+  setTimeout(()=>{if(runId===revealGeneration){burst(90,innerWidth*.08,innerHeight,.9);burst(90,innerWidth*.92,innerHeight,.9)}},350);
+  setTimeout(()=>{if(runId===revealGeneration)burst(100,cxp,innerHeight*.5,Math.PI)},1400);
  }else{
   flash(.3);
-  setTimeout(()=>S.ding(),300);
+  setTimeout(()=>{if(runId===revealGeneration)S.ding()},300);
   burst(45,cxp,innerHeight*.6,1.2);
  }
 }
@@ -1637,7 +2050,7 @@ async function startReveal(){
  const all=rankedRows(),top=all.slice(0,3),mid=all.slice(3,10);
  if(!top.length){setRank(true);return;}
 
- revealing=true;skipped=false;rejects=[];parts=[];
+ revealing=true;skipped=false;rejects=[];parts=[];revealGeneration++;
  $('rankBtn').disabled=true;
 
  initAudio();
@@ -1649,11 +2062,13 @@ async function startReveal(){
  $('rvSub').textContent='กำลังประกาศอันดับ...';
 
  try{
-  S.drone(mid.length?40:26);
+  S.drone(top.length===3?50:30);
+  S.tension(3);
   await wait(900);
 
-  /* นับถอยหลัง + กลองรัว */
-  S.roll(3,6,22,.05,.3);
+  /* เปิดฉาก: เสียงนับถอยหลังหนักแน่นและหัวใจเริ่มเต้น */
+  S.heartbeat(3.1,1,.72);
+  S.roll(3,5,16,.045,.18);
   for(const n of [3,2,1]){
    $('rvCount').innerHTML=`<span>${n}</span>`;
    S.tick(n);
@@ -1662,9 +2077,10 @@ async function startReveal(){
   $('rvCount').innerHTML='';
 
   /* อันดับ 4-10 ก่อน */
-  if(mid.length){
+  if(top.length===3){
    await showMid(mid);
    $('rvSub').textContent='และนี่คือ TOP 3';
+   S.tension(1.7);
    S.riser(1.6);
    $('rvStage').classList.add('on');
    await wait(1700);
@@ -1675,22 +2091,32 @@ async function startReveal(){
 
   /* อันดับ 3 และ 2 ขึ้นบันไดทีละขั้น */
   for(let k=top.length;k>=2;k--){
+   $('rvSub').textContent=`เตรียมประกาศอันดับ ${k}...`;
+   S.tension(2.7);
+   S.heartbeat(2.8,.85,.45);
+   S.roll(2.7,6,27,.05,.3);
+   await wait(2600);
    $('rvSub').textContent=`อันดับ ${k} ได้แก่...`;
-   S.roll(1.5,8,20,.05,.28);
-   await wait(1600);
    await showPod(k);
-   await wait(2200);
+   await wait(3200);
   }
 
-  /* ลุ้นอันดับ 1 */
-  $('rvSub').textContent='และผู้ชนะอันดับ 1 คือ...';
+  /* รอบชิง: หัวใจเร่งจังหวะ + ดนตรีไต่ระดับ ก่อนเว้นจังหวะแล้วเฉลย */
+  $('rvSub').textContent='ใครจะเป็นแชมป์ GO ROBOT CHALLENGE 2026?';
   $('rvStage').classList.add('focus');
+  $('rvStage').classList.add('suspense');
   $('pod1').classList.add('tease');
-  S.riser(3);
-  S.roll(3,10,34,.08,.5);
-  await wait(3100);
+  S.tension(5.1);
+  S.heartbeat(4.9,.78,.31);
+  S.riser(4.8);
+  S.roll(4.8,8,39,.055,.39);
+  await wait(3500);
+  $('rvSub').textContent='และผู้ชนะอันดับ 1 ได้แก่...';
+  await wait(1550);
+  $('rvStage').classList.remove('suspense');
   await showPod(1);
-  await wait(5200);
+  $('rvSub').textContent='🏆 ขอแสดงความยินดีกับทีมแชมป์! 🏆';
+  await wait(6500);
 
  }catch(e){
   if(e!==SKIP)console.error(e);
@@ -1700,6 +2126,7 @@ async function startReveal(){
 }
 
 function endReveal(){
+ revealGeneration++;
  fadeBus();
  rejects=[];parts=[];
 
