@@ -1220,6 +1220,159 @@ body::-webkit-scrollbar{display:none}
 .rank-btn{background:linear-gradient(135deg,#f0d8ff,#a76bff);color:#2b0c48}
 .rank-btn.on{background:linear-gradient(135deg,#c59bff,#7a35dc);color:#fff}
 
+/* ===== TOP 3 INTERACTIVE CEREMONY ===== */
+.pod:not(.up) .pod-number{opacity:0}
+.pod-figure{pointer-events:none}
+.pod-pick{position:absolute;z-index:8;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9);
+ width:clamp(87px,13vw,174px);aspect-ratio:1;border-radius:50%;cursor:default;pointer-events:auto;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+ background:radial-gradient(circle at 35% 25%,rgba(144,91,199,.25),rgba(11,6,29,.94) 62%);
+ border:2px solid rgba(192,145,255,.27);color:rgba(235,215,255,.46);
+ box-shadow:inset 0 0 28px rgba(157,86,255,.18),0 0 15px rgba(0,0,0,.6);
+ font-family:'Orbitron','Kanit',sans-serif;transition:opacity .45s,transform .4s,border-color .3s,box-shadow .3s}
+.pod-pick .pick-n{font-size:clamp(34px,7vh,91px);font-weight:900;line-height:1}
+.pod-pick .pick-label{font-family:'Kanit',sans-serif;letter-spacing:.08em;font-size:clamp(9px,1.35vh,15px);font-weight:600}
+.pod-pick:disabled{cursor:default}
+.pod-pick.ready{cursor:pointer;border-color:rgb(var(--c));color:#fff;transform:translate(-50%,-50%) scale(1);
+ background:radial-gradient(circle at 36% 24%,rgba(var(--c),.27),rgba(19,8,38,.96) 64%);
+ box-shadow:0 0 28px rgba(var(--c),.55),0 0 64px rgba(151,64,255,.35),inset 0 0 27px rgba(var(--c),.26);
+ animation:pickPulse 1.45s ease-in-out infinite}
+.pod-pick.ready:hover{transform:translate(-50%,-50%) scale(1.12);filter:brightness(1.23)}
+.pod-pick.ready:focus-visible{outline:3px solid white;outline-offset:7px}
+.pod.up .pod-pick{visibility:hidden;opacity:0;pointer-events:none}
+@keyframes pickPulse{50%{box-shadow:0 0 44px rgba(var(--c),.82),0 0 84px rgba(162,67,255,.46),inset 0 0 35px rgba(var(--c),.35)}}
+.rv-pick-hint{position:absolute;bottom:1.3vh;left:50%;transform:translateX(-50%);z-index:6;
+ color:#ead5ff;font-weight:600;font-size:clamp(11px,1.6vh,17px);letter-spacing:.04em;
+ padding:5px 20px;border-radius:100px;background:rgba(40,18,74,.72);border:1px solid rgba(176,99,255,.32);
+ opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.rv-pick-hint.on{opacity:1}
+
+/* Central winner spotlight: rise -> hold -> move to the physical podium */
+.rv-feature{--m:255,202,103;position:absolute;z-index:8;inset:0;display:grid;place-items:center;
+ visibility:hidden;opacity:0;pointer-events:none;transition:opacity .4s,visibility .4s;
+ background:radial-gradient(ellipse at center,rgba(45,19,76,.8) 0%,rgba(10,4,26,.8) 54%,rgba(6,2,16,.56) 85%)}
+.rv-feature.on{visibility:visible;opacity:1}
+.rv-feature.fade{opacity:0}
+.rv-feature.rank2{--m:201,217,229}.rv-feature.rank3{--m:233,157,117}
+.rv-feature-glow{position:absolute;inset:0;overflow:hidden}
+.rv-feature-glow:before{content:"";position:absolute;width:min(82vw,800px);aspect-ratio:1;top:50%;left:50%;
+ transform:translate(-50%,-50%);border:2px solid rgba(var(--m),.32);border-radius:50%;
+ box-shadow:0 0 100px rgba(161,75,255,.42),inset 0 0 100px rgba(161,75,255,.22);
+ animation:featureHalo 2.6s ease-in-out infinite}
+.rv-feature-glow:after{content:"";position:absolute;inset:-30%;
+ background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(var(--m),.09) 0 6deg,transparent 8deg 23deg);
+ animation:rvspin 19s linear infinite;mask-image:radial-gradient(circle at center,transparent 9%,#000 33%,transparent 57%)}
+@keyframes featureHalo{50%{transform:translate(-50%,-50%) scale(1.14);opacity:.45}}
+.rv-feature-card{position:relative;z-index:2;width:min(850px,88vw);min-height:clamp(220px,35vh,365px);
+ display:grid;grid-template-columns:minmax(130px,.65fr) minmax(0,1.7fr);align-items:center;gap:clamp(18px,3vw,40px);
+ padding:clamp(24px,3.5vw,56px);transform-origin:top left;
+ color:#fff;border-radius:clamp(18px,2.2vw,30px);
+ background:linear-gradient(122deg,rgba(68,33,100,.97),rgba(20,9,44,.98) 50%,rgba(8,5,26,.99));
+ border:2px solid rgba(var(--m),.87);box-shadow:0 0 0 7px rgba(168,94,255,.17),0 0 120px rgba(170,82,255,.48),
+ 0 40px 90px rgba(0,0,0,.7),inset 0 1px 35px rgba(var(--m),.1);
+ animation:featureEnter .95s cubic-bezier(.15,1.35,.3,1) both}
+.rv-feature-card:before{content:"";position:absolute;inset:12px;border-radius:16px;border:1px solid rgba(var(--m),.23);pointer-events:none}
+.rv-feature-card:after{content:"";position:absolute;left:14%;right:14%;bottom:0;height:4px;
+ background:linear-gradient(90deg,transparent,rgb(var(--m)),transparent);box-shadow:0 0 30px rgb(var(--m))}
+@keyframes featureEnter{from{opacity:0;transform:translateY(90px) scale(.65) rotateX(12deg);filter:blur(18px)}
+ to{opacity:1;transform:translateY(0) scale(1) rotateX(0);filter:blur(0)}}
+.rv-feature-medal{text-align:center;min-width:0}
+.rv-feature-medal .number{display:block;line-height:.98;letter-spacing:-.13em;
+ font:900 clamp(94px,15vw,210px)/1 'Orbitron',sans-serif;
+ background:linear-gradient(150deg,#fff 4%,rgb(var(--m)) 33%,#fff9e7 47%,rgb(var(--m)) 67%,#6f4770);
+ background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+ filter:drop-shadow(0 6px 2px rgba(0,0,0,.62)) drop-shadow(0 0 19px rgba(var(--m),.35))}
+.rv-feature-medal .word{display:block;font:800 clamp(12px,2vw,23px) 'Orbitron','Kanit',sans-serif;letter-spacing:.18em;color:rgb(var(--m))}
+.rv-feature-info{min-width:0}
+.rv-feature-info .tag{display:inline-block;border:1px solid rgba(var(--m),.6);border-radius:99px;
+ padding:5px 17px;color:rgb(var(--m));background:rgba(var(--m),.09);
+ font-size:clamp(12px,1.65vw,19px);font-weight:700;letter-spacing:.13em}
+.rv-feature-info .winner-name{font-size:clamp(29px,5.4vw,72px);line-height:1.05;font-weight:900;
+ text-shadow:0 0 29px rgba(var(--m),.3);margin:clamp(10px,2vh,25px) 0;
+ overflow-wrap:anywhere;word-break:break-word}
+.rv-feature-info .winner-member{font-size:clamp(15px,2vw,25px);color:#d9c8ed;line-height:1.25;max-height:3em;overflow:hidden}
+.rv-feature-stats{margin-top:clamp(12px,2vh,25px);display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 24px}
+.rv-feature-stats span{font-size:clamp(12px,1.5vw,18px);color:#ccb7e9}
+.rv-feature-stats strong{font-family:'Orbitron','Kanit',sans-serif;color:rgb(var(--m));font-size:clamp(18px,3vw,35px)}
+.rv-feature-stats .time{font-size:clamp(14px,2vw,23px);color:#f2eaff}
+.rv-feature-flying .rv-feature-glow{opacity:0;transition:opacity .35s}
+@media(max-width:720px){
+ .pod-pick{width:clamp(53px,13vw,90px)}.pod-pick .pick-n{font-size:clamp(27px,6vw,48px)}
+ .pod-pick .pick-label{font-size:8px;letter-spacing:0}
+ .rv-feature-card{grid-template-columns:1fr;gap:8px;text-align:center;width:88vw;padding:24px 18px;min-height:0}
+ .rv-feature-medal .number{font-size:clamp(75px,19vw,130px)}
+ .rv-feature-medal .word{font-size:13px}
+ .rv-feature-info .winner-name{font-size:clamp(26px,7vw,42px);margin:10px 0}
+ .rv-feature-stats{justify-content:center;gap:5px 10px}
+ .rv-pick-hint{white-space:normal;min-width:70%;text-align:center}
+}
+@media(prefers-reduced-motion:reduce){.pod-pick.ready,.rv-feature-glow:before,.rv-feature-glow:after,.rv-feature-card{animation:none}}
+
+/* ===== LARGE-SCREEN READABILITY · 3D podium labels ===== */
+/* ป้ายและตัวอักษรอยู่เหนือชั้นกระดาษโปรย จึงอ่านได้แม้ช่วงฉลองแชมป์ */
+.rv-stage{z-index:6}
+.pcard{width:98%;min-height:clamp(155px,23vh,252px);padding:clamp(12px,1.5vw,24px);
+ gap:clamp(4px,.65vh,9px);border-width:2px;
+ background:linear-gradient(145deg,rgba(50,28,78,.98),rgba(8,4,22,.99));
+ box-shadow:0 0 0 2px rgba(158,74,245,.13),0 12px 30px rgba(0,0,0,.76),
+ 0 0 27px rgba(173,86,255,.25),inset 0 1px rgba(255,255,255,.15)}
+.pcard .medal{font-size:clamp(15px,1.1vw,25px);font-weight:800;letter-spacing:.04em;line-height:1.15}
+.pcard .tn,.pod.p1 .tn{font-size:clamp(28px,2.35vw,50px);font-weight:900;line-height:1.08;
+ text-shadow:0 2px 3px rgba(0,0,0,.8),0 0 22px rgba(var(--c),.23)}
+.pcard .mb{font-size:clamp(17px,1.45vw,30px);font-weight:600;line-height:1.2;max-height:2.5em;
+ color:#f0e4ff;text-shadow:0 2px 5px rgba(0,0,0,.9)}
+.pod-stats{margin-top:clamp(5px,1vh,12px);column-gap:clamp(7px,.8vw,18px);row-gap:3px}
+.pod-stats >span{font-size:clamp(15px,1.1vw,23px);font-weight:600;color:#e0c9f8}
+.pcard .sc{font-size:clamp(27px,2.2vw,47px);line-height:1.1;font-weight:900;
+ text-shadow:0 0 19px rgba(var(--c),.3)}
+.pcard .tm{font-size:clamp(18px,1.5vw,30px);font-weight:800;line-height:1.1;color:#fff}
+
+/* TV/โปรเจกเตอร์แนวนอนเตี้ย: กันไม่ให้ป้ายที่ขยายไปเบียดฐานแท่น */
+@media(min-width:721px) and (min-height:560px) and (max-height:850px){
+ .pod.p1{--fig-h:clamp(152px,24vh,215px);--h:clamp(58px,9vh,93px)}
+ .pod.p2,.pod.p3{--fig-h:clamp(120px,18.5vh,175px);--h:clamp(47px,7.5vh,78px)}
+ .pcard{min-height:clamp(160px,23vh,205px)}
+}
+@media(min-width:721px) and (max-height:559px){
+ .pod.p1{--fig-h:21vh;--h:8vh}
+ .pod.p2,.pod.p3{--fig-h:18vh;--h:7vh}
+ .pcard{min-height:clamp(105px,28vh,146px);padding:clamp(6px,1.5vh,12px) 9px;gap:2px}
+ .pcard .medal{font-size:clamp(13px,3.7vh,20px)}
+ .pcard .tn,.pod.p1 .tn{font-size:clamp(25px,7.5vh,38px);line-height:1.03}
+ .pcard .mb{display:block;font-size:clamp(15px,4.5vh,21px);max-height:1.2em;line-height:1.1}
+ .pod-stats{margin-top:4px;gap:5px 9px}
+ .pod-stats >span{font-size:clamp(14px,3.5vh,18px)}
+ .pcard .sc{font-size:clamp(25px,7.2vh,39px)}
+ .pcard .tm{font-size:clamp(17px,4.8vh,24px)}
+}
+@media(max-width:720px){
+ .pcard{width:99%;min-height:clamp(108px,23vh,160px);padding:6px 4px;gap:2px}
+ .pcard .medal{font-size:clamp(10px,2vw,13px);letter-spacing:0}
+ .pcard .tn,.pod.p1 .tn{font-size:clamp(14px,3.4vw,21px)}
+ .pcard .mb{font-size:clamp(10px,2.5vw,13px);max-height:2.3em}
+ .pod-stats{gap:2px 5px;margin-top:2px}
+ .pod-stats >span{font-size:clamp(10px,2.2vw,12px)}
+ .pcard .sc{font-size:clamp(15px,3.6vw,22px)}
+ .pcard .tm{font-size:clamp(11px,2.6vw,14px)}
+}
+
+/* WEDO: ตารางอันดับเดิมยังแสดงสดตลอด; ปุ่มใช้เปิดพิธีประกาศอันดับแยกจาก iDekTep */
+.wedo .rank-btn{background:linear-gradient(135deg,#fff0a1,#ffc400);color:#362900;
+ box-shadow:0 0 13px rgba(255,196,0,.16)}
+.wedo .rank-btn:hover:not(:disabled){filter:brightness(1.12)}
+.wedo .rank-btn:disabled{filter:saturate(.55);box-shadow:none}
+#reveal.wedo-reveal .rv-head h2{background:linear-gradient(180deg,#fffef4 0%,#ffe68d 55%,#ffbd3a 100%);
+ -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+#reveal.wedo-reveal .rv-subline{background:linear-gradient(90deg,transparent,#ffbd3a,#fff2a1,#ffbd3a,transparent);
+ box-shadow:0 0 20px rgba(255,196,0,.5)}
+#reveal.wedo-reveal .rv-feature-stats.only-score strong{font-size:clamp(27px,4vw,48px)}
+#reveal.wedo-reveal .pod-stats.only-score .sc{font-size:clamp(32px,2.6vw,55px)}
+@media(max-width:700px){
+ .wedo .board-title{gap:8px}
+ .wedo .board-title span{padding:4px 8px}
+ .wedo .rank-btn{margin-left:2px;padding:6px 10px}
+}
+
 </style>
 </head>
 
@@ -1275,6 +1428,8 @@ body::-webkit-scrollbar{display:none}
    <div class="board-title">
     <h2>WEDO</h2>
     <span>ตารางคะแนน</span>
+    <button class="rank-btn" id="wedoRankBtn" onclick="toggleWedoRank()"
+            title="เปิดพิธีประกาศอันดับ WEDO" disabled>RANK</button>
    </div>
 
    <div class="head">
@@ -1305,7 +1460,7 @@ body::-webkit-scrollbar{display:none}
  </div>
  <div class="rv-head">
   <small>GO ROBOT CHALLENGE 2026</small>
-  <h2>iDekTep · TOP 3</h2>
+  <h2 id="rvTitle">iDekTep · TOP 3</h2>
   <p id="rvSub"></p>
   <div class="rv-subline"></div>
  </div>
@@ -1314,6 +1469,8 @@ body::-webkit-scrollbar{display:none}
  <div class="rv-count" id="rvCount"></div>
  <div class="rv-list" id="rvList"></div>
  <div class="rv-stage" id="rvStage"></div>
+ <div class="rv-pick-hint" id="rvPickHint"></div>
+ <div class="rv-feature" id="rvFeature" aria-live="polite"></div>
 </div>
 
 <script>
@@ -1350,6 +1507,9 @@ function escapeHtml(value){
 
 /* WEDO */
 
+let wedoRaw=[];
+let pendingWedoRaw=null;
+
 function cleanRows(raw){
  if(!Array.isArray(raw))return [];
 
@@ -1376,15 +1536,29 @@ function rowHtml(r,rank){
  </div>`;
 }
 
-function renderWedo(raw){
- const board=document.getElementById('wedoData');
- const rows=cleanRows(raw);
+function sortedWedoRows(raw){
+ /* การเรียงในตารางและบนเวทีใช้ผลชุดเดียวกัน: คะแนนมากสุดมาก่อน */
+ return cleanRows(raw).sort((a,b)=>(num(b.score)||0)-(num(a.score)||0));
+}
 
- rows.sort((a,b)=>(num(b.score)||0)-(num(a.score)||0));
+function renderWedo(raw){
+ if(raw){
+  if(revealing&&activeRevealType==='wedo'){
+   pendingWedoRaw=raw;
+   return;
+  }
+  wedoRaw=raw;
+ }
+ const board=document.getElementById('wedoData');
+ const rows=sortedWedoRows(wedoRaw);
 
  board.innerHTML=rows.length
  ?rows.map((r,i)=>rowHtml(r,i+1)).join('')
  :'<div class="loading">ไม่พบข้อมูล</div>';
+
+ /* ตาราง WEDO ยังโชว์อันดับ 1–8 (หรือตามข้อมูลจริง) ไม่ถูกซ่อนตอนประกาศ */
+ document.getElementById('wedoRankBtn').disabled=
+  revealing||!rows.some(r=>Number.isFinite(num(r.score)));
 }
 
 /* iDEKTEP */
@@ -1476,7 +1650,7 @@ function idekRowHtml(r,rank){
 
 function renderIdektep(raw){
  if(raw){
-  if(revealing){pendingRaw=raw;return;}
+  if(revealing&&activeRevealType==='idek'){pendingRaw=raw;return;}
   idektepRaw=raw;
  }
 
@@ -1596,6 +1770,8 @@ function toggleFullscreen(){
 
 const $=id=>document.getElementById(id);
 let revealing=false,pendingRaw=null,soundOn=true,skipped=false,rejects=[],revealGeneration=0;
+let activeRankPick=null;
+let activeRevealType=null;
 const SKIP={};
 
 const wait=ms=>new Promise((res,rej)=>{
@@ -1606,7 +1782,43 @@ const wait=ms=>new Promise((res,rej)=>{
 });
 
 function rvSkip(){skipped=true;rejects.slice().forEach(f=>f())}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&revealing)rvSkip()});
+document.addEventListener('keydown',e=>{
+ if(!revealing)return;
+ if(e.key==='Escape')rvSkip();
+ if(['1','2','3'].includes(e.key))rvPickRank(Number(e.key));
+});
+
+/* ผู้ดำเนินรายการกดเลขบนแท่นหรือแป้นพิมพ์ 3 → 2 → 1 */
+function rvPickRank(k){
+ const pick=activeRankPick;
+ if(!pick||!revealing||skipped||pick.rank!==k||pick.runId!==revealGeneration)return;
+ S.tick(k);
+ pick.resolve();
+}
+
+function waitForRankPick(k){
+ if(skipped)return Promise.reject(SKIP);
+ const pod=$('pod'+k),btn=pod?.querySelector('.pod-pick');
+ if(!btn)return Promise.reject(new Error('Missing podium '+k));
+ btn.disabled=false;
+ btn.classList.add('ready');
+ $('rvSub').textContent=`พร้อมประกาศอันดับ ${k} — กดเลข ${k} เพื่อเปิดตัวทีม`;
+ $('rvPickHint').textContent=`คลิกเลข ${k} บนแท่น หรือกดเลข ${k} บนแป้นพิมพ์`;
+ $('rvPickHint').classList.add('on');
+ return new Promise((resolve,reject)=>{
+  const runId=revealGeneration;
+  const cleanup=()=>{
+   rejects=rejects.filter(f=>f!==cancel);
+   if(activeRankPick?.runId===runId)activeRankPick=null;
+   btn.disabled=true;
+   btn.classList.remove('ready');
+   $('rvPickHint').classList.remove('on');
+  };
+  const cancel=()=>{cleanup();reject(SKIP)};
+  activeRankPick={rank:k,runId,resolve:()=>{cleanup();resolve()},cancel};
+  rejects.push(cancel);
+ });
+}
 
 function rvToggleSound(){
  soundOn=!soundOn;
@@ -1851,7 +2063,13 @@ function loop(){
 
 /* ---------- REVEAL ---------- */
 
-function rankedRows(){
+function rankedRows(type='idek'){
+ if(type==='wedo'){
+  /* WEDO แข่งคะแนนรอบเดียว จึงไม่มีเวลาให้ใช้เป็นเกณฑ์หรือแสดงบนเวที */
+  return sortedWedoRows(wedoRaw)
+   .filter(r=>Number.isFinite(num(r.score)))
+   .map(r=>({...r,best:0,rounds:[{score:r.score,time:''}]}));
+ }
  return cleanIdektep(idektepRaw).map(r=>{
   const b=bestRound(r.rounds);
   return {...r,best:b,
@@ -1891,9 +2109,10 @@ function laurelMarkup(){
 
 function buildStage(top){
  const n=top.length,order=n===3?[2,1,3]:n===2?[2,1]:[1];
+ const isWedo=activeRevealType==='wedo';
  const f=(cls,t)=>`<div class="${cls}" data-f="${escapeHtml(t)}">${escapeHtml(t)}</div>`;
  const metal=['','🥇 CHAMPION','🥈 RUNNER-UP','🥉 THIRD PLACE'];
- $('rvStage').className='rv-stage';
+ $('rvStage').className='rv-stage'+(isWedo?' is-wedo':'');
  $('rvStage').innerHTML=order.map(k=>{
   const r=top[k-1],x=r.rounds[r.best];
   return `
@@ -1903,12 +2122,14 @@ function buildStage(top){
    <div class="pcard">
     <div class="medal">${metal[k]}</div>
     ${f('tn',r.team)}${f('mb',r.member)}
-    <div class="pod-stats"><span>คะแนน</span>${f('sc',x.score)}<span>เวลา</span>${f('tm',x.time)}</div>
+    <div class="pod-stats${isWedo?' only-score':''}"><span>คะแนน</span>${f('sc',x.score)}${isWedo?'':`<span>เวลา</span>${f('tm',x.time)}`}</div>
    </div>
    <div class="pod-figure">
     ${laurelMarkup()}
     ${k===1?'<span class="pod-crown">♛</span>':''}
     <span class="pod-number">?</span>
+   <button type="button" class="pod-pick" onclick="rvPickRank(${k})" disabled
+    aria-label="เปิดเผยทีมอันดับ ${k}"><span class="pick-n">${k}</span><span class="pick-label">กดเปิดอันดับ</span></button>
     <i class="pod-sparkle s1"></i><i class="pod-sparkle s2"></i>
    </div>
    <div class="pod-top"></div>
@@ -1935,6 +2156,7 @@ function shake(){
 async function showMid(mid){
  const runId=revealGeneration;
  const L=$('rvList'),N=7,last=10;
+ const isWedo=activeRevealType==='wedo';
  const bt=r=>r.rounds[r.best];
  const order=[...mid].sort((a,b)=>a.team.localeCompare(b.team,undefined,{numeric:true,sensitivity:'base'}));
  const pending=Array.from({length:Math.max(0,N-mid.length)},(_,i)=>mid.length+i+4);
@@ -1945,7 +2167,7 @@ async function showMid(mid){
    <b class="mr">?</b>
    <span class="mn">${escapeHtml(r.team)}</span>
    <span class="mm">${escapeHtml(r.member)}</span>
-   <span class="ms"><span class="sv">- - -</span><small class="st">- - -</small></span>
+   <span class="ms"><span class="sv">- - -</span>${isWedo?'':'<small class="st">- - -</small>'}</span>
   </div>`).join('')+pending.map(rank=>`
   <div class="mrow mrow-pending" data-rank="${rank}">
    <b class="mr">${rank}</b>
@@ -1968,7 +2190,7 @@ async function showMid(mid){
  await wait(N*150+900);
 
  /* 2) จัดเรียง */
- $('rvSub').textContent='กำลังตรวจสอบคะแนนและเวลาที่ดีที่สุด...';
+ $('rvSub').textContent=isWedo?'กำลังตรวจสอบคะแนนของแต่ละทีม...':'กำลังตรวจสอบคะแนนและเวลาที่ดีที่สุด...';
  S.tension(2.4);
  S.roll(2.4,6,24,.04,.2);
  S.heartbeat(2.4,.85,.57);
@@ -1998,7 +2220,7 @@ async function showMid(mid){
   e.classList.add('lock');
   e.querySelector('.mr').textContent=k+4;
   scramble(e.querySelector('.sv'),String(bt(r).score),780);
-  scramble(e.querySelector('.st'),String(bt(r).time),780);
+  if(!isWedo)scramble(e.querySelector('.st'),String(bt(r).time),780);
   S.lock(k);
  },lockStart+k*lockStep));
  await wait(lockStart+Math.max(0,mid.length-1)*lockStep+1350);
@@ -2044,21 +2266,98 @@ async function showPod(k){
  }
 }
 
-async function startReveal(){
+/* เปิดตัวกลางจออย่างอลังการ แล้วบินกลับไปอยู่บนแท่นประจำอันดับ */
+async function revealCenter(k,r){
+ const runId=revealGeneration;
+ const podium=$('pod'+k),feature=$('rvFeature');
+ const round=r.rounds[r.best];
+ const isWedo=activeRevealType==='wedo';
+ const names={1:'GRAND CHAMPION',2:'RUNNER-UP',3:'THIRD PLACE'};
+ let flight=null;
+ feature.innerHTML=`
+  <div class="rv-feature-glow" aria-hidden="true"></div>
+  <div class="rv-feature-card" id="rvFeatureCard">
+   <div class="rv-feature-medal"><span class="number">${k}</span><span class="word">${names[k]}</span></div>
+   <div class="rv-feature-info">
+    <span class="tag">🏆 ${isWedo?'WEDO · ':''}GO ROBOT CHALLENGE 2026</span>
+    <div class="winner-name">${escapeHtml(r.team)}</div>
+    <div class="winner-member">${escapeHtml(r.member)}</div>
+    <div class="rv-feature-stats${isWedo?' only-score':''}"><span>คะแนน</span><strong>${escapeHtml(round.score)}</strong>
+     ${isWedo?'':`<span>เวลา</span><strong class="time">${escapeHtml(round.time)}</strong>`}</div>
+   </div>
+  </div>`;
+ feature.className=`rv-feature rank${k} on`;
+ $('rvSub').textContent=`เปิดตัวทีมอันดับ ${k}!`;
+ S.whoosh();S.boom(k===1);shake();flash(k===1?.85:.48);
+ S.sparkle();
+ burst(k===1?190:105,innerWidth*.5,innerHeight*.44,Math.PI*1.35);
+ try{
+  /* เว้นให้ทุกคนอ่านชื่อทีม คะแนน และเวลาอย่างชัดเจน */
+  await wait(k===1?3200:2700);
+  if(runId!==revealGeneration)throw SKIP;
+
+  const card=$('rvFeatureCard');
+  card.style.animation='none';
+  card.style.transform='none';
+  const from=card.getBoundingClientRect();
+  /* การ์ดบนแท่นเริ่มซ่อนด้วย scale(.6): วัดขนาดจริงก่อนคำนวณเส้นทางบิน */
+  const targetCard=podium.querySelector('.pcard');
+  const originalTransform=targetCard.style.transform;
+  targetCard.style.transform='none';
+  const to=targetCard.getBoundingClientRect();
+  targetCard.style.transform=originalTransform;
+  const dx=to.left-from.left,dy=to.top-from.top;
+  const sx=Math.max(.08,to.width/from.width),sy=Math.max(.08,to.height/from.height);
+  $('rvSub').textContent=`อันดับ ${k} กำลังเข้าสู่แท่นรางวัล...`;
+  feature.classList.add('rv-feature-flying');
+  S.swish();S.riser(1.3);
+
+  /* Web Animations ช่วยให้ตำแหน่งปลายทางตรงกับแท่นบนจอทุกขนาด */
+  if(card.animate){
+   flight=card.animate([
+    {transform:'translate3d(0,0,0) scale(1)',opacity:1},
+    {transform:`translate3d(${dx}px,${dy}px,0) scale(${sx},${sy})`,opacity:.84}
+   ],{duration:1900,easing:'cubic-bezier(.3,.04,.18,1)',fill:'forwards'});
+  }else{
+   card.style.transition='transform 1.9s cubic-bezier(.3,.04,.18,1),opacity 1.9s';
+   card.style.transform=`translate3d(${dx}px,${dy}px,0) scale(${sx},${sy})`;
+   card.style.opacity='.84';
+  }
+  await wait(1920);
+  if(runId!==revealGeneration)throw SKIP;
+  await showPod(k);
+  feature.classList.add('fade');
+  await wait(550);
+ }finally{
+  if(flight)flight.cancel();
+  feature.className='rv-feature';
+  feature.innerHTML='';
+ }
+}
+
+async function startReveal(type='idek'){
  if(revealing)return;
 
- const all=rankedRows(),top=all.slice(0,3),mid=all.slice(3,10);
- if(!top.length){setRank(true);return;}
+ const all=rankedRows(type),top=all.slice(0,3),mid=all.slice(3,10);
+ if(!top.length){
+  if(type==='idek')setRank(true);
+  else alert('ยังไม่มีผลคะแนน WEDO สำหรับประกาศอันดับ');
+  return;
+ }
 
+ activeRevealType=type;
  revealing=true;skipped=false;rejects=[];parts=[];revealGeneration++;
  $('rankBtn').disabled=true;
+ $('wedoRankBtn').disabled=true;
 
  initAudio();
  buildStage(top);
 
  cv.width=innerWidth;cv.height=innerHeight;
  const rv=$('reveal');
- rv.className='show';void rv.offsetWidth;rv.classList.add('in');
+ rv.className=type==='wedo'?'show wedo-reveal':'show';
+ $('rvTitle').textContent=type==='wedo'?'WEDO · TOP 3':'iDekTep · TOP 3';
+ void rv.offsetWidth;rv.classList.add('in');
  $('rvSub').textContent='กำลังประกาศอันดับ...';
 
  try{
@@ -2089,34 +2388,24 @@ async function startReveal(){
    await wait(500);
   }
 
-  /* อันดับ 3 และ 2 ขึ้นบันไดทีละขั้น */
-  for(let k=top.length;k>=2;k--){
-   $('rvSub').textContent=`เตรียมประกาศอันดับ ${k}...`;
-   S.tension(2.7);
-   S.heartbeat(2.8,.85,.45);
-   S.roll(2.7,6,27,.05,.3);
-   await wait(2600);
-   $('rvSub').textContent=`อันดับ ${k} ได้แก่...`;
-   await showPod(k);
-   await wait(3200);
+  /* โชว์แท่นว่างก่อน แล้วให้ผู้ดำเนินรายการคลิก 3 → 2 → 1 */
+  for(let k=top.length;k>=1;k--){
+   await waitForRankPick(k);
+   S.heartbeat(k===1?1.7:.9,.69,.43);
+   S.roll(k===1?1.65:.85,7,26,.045,.29);
+   if(k===1){
+    $('rvStage').classList.add('focus','suspense');
+    $('pod1').classList.add('tease');
+    S.riser(1.7);
+   }
+   await wait(k===1?1700:900);
+   $('rvStage').classList.remove('suspense');
+   await revealCenter(k,top[k-1]);
+   $('rvSub').textContent=k===1?'🏆 ขอแสดงความยินดีกับทีมแชมป์! 🏆':`อันดับ ${k} เข้าประจำแท่นแล้ว`;
+   await wait(k===1?800:550);
   }
-
-  /* รอบชิง: หัวใจเร่งจังหวะ + ดนตรีไต่ระดับ ก่อนเว้นจังหวะแล้วเฉลย */
-  $('rvSub').textContent='ใครจะเป็นแชมป์ GO ROBOT CHALLENGE 2026?';
-  $('rvStage').classList.add('focus');
-  $('rvStage').classList.add('suspense');
-  $('pod1').classList.add('tease');
-  S.tension(5.1);
-  S.heartbeat(4.9,.78,.31);
-  S.riser(4.8);
-  S.roll(4.8,8,39,.055,.39);
-  await wait(3500);
-  $('rvSub').textContent='และผู้ชนะอันดับ 1 ได้แก่...';
-  await wait(1550);
-  $('rvStage').classList.remove('suspense');
-  await showPod(1);
-  $('rvSub').textContent='🏆 ขอแสดงความยินดีกับทีมแชมป์! 🏆';
-  await wait(6500);
+  $('rvSub').textContent='🏆 ขอแสดงความยินดีกับ TOP 3 ทุกทีม! 🏆';
+  await wait(8500);
 
  }catch(e){
   if(e!==SKIP)console.error(e);
@@ -2126,48 +2415,62 @@ async function startReveal(){
 }
 
 function endReveal(){
+ const isIdek=activeRevealType==='idek';
  revealGeneration++;
+ activeRankPick=null;
+ $('rvFeature').className='rv-feature';
+ $('rvFeature').innerHTML='';
+ $('rvPickHint').classList.remove('on');
  fadeBus();
  rejects=[];parts=[];
 
  if(pendingRaw){idektepRaw=pendingRaw;pendingRaw=null;}
+ if(pendingWedoRaw){wedoRaw=pendingWedoRaw;pendingWedoRaw=null;}
 
- const board=$('idektepData');
- const first=new Map([...board.querySelectorAll('.team')]
-  .map(e=>[e.dataset.team,e.getBoundingClientRect().top]));
-
- setRank(true);
-
+ let rows=[];
  const card=document.querySelector('.board.idek');
- card.classList.add('rank-in');
+ if(isIdek){
+  const board=$('idektepData');
+  const first=new Map([...board.querySelectorAll('.team')]
+   .map(e=>[e.dataset.team,e.getBoundingClientRect().top]));
 
- /* แถวเด้งจากลำดับตามรหัสทีม ไปเข้าลำดับ RANK */
- const rows=[...board.querySelectorAll('.team')];
- rows.forEach(e=>{
-  const o=first.get(e.dataset.team);
-  if(o==null)return;
-  e.style.transition='none';
-  e.style.transform=`translateY(${o-e.getBoundingClientRect().top}px) scale(.96)`;
-  e.style.opacity='.5';
- });
- void board.offsetWidth;
- rows.forEach((e,i)=>{
-  e.style.transition=`transform 1s cubic-bezier(.34,1.56,.64,1) ${i*45}ms,opacity .4s ${i*45}ms`;
-  e.style.transform='';
-  e.style.opacity='';
-  if(i<10)setTimeout(()=>pop(i),i*45+150);
- });
+  setRank(true);
+  card.classList.add('rank-in');
+
+  /* เฉพาะ iDekTep: แถวเด้งจากลำดับรหัสทีมไปเป็น RANK */
+  rows=[...board.querySelectorAll('.team')];
+  rows.forEach(e=>{
+   const o=first.get(e.dataset.team);
+   if(o==null)return;
+   e.style.transition='none';
+   e.style.transform=`translateY(${o-e.getBoundingClientRect().top}px) scale(.96)`;
+   e.style.opacity='.5';
+  });
+  void board.offsetWidth;
+  rows.forEach((e,i)=>{
+   e.style.transition=`transform 1s cubic-bezier(.34,1.56,.64,1) ${i*45}ms,opacity .4s ${i*45}ms`;
+   e.style.transform='';
+   e.style.opacity='';
+   if(i<10)setTimeout(()=>pop(i),i*45+150);
+  });
+ }else{
+  /* WEDO: กลับไปตารางเรียงอันดับเดิมโดยไม่แก้รูปแบบหรือเปิดโหมดซ่อน */
+  renderWedo();
+ }
 
  const rv=$('reveal');
  rv.classList.remove('in');
  setTimeout(()=>{rv.className='';$('rvCount').innerHTML='';$('rvList').className='rv-list';$('rvList').innerHTML=''},700);
 
  setTimeout(()=>{
-  card.classList.remove('rank-in');
+  if(isIdek)card.classList.remove('rank-in');
   revealing=false;
+  activeRevealType=null;
   $('rankBtn').disabled=false;
+  $('wedoRankBtn').disabled=!sortedWedoRows(wedoRaw).some(r=>Number.isFinite(num(r.score)));
   if(pendingRaw){const p=pendingRaw;pendingRaw=null;renderIdektep(p);}
- },1300+rows.length*45);
+  if(pendingWedoRaw){const p=pendingWedoRaw;pendingWedoRaw=null;renderWedo(p);}
+ },isIdek?1300+rows.length*45:750);
 }
 
 function setRank(on){
@@ -2181,7 +2484,13 @@ function setRank(on){
 function toggleRank(){
  if(revealing)return;
  if(rankMode){setRank(false);return;}
- startReveal();
+ startReveal('idek');
+}
+
+function toggleWedoRank(){
+ if(revealing)return;
+ /* ไม่สลับโหมดตาราง: WEDO แสดงอันดับปัจจุบันอยู่เสมอ */
+ startReveal('wedo');
 }
 
 loadAll();
