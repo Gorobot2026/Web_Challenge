@@ -864,6 +864,366 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
  body.is-fs #matches-view.active .match-tools{flex:0 0 auto;margin:0 0 2px;min-height:36px}
  body.is-fs #matches-view.active .match-gear{font-size:14px}
 }
+
+
+/* ==============================================================
+   GO ROBOT CHALLENGE 2026 — ARENA / ESPORTS MATCH RESULT DESIGN
+   Isolated to #matches-view. Original Google Sheets, paging,
+   and completed-result logic are preserved.
+   ============================================================== */
+#matches-view{
+  --arena-scarlet:#ff5d58;
+  --arena-ice:#38c8ff;
+  --arena-ink:#091326;
+}
+#matches-view .matches-grid{
+  gap:14px;
+  margin-top:10px;
+}
+#matches-view .match-card,
+body:has(#matches-view.active) #matches-view .match-card,
+body.is-fs #matches-view.active .match-card{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  border:0;
+  border-radius:0;
+  min-width:0;
+  min-height:235px;
+  padding:clamp(13px,1.65vh,22px) clamp(15px,1.4vw,26px);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:clamp(8px,1.1vh,14px);
+  background:linear-gradient(124deg,#3c8bb4 0%,#244160 25%,#20334c 75%,#34cffa 100%);
+  clip-path:polygon(0 0,calc(100% - 25px) 0,100% 25px,100% 100%,25px 100%,0 calc(100% - 25px));
+  box-shadow:none;
+  transition:filter .25s ease,transform .25s ease;
+}
+#matches-view .match-card:hover{
+  transform:translateY(-2px);
+  border-color:transparent;
+  box-shadow:none;
+  filter:brightness(1.14);
+}
+#matches-view .match-card::before{
+  content:"";
+  position:absolute;
+  inset:2px;
+  z-index:-2;
+  background:linear-gradient(120deg,#152942 0%,#0b172d 48%,#102039 100%);
+  clip-path:polygon(0 0,calc(100% - 23px) 0,100% 23px,100% 100%,23px 100%,0 calc(100% - 23px));
+}
+#matches-view .match-card::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  pointer-events:none;
+  inset:2px;
+  opacity:.9;
+  background:
+    radial-gradient(ellipse at 1% 55%,rgba(244,69,76,.11),transparent 44%),
+    radial-gradient(ellipse at 98% 48%,rgba(35,182,251,.14),transparent 48%),
+    repeating-linear-gradient(115deg,transparent 0 58px,rgba(202,228,255,.022) 59px,transparent 60px);
+}
+#matches-view .arena-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  min-height:38px;
+  padding:0 2px clamp(10px,1.2vh,14px);
+  border-bottom:1px solid rgba(108,153,203,.22);
+}
+#matches-view .arena-heading{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+#matches-view .arena-heading::before{
+  content:"";
+  height:25px;
+  width:4px;
+  flex:0 0 4px;
+  background:linear-gradient(#8ff0ff,#1d80ef);
+  box-shadow:0 0 14px rgba(33,197,253,.45);
+  transform:skew(-17deg);
+}
+#matches-view .match-title{
+  font:800 clamp(22px,2.9vh,34px)/1.1 'Orbitron','Kanit',sans-serif;
+  letter-spacing:1px;
+  color:#f1f8ff;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+#matches-view .arena-status{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  flex:0 0 auto;
+  font:600 clamp(11px,.88vw,15px)/1 'Kanit',sans-serif;
+  letter-spacing:1px;
+  color:#9ab0c4;
+  padding:9px 14px;
+  background:#091627;
+  border:1px solid rgba(124,173,200,.21);
+  clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
+}
+#matches-view .arena-status::before{
+  content:"";
+  width:6px;
+  height:6px;
+  background:#9badbf;
+  transform:rotate(45deg);
+}
+#matches-view .arena-status.is-done{color:#91ffe1;border-color:rgba(28,230,184,.35)}
+#matches-view .arena-status.is-done::before{background:#41efbe;box-shadow:0 0 9px #3df0ba}
+#matches-view .arena-core{
+  width:100%;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) clamp(55px,5.4vw,92px) minmax(0,1fr);
+  gap:clamp(10px,1vw,18px);
+  align-items:stretch;
+  flex:1;
+  min-height:0;
+}
+#matches-view .arena-side{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:8px;
+  min-width:0;
+  overflow:hidden;
+  padding:clamp(16px,1.9vh,24px) clamp(20px,1.9vw,32px);
+  color:#f6f9ff;
+}
+#matches-view .arena-side.red{
+  background:linear-gradient(108deg,rgba(235,68,69,.24),rgba(108,49,70,.1) 55%,rgba(16,31,54,.53)),#0b152a;
+  border-left:4px solid #f35d59;
+  clip-path:polygon(0 0,100% 0,calc(100% - 17px) 100%,0 100%);
+}
+#matches-view .arena-side.blue{
+  background:linear-gradient(252deg,rgba(27,169,244,.27),rgba(34,81,134,.11) 55%,rgba(12,27,51,.55)),#0b152a;
+  border-right:4px solid #2eb9ff;
+  clip-path:polygon(17px 0,100% 0,100% 100%,0 100%);
+  text-align:right;
+  align-items:flex-end;
+}
+#matches-view .arena-side.red::before,
+#matches-view .arena-side.blue::before{
+  content:"";
+  position:absolute;
+  width:44%;height:160%;top:-35%;right:-25%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.038),transparent);
+  transform:rotate(25deg);
+  pointer-events:none;
+}
+#matches-view .arena-side.blue::before{right:auto;left:-25%;transform:rotate(-25deg)}
+#matches-view .arena-side .side-label{
+  display:flex;align-items:center;gap:7px;
+  font:700 clamp(11px,.9vw,14px)/1 'Orbitron','Kanit',sans-serif;
+  letter-spacing:1.7px;
+}
+#matches-view .arena-side.red .side-label{color:#ff908e}
+#matches-view .arena-side.blue .side-label{color:#77dcff}
+#matches-view .side-label::before{content:"";width:6px;height:6px;transform:rotate(45deg);background:currentColor;flex:0 0 auto}
+#matches-view .arena-team-name{
+  width:100%;
+  font:900 clamp(48px,4vw,76px)/1.06 'Kanit',sans-serif;
+  text-wrap:balance;
+  letter-spacing:.2px;
+  color:#fff;
+  overflow-wrap:anywhere;
+  text-shadow:0 3px 14px rgba(0,0,0,.76),0 0 23px rgba(255,255,255,.13);
+}
+#matches-view .arena-side .arena-bottom{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:14px;
+  border-top:1px solid rgba(175,207,233,.16);
+  padding-top:10px;
+}
+#matches-view .arena-side.blue .arena-bottom{flex-direction:row-reverse}
+/* Reserve the center of each team panel for large, distance-readable team names. */
+#matches-view .arena-side{padding-top:9px;padding-bottom:9px;gap:4px}
+#matches-view .arena-side .arena-bottom{padding-top:5px;min-height:0}
+#matches-view .arena-bottom > div:first-child{display:flex;align-items:baseline;gap:10px;min-width:0}
+#matches-view .arena-side.blue .arena-bottom > div:first-child{flex-direction:row-reverse}
+#matches-view .side-points-label{padding-bottom:0}
+#matches-view .arena-footer{white-space:nowrap;font-size:clamp(9px,.72vw,12px);letter-spacing:.75px}
+#matches-view .arena-footer .footer-rule{min-width:8px}
+
+#matches-view .arena-points{
+  font:900 clamp(48px,7vh,84px)/.94 'Orbitron','Kanit',sans-serif;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:1px;
+  color:#fff;
+  text-shadow:0 4px 14px rgba(0,0,0,.4);
+}
+#matches-view .arena-side.red .arena-points{color:#ffe8e7}
+#matches-view .arena-side.blue .arena-points{color:#e0f6ff}
+#matches-view .arena-points.is-empty{color:#607289!important;text-shadow:none}
+#matches-view .side-points-label{
+  font:600 clamp(12px,.95vw,15px)/1.3 'Kanit',sans-serif;
+  color:#7f99b1;
+  text-transform:uppercase;
+  letter-spacing:1.6px;
+  padding-bottom:3px;
+}
+#matches-view .arena-result{
+  font:700 clamp(10px,.95vw,15px)/1 'Orbitron','Kanit',sans-serif;
+  letter-spacing:.9px;
+  padding:8px 12px;
+  color:#a7b5c5;
+  white-space:nowrap;
+  text-shadow:none;
+}
+#matches-view .arena-result.win{background:rgba(51,231,157,.14);color:#55f9b8;border:1px solid rgba(72,246,176,.37)}
+#matches-view .arena-result.lose{background:rgba(241,90,85,.12);color:#ffaaa4;border:1px solid rgba(255,124,116,.25)}
+#matches-view .arena-result.draw{background:rgba(248,192,64,.13);color:#f9d786;border:1px solid rgba(251,199,75,.25)}
+#matches-view .arena-vs{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  align-self:stretch;
+  text-align:center;
+  gap:8px;
+  min-width:0;
+  color:#f7fbff;
+}
+#matches-view .arena-vs::before,
+#matches-view .arena-vs::after{
+  content:"";
+  width:1px;
+  flex:1;
+  max-height:35px;
+  background:linear-gradient(transparent,rgba(98,169,217,.5));
+}
+#matches-view .arena-vs::after{transform:rotate(180deg)}
+#matches-view .arena-vs-big{
+  position:relative;
+  font:900 clamp(26px,3.6vh,42px)/1.1 'Orbitron','Kanit',sans-serif;
+  letter-spacing:-1px;
+  text-shadow:0 0 22px rgba(51,194,255,.42);
+}
+#matches-view .arena-vs-big::after{
+  content:"";display:block;margin:10px auto 0;
+  width:24px;height:4px;background:#22c6f6;
+  box-shadow:0 0 13px #24c9ff;
+  transform:skew(-32deg);
+}
+#matches-view .arena-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  color:#748ea7;
+  font:500 clamp(10px,.9vw,13px)/1.3 'Kanit',sans-serif;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+}
+#matches-view .arena-footer .footer-rule{flex:1;max-width:46%;height:1px;background:linear-gradient(90deg,rgba(70,152,223,.3),transparent)}
+#matches-view .arena-footer .footer-right{color:#9fc5dc}
+#matches-view .pagination-container{margin-top:6px}
+#matches-view .page-btn{
+  border-radius:0;
+  clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px);
+  background:linear-gradient(125deg,#174773,#10243d);
+  border:1px solid #377eab;
+  box-shadow:inset 0 1px rgba(148,214,251,.08);
+}
+#matches-view .page-btn:not(:disabled):hover{background:#2074a9}
+#matches-view .match-gear{border-radius:2px;clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px)}
+@media (max-width:900px){
+  #matches-view .matches-grid{grid-template-columns:1fr;grid-template-rows:auto;margin-top:10px;gap:12px}
+  #matches-view .match-card{min-height:270px!important;padding:18px!important}
+  #matches-view .arena-core{grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr);min-height:165px}
+  #matches-view .arena-team-name{font-size:clamp(29px,7vw,44px)}
+  #matches-view .arena-points{font-size:clamp(38px,10vw,66px)}
+  #matches-view .side-points-label{font-size:10px;letter-spacing:.5px}
+  #matches-view .arena-side{padding:9px 12px}
+  #matches-view .arena-result{font-size:10px}
+  #matches-view .arena-bottom > div:first-child{gap:5px}
+  #matches-view .arena-bottom .side-points-label{font-size:9px}
+  #matches-view .arena-status{font-size:11px;padding:8px 10px}
+}
+@media (max-width:380px){
+  #matches-view .arena-core{grid-template-columns:minmax(0,1fr) 43px minmax(0,1fr);gap:2px}
+  #matches-view .arena-side{padding:9px 10px}
+  #matches-view .arena-team-name{font-size:28px}
+  #matches-view .arena-result{padding:5px 6px}
+  #matches-view .arena-heading{gap:7px}
+}
+@media(min-width:901px) and (max-height:740px){
+  body:has(#matches-view.active) #matches-view .match-card{min-height:0!important;padding:10px 18px;gap:6px}
+  #matches-view .arena-header{padding-bottom:4px;min-height:25px}
+  #matches-view .arena-team-name{font-size:clamp(42px,5.9vh,65px)}
+  #matches-view .arena-side{padding:7px 18px}
+  #matches-view .arena-points{font-size:clamp(32px,5.5vh,56px)}
+  #matches-view .arena-footer{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  #matches-view .match-card{transition:none}
+}
+
+
+/* ============ GO ROBOT 2026 · CINEMATIC DATA REVEAL ============
+   Each active view has its own animation language; no repeated poll flashes. */
+#matches-view .match-card.fx-card-enter {animation:fxCardLand .8s cubic-bezier(.12,.8,.16,1) both;animation-delay:var(--fx-delay,0ms)}
+@keyframes fxCardLand {0%{opacity:.18;transform:translateY(38px) scale(.93);filter:brightness(2)}45%{opacity:1;filter:brightness(1.8)}100%{transform:none;filter:none;opacity:1}}
+#matches-view .match-card.fx-score-impact {animation:fxCardImpact .9s ease-out both}
+@keyframes fxCardImpact {0%{filter:brightness(1.9)}16%{filter:brightness(2.4) drop-shadow(0 0 12px rgba(32,222,255,.8))}100%{filter:none}}
+#matches-view .match-card.fx-score-impact .arena-points:not(.is-empty){animation:fxPointPop 1.2s cubic-bezier(.16,1,.3,1)}
+@keyframes fxPointPop {0%{transform:scale(.55);opacity:.3;text-shadow:0 0 45px #fff}30%{transform:scale(1.23);opacity:1;text-shadow:0 0 32px #fff,0 0 55px #1ed8ff}100%{transform:scale(1);text-shadow:0 4px 14px rgba(0,0,0,.4)}}
+#matches-view .match-card.fx-score-impact .arena-status.is-done {animation:fxStatusZap .95s ease-out}
+@keyframes fxStatusZap{0%,28%{box-shadow:0 0 30px #22ecc2;background:rgba(31,240,180,.35)}100%{box-shadow:none}}
+#matches-view .fx-score-shard{position:absolute;z-index:5;left:var(--sx);top:var(--sy);width:var(--sw);height:3px;background:var(--sc,#41daff);box-shadow:0 0 12px var(--sc,#41daff);pointer-events:none;transform:rotate(var(--sr));animation:fxShard .85s ease-out forwards}
+@keyframes fxShard{from{opacity:1;transform:translate(0,0) rotate(var(--sr)) scaleX(1)}to{opacity:0;transform:translate(var(--tx),var(--ty)) rotate(var(--sr)) scaleX(.2)}}
+#tournament-view .bracket-team.fx-bracket-enter,
+#tournament-view .semi-box.fx-bracket-enter,
+#tournament-view .podium-team.fx-bracket-enter{animation:fxBracketNode .9s cubic-bezier(.2,.9,.2,1) both;animation-delay:var(--fx-delay,0ms)}
+@keyframes fxBracketNode{0%{opacity:.05;transform:scaleX(.45) translateY(9px);filter:brightness(3)}52%{opacity:1;filter:brightness(2) drop-shadow(0 0 24px #27ddff)}100%{transform:none;opacity:1;filter:none}}
+#tournament-view .bracket-wrapper.fx-route-active #bracket-svg path:not(.third-line){stroke-dasharray:20 8;animation:fxTraceRoute .55s linear 4;stroke:#74faff;filter:drop-shadow(0 0 8px #24e5ff)}
+#tournament-view .bracket-wrapper.fx-route-active #bracket-svg path.third-line{animation:fxTraceRoute .8s linear 3;filter:drop-shadow(0 0 10px #ffc777)}
+@keyframes fxTraceRoute{to{stroke-dashoffset:-84}}
+#tournament-view .podium-step.fx-champion-burst {animation:fxChampionLift 1.55s cubic-bezier(.18,.7,.2,1) both;z-index:9}
+@keyframes fxChampionLift{0%{transform:translateY(25px) scale(.83);filter:brightness(2) drop-shadow(0 0 38px #ffd96a)}36%{transform:translateY(-22px) scale(1.12);filter:brightness(1.6) drop-shadow(0 0 42px #ffdc75)}100%{transform:none;filter:none}}
+#playoff-view .team.fx-playoff-enter {animation:fxPilotEnter .9s cubic-bezier(.15,.9,.18,1) both;animation-delay:var(--fx-delay,0ms)}
+#playoff-view .match-side.right .team.fx-playoff-enter{animation-name:fxPilotEnterRight}
+@keyframes fxPilotEnter{0%{transform:translateX(-95px) skewX(9deg);opacity:0;filter:brightness(2)}65%{opacity:1;filter:brightness(1.6) drop-shadow(0 0 24px #2ceaff)}100%{transform:none;opacity:1;filter:none}}
+@keyframes fxPilotEnterRight{0%{transform:translateX(95px) skewX(-9deg);opacity:0;filter:brightness(2)}65%{opacity:1;filter:brightness(1.6) drop-shadow(0 0 24px #2ceaff)}100%{transform:none;opacity:1;filter:none}}
+#playoff-view .winner-box.fx-winner-impact{animation:fxWinnerImpact 1.5s cubic-bezier(.2,.8,.18,1) both!important;z-index:10}
+@keyframes fxWinnerImpact {0%{transform:scale(.5) rotate(-4deg);opacity:0;filter:brightness(3) drop-shadow(0 0 40px #ffcc57)}35%{transform:scale(1.27);opacity:1;filter:brightness(1.8) drop-shadow(0 0 55px #ffcf40)}64%{transform:scale(.96)}100%{transform:scale(1);opacity:1}}
+#playoff-view .board.fx-playoff-wave {animation:fxBoardPower 1.5s ease-out}
+@keyframes fxBoardPower {0%{box-shadow:0 0 95px rgba(134,70,252,.8),inset 0 0 65px rgba(87,48,225,.24)}100%{box-shadow:0 0 40px rgba(30,123,255,.15),0 18px 50px rgba(0,0,0,.35)}}
+/* Scene overlays: one brief, non-interactive stage sweep per meaningful reveal */
+.go-fx-stage{position:fixed;inset:0;z-index:99999;pointer-events:none;display:flex;align-items:center;justify-content:center;overflow:hidden;isolation:isolate;animation:fxCurtainOut 1.9s ease-in forwards}
+.go-fx-stage::before{content:"";position:absolute;inset:-20%;opacity:.25;background:radial-gradient(ellipse 43% 30% at 50% 50%,var(--fx-color),transparent 75%);animation:fxStageFlash 1.35s ease-out both}
+.go-fx-stage::after{content:"";position:absolute;left:-20%;width:140%;height:2px;top:50%;background:linear-gradient(90deg,transparent,var(--fx-glow),#fff,var(--fx-glow),transparent);filter:drop-shadow(0 0 22px var(--fx-glow));transform:rotate(var(--fx-rotate,0deg)) scaleX(0);animation:fxLaser .9s ease-out .1s both}
+.go-fx-stage.fx-match{--fx-color:#ef4e8f;--fx-glow:#2ddfff;--fx-rotate:-6deg}
+.go-fx-stage.fx-tournament{--fx-color:#13cdec;--fx-glow:#70eaff;--fx-rotate:6deg}
+.go-fx-stage.fx-playoff{--fx-color:#a34aff;--fx-glow:#ffda67;--fx-rotate:0deg}
+.go-fx-panel{position:relative;z-index:3;max-width:min(90vw,1000px);text-align:center;padding:23px clamp(22px,6vw,85px);border-top:2px solid var(--fx-glow);border-bottom:2px solid var(--fx-glow);background:linear-gradient(90deg,transparent,rgba(4,10,31,.91) 23%,rgba(4,10,31,.94) 77%,transparent);filter:drop-shadow(0 0 27px var(--fx-glow));clip-path:polygon(0 0,100% 0,95% 100%,5% 100%);animation:fxPanelIn 1.55s cubic-bezier(.12,.85,.16,1) both}
+.go-fx-panel .fx-kicker{font:800 clamp(10px,1.25vw,16px)/1.3 'Orbitron','Kanit',sans-serif;letter-spacing:.32em;color:var(--fx-glow);text-shadow:0 0 16px var(--fx-glow)}
+.go-fx-panel .fx-headline{font:900 clamp(26px,5.1vw,78px)/1.15 'Orbitron','Kanit',sans-serif;letter-spacing:.045em;color:#f9fdff;text-shadow:0 0 16px var(--fx-glow),0 4px 18px rgba(0,0,0,.8);overflow-wrap:anywhere}
+.go-fx-stage .fx-ray{position:absolute;z-index:1;top:50%;left:50%;width:var(--fx-w);height:2px;background:linear-gradient(90deg,var(--fx-glow),transparent);transform-origin:0 50%;transform:rotate(var(--fx-a));animation:fxRay 1.15s ease-out both}
+.go-fx-stage.fx-playoff .fx-ray{background:linear-gradient(90deg,#ffeb86,rgba(210,74,255,.75),transparent)}
+.go-fx-stage.fx-tournament .fx-ray{height:1px}
+@keyframes fxCurtainOut{0%,64%{opacity:1}100%{opacity:0;visibility:hidden}}
+@keyframes fxStageFlash{0%{opacity:0;transform:scale(.6)}20%{opacity:.55}100%{opacity:0;transform:scale(1.35)}}
+@keyframes fxLaser{0%{opacity:0;transform:rotate(var(--fx-rotate)) scaleX(0)}45%{opacity:1;transform:rotate(var(--fx-rotate)) scaleX(1)}100%{opacity:0;transform:rotate(var(--fx-rotate)) scaleX(.8)}}
+@keyframes fxPanelIn{0%{opacity:0;transform:scaleX(.2) scaleY(.75);filter:blur(11px)}18%{opacity:1;transform:scaleX(1.06)}34%{transform:scale(1);filter:blur(0)}65%{opacity:1}100%{opacity:0;transform:scale(1.08)}}
+@keyframes fxRay{0%{opacity:0;scale:.15 1}25%{opacity:.85}100%{opacity:0;scale:1.2 1}}
+@media (max-width:700px){.go-fx-panel{padding:14px 16px}.go-fx-panel .fx-kicker{letter-spacing:.13em}.go-fx-panel .fx-headline{font-size:clamp(22px,6vw,38px)}}
+@media (prefers-reduced-motion:reduce){.go-fx-stage{display:none!important}#matches-view .fx-card-enter,#matches-view .fx-score-impact,#matches-view .fx-score-impact .arena-points,#tournament-view .fx-bracket-enter,#tournament-view .podium-step.fx-champion-burst,#playoff-view .team.fx-playoff-enter,#playoff-view .winner-box.fx-winner-impact,#playoff-view .board.fx-playoff-wave{animation:none!important}}
+
 </style>
 </head>
 <body>
@@ -1141,7 +1501,11 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
             if(matchDeadline&&Date.now()>=matchDeadline){
                 currentMatchPage=currentMatchPage>=pages?1:currentMatchPage+1;
                 matchDeadline=0;matchCompletionKey='';
-                document.getElementById('matches-content').innerHTML=renderMatchCardsPaginated(globalMatches);
+                const newPageHtml=renderMatchCardsPaginated(globalMatches);
+                const pageHolder=document.getElementById('matches-content');
+                pageHolder.innerHTML=newPageHtml;
+                pageHolder.dataset.rendered=newPageHtml;
+                requestAnimationFrame(()=>fxMatchCards(true));
             }
             refreshMatchStatus();
         }
@@ -1160,12 +1524,17 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
 
             if (viewId === 'matches-view') {
                 startAutoPageAdvance();
+                scheduleArenaNameFit();
             } else {
                 stopAutoPageAdvance();
             }
 
             if (viewId === 'tournament-view') {
                 setTimeout(drawBracketLines, 100);
+            }
+
+            if (['matches-view','tournament-view','playoff-view'].includes(viewId)) {
+                setTimeout(() => fxEnterView(viewId), 150);
             }
 
             // [เพิ่ม] ปรับขนาดให้พอดีจอหลังสลับแท็บ (ตอนเต็มจอ)
@@ -1565,7 +1934,11 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
             currentMatchPage += delta;
             if (currentMatchPage < 1) currentMatchPage = 1;
             if (currentMatchPage > totalPages) currentMatchPage = totalPages;
-            document.getElementById('matches-content').innerHTML = renderMatchCardsPaginated(globalMatches);
+            const newPageHtml=renderMatchCardsPaginated(globalMatches);
+            const pageHolder=document.getElementById('matches-content');
+            pageHolder.innerHTML=newPageHtml;
+            pageHolder.dataset.rendered=newPageHtml;
+            requestAnimationFrame(()=>fxMatchCards(true));
             if (document.getElementById('matches-view').classList.contains('active')) { startAutoPageAdvance(); }
         }
 
@@ -1576,27 +1949,64 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
             if (currentMatchPage < 1) currentMatchPage = 1;
             const startIndex = (currentMatchPage - 1) * MATCHES_PER_PAGE;
             const currentMatchesToDisplay = parsedMatches.slice(startIndex, startIndex + MATCHES_PER_PAGE);
+            const safeScore = (value) => {
+                const score = String(value ?? '').trim();
+                return !score || ['FALSE', '#REF!', '#N/A', '#VALUE!', '-', '—'].includes(score.toUpperCase()) ? '—' : score;
+            };
+            const verdict = (result) => {
+                const state = String(result || '').toUpperCase();
+                if (state === 'WIN') return '<span class="arena-result win">WIN</span>';
+                if (state === 'LOSE') return '<span class="arena-result lose">LOSE</span>';
+                if (state === 'DRAW') return '<span class="arena-result draw">DRAW</span>';
+                return '';
+            };
             let html = '<div class="matches-grid">';
-            currentMatchesToDisplay.forEach(m => {
-                const getBadge = (result) => {
-                    if (result === "WIN") return '<div class="badge badge-win">WIN</div>';
-                    if (result === "LOSE") return '<div class="badge badge-lose">LOSE </div>';
-                    if (result === "DRAW") return '<div class="badge badge-draw">DRAW </div>';
-                    return '<div class="badge badge-empty">-</div>';
-                };
+            currentMatchesToDisplay.forEach((m, idx) => {
+                const leftScore = safeScore(m.leftScore);
+                const rightScore = safeScore(m.rightScore);
+                const completed = ['WIN', 'LOSE', 'DRAW'].includes(String(m.leftResult || '').toUpperCase()) ||
+                                  ['WIN', 'LOSE', 'DRAW'].includes(String(m.rightResult || '').toUpperCase());
+                const matchTitle = String(m.matchTitle || `MATCH ${startIndex + idx + 1}`);
+                const cleanTitle = esc(matchTitle);
+                const leftEmpty = leftScore === '—';
+                const rightEmpty = rightScore === '—';
                 html += `
-                    <div class="match-card">
-                        <div class="match-header"><div class="match-title">${m.matchTitle}</div></div>
-                        <div class="match-content">
-                            <div class="team-container"><div class="team-box team-left">${m.teamLeft}</div>${getBadge(m.leftResult)}</div>
-                            <div class="team-box team-center vs-text">VS</div>
-                            <div class="team-container"><div class="team-box team-right">${m.teamRight}</div>${getBadge(m.rightResult)}</div>
+                    <section class="match-card" aria-label="${cleanTitle}: ${esc(m.teamLeft)} vs ${esc(m.teamRight)}">
+                        <header class="arena-header">
+                            <div class="arena-heading">
+                                <div>
+                                    <div class="match-title">${cleanTitle}</div>
+                                </div>
+                            </div>
+                            <span class="arena-status ${completed ? 'is-done' : ''}">${completed ? 'RESULT CONFIRMED' : 'AWAITING RESULT'}</span>
+                        </header>
+                        <div class="arena-core">
+                            <div class="arena-side red">
+                                <div class="side-label">RED SIDE</div>
+                                <div class="arena-team-name">${esc(m.teamLeft || 'รอทีม')}</div>
+                                <div class="arena-bottom">
+                                    <div><div class="side-points-label">SCORE</div><div class="arena-points ${leftEmpty ? 'is-empty' : ''}">${esc(leftScore)}</div></div>
+                                    ${verdict(m.leftResult)}
+                                </div>
+                            </div>
+                            <div class="arena-vs" aria-hidden="true">
+                                <div class="arena-vs-big">VS</div>
+                            </div>
+                            <div class="arena-side blue">
+                                <div class="side-label">BLUE SIDE</div>
+                                <div class="arena-team-name">${esc(m.teamRight || 'รอทีม')}</div>
+                                <div class="arena-bottom">
+                                    <div><div class="side-points-label">SCORE</div><div class="arena-points ${rightEmpty ? 'is-empty' : ''}">${esc(rightScore)}</div></div>
+                                    ${verdict(m.rightResult)}
+                                </div>
+                            </div>
                         </div>
-                        <div class="score-row">
-                            <div class="score-item"><div class="score-label">Score</div><div class="score-value" style="color: #e74c3c;">${m.leftScore}</div></div>
-                            <div class="score-item"><div class="score-label">Score</div><div class="score-value" style="color: #3498db;">${m.rightScore}</div></div>
-                        </div>
-                    </div>`;
+                        <footer class="arena-footer">
+                            <span>ROBOTICS CHAMPIONSHIP 2026</span>
+                            <span class="footer-rule"></span>
+                            <span class="footer-right">${completed ? 'MATCH COMPLETED' : 'OFFICIAL MATCH CENTER'}</span>
+                        </footer>
+                    </section>`;
             });
             html += '</div>';
             if (totalPages > 1) {
@@ -1663,6 +2073,7 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
                 final1:'t-f1', final2:'t-f2', third1:'t-t1', third2:'t-t2',
                 winner:'t-winner', runner1:'t-runner1', runner2:'t-runner2'
             };
+            const changedFxNodes=[];
             for (const [key, id] of Object.entries(mapIds)) {
                 const el = document.getElementById(id);
                 if (!el) continue;
@@ -1673,11 +2084,13 @@ body.is-fs .bracket-wrapper{overflow:visible;margin-bottom:0}
                 if (el.dataset.lastValue === shown) continue;
                 el.dataset.lastValue = shown;
                 el.textContent = shown;
+                if(fxReal(shown)) changedFxNodes.push(el);
                 el.classList.toggle('empty', shown === '-');
                 el.classList.toggle('filled', shown !== '-');
             }
             if (document.getElementById('tournament-view').classList.contains('active')) {
                 requestAnimationFrame(drawBracketLines);
+                if(changedFxNodes.length) requestAnimationFrame(()=>fxTournamentChanged(changedFxNodes));
             }
         }
 
@@ -1731,6 +2144,12 @@ function renderPlayoff(data){
     }
 
     const p = data.playoffTournament || {};
+    const meaningfulSig=JSON.stringify({p,title:data.title||'',subtitle:data.subtitle||''});
+    if(goFx.playoffSig===meaningfulSig)return;
+    const previousPlayoff=renderPlayoff._previous || {};
+    const firstPlayoff=goFx.playoffSig===null;
+    goFx.playoffSig=meaningfulSig;
+    renderPlayoff._previous={...p};
 
     const titleEl = getEl("po-title");
     const subtitleEl = getEl("po-subtitle");
@@ -1781,6 +2200,8 @@ function renderPlayoff(data){
         countEl.textContent = `${c} MATCHES`;
     }
 
+    if(!firstPlayoff) requestAnimationFrame(()=>fxPlayoffChanged(previousPlayoff,p));
+    else if(document.getElementById('playoff-view')?.classList.contains('active')) requestAnimationFrame(()=>fxEnterView('playoff-view'));
     console.log("Render Play-off สำเร็จ:", p);
 }
 
@@ -1838,7 +2259,13 @@ function renderPlayoff(data){
 
                 if (data.matches) {
                     globalMatches = parseMatches(data.matches);
-                    document.getElementById('matches-content').innerHTML = renderMatchCardsPaginated(globalMatches);
+                    const matchContainer=document.getElementById('matches-content');
+                    const renderedMatches=renderMatchCardsPaginated(globalMatches);
+                    if(matchContainer.dataset.rendered!==renderedMatches){
+                        matchContainer.innerHTML=renderedMatches;
+                        matchContainer.dataset.rendered=renderedMatches;
+                    }
+                    requestAnimationFrame(()=>fxHandleMatchData(globalMatches));
                 }
 
                 if (data.tournament) {
@@ -1879,6 +2306,230 @@ function renderPlayoff(data){
                     errorBox.style.display = 'block';
                     errorBox.textContent = 'ไม่สามารถรับข้อมูลจาก Google Apps Script ได้ กรุณาตรวจสอบการ Deploy Web App และสิทธิ์การเข้าถึง';
                 }
+            }
+        }
+
+
+        // ให้อ่านชื่อทีมได้จากระยะไกล: ขยายชื่อสั้นให้เต็มพื้นที่ และย่อเฉพาะชื่อที่ยาว
+        function fitArenaTeamNames() {
+            const view = document.getElementById('matches-view');
+            if (!view || !view.classList.contains('active')) return;
+            const grid = view.querySelector('.matches-grid');
+            if (!grid || grid.getBoundingClientRect().width < 20) return;
+            const isMobile = window.innerWidth <= 900;
+            const isVerySmall = window.innerWidth <= 380;
+            const maximum = isVerySmall ? 31 : (isMobile ? 44 : (window.innerHeight <= 740 ? 66 : 78));
+            const minimum = isMobile ? 17 : 26;
+            grid.querySelectorAll('.arena-team-name').forEach((name) => {
+                const side = name.closest('.arena-side');
+                if (!side) return;
+                const label = side.querySelector('.side-label');
+                const bottom = side.querySelector('.arena-bottom');
+                if (!label || !bottom) return;
+                const styles = getComputedStyle(side);
+                const verticalPadding = parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
+                const gap = parseFloat(styles.rowGap || styles.gap) || 8;
+                const isLong = name.textContent.trim().length > 9;
+                name.style.marginBlock = isLong ? '7px' : '0px';
+                const height = Math.max(25, side.clientHeight - verticalPadding - label.offsetHeight - bottom.offsetHeight - gap * 2 - 4 - (isLong ? 14 : 0));
+                name.style.fontSize = maximum + 'px';
+                let size = maximum;
+                while (size > minimum && (name.scrollHeight > height + 2 || name.scrollWidth > name.clientWidth + 2)) {
+                    size -= 2;
+                    name.style.fontSize = Math.max(minimum, size) + 'px';
+                }
+            });
+        }
+        let arenaResizeFrame = 0;
+        function scheduleArenaNameFit() {
+            if (arenaResizeFrame) cancelAnimationFrame(arenaResizeFrame);
+            arenaResizeFrame = requestAnimationFrame(() => {
+                arenaResizeFrame = 0;
+                fitArenaTeamNames();
+            });
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const holder = document.getElementById('matches-content');
+            if (holder) new MutationObserver(scheduleArenaNameFit).observe(holder, {childList:true});
+            const panel = document.getElementById('matches-view');
+            if (panel && typeof ResizeObserver !== 'undefined') {
+                new ResizeObserver(scheduleArenaNameFit).observe(panel);
+            }
+            window.addEventListener('resize', scheduleArenaNameFit);
+            if (document.fonts) document.fonts.ready.then(scheduleArenaNameFit);
+            scheduleArenaNameFit();
+        });
+
+
+        // ================================================================
+        // CINEMATIC FX: three distinct visual languages; play only on
+        // first visible data or a real change, never every 3-second poll.
+        // ================================================================
+        const goFx = {
+            intros: new Set(), matchSig: null, matchMap: new Map(), playoffSig: null,
+            enabled: !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+        };
+        function fxReal(v) {
+            const t = String(v ?? '').trim();
+            return !!t && !['-','—','รอทีม','รอผล','FALSE','#N/A','#REF!','#VALUE!'].includes(t.toUpperCase());
+        }
+        function fxCleanupClass(el, cls, duration=1650) {
+            if (!el) return;
+            el.classList.remove(cls);
+            void el.offsetWidth;
+            el.classList.add(cls);
+            clearTimeout(el['fxTimer_'+cls]);
+            el['fxTimer_'+cls] = setTimeout(() => el.classList.remove(cls), duration);
+        }
+        function fxScreen(type, headline, kicker) {
+            if (!goFx.enabled || document.hidden) return;
+            const old = document.querySelector('.go-fx-stage');
+            if (old) old.remove();
+            const overlay=document.createElement('div');
+            overlay.className='go-fx-stage fx-'+type;
+            // Only application-defined copy; data from Sheets is never injected as HTML.
+            overlay.innerHTML='<div class="go-fx-panel"><div class="fx-kicker"></div><div class="fx-headline"></div></div>';
+            overlay.querySelector('.fx-kicker').textContent=kicker;
+            overlay.querySelector('.fx-headline').textContent=headline;
+            for(let i=0;i<16;i++) {
+                const ray=document.createElement('span');
+                ray.className='fx-ray';
+                ray.style.setProperty('--fx-a',(i*22.5)+'deg');
+                ray.style.setProperty('--fx-w',(140+(i%4)*70)+'px');
+                ray.style.animationDelay=((i%4)*70)+'ms';
+                overlay.appendChild(ray);
+            }
+            document.body.appendChild(overlay);
+            setTimeout(()=>overlay.remove(),1950);
+        }
+        function fxMatchCards(intro=false, affected=[]) {
+            if (!goFx.enabled) return;
+            const view=document.getElementById('matches-view');
+            if (!view?.classList.contains('active')) return;
+            const cards=[...view.querySelectorAll('.matches-grid .match-card')];
+            cards.forEach((card,i)=> {
+                if (intro) {
+                    card.style.setProperty('--fx-delay',(i*110)+'ms');
+                    fxCleanupClass(card,'fx-card-enter',1550);
+                } else if (affected.includes(i)) {
+                    fxCleanupClass(card,'fx-score-impact',1350);
+                    for(let j=0;j<12;j++){
+                        const shard=document.createElement('i');
+                        shard.className='fx-score-shard';
+                        shard.style.setProperty('--sx',(25+(j*13)%55)+'%');
+                        shard.style.setProperty('--sy',(15+(j*19)%70)+'%');
+                        shard.style.setProperty('--sw',(12+j%4*9)+'px');
+                        shard.style.setProperty('--sr',(j*31)+'deg');
+                        shard.style.setProperty('--tx',((j%2?1:-1)*(45+j*5))+'px');
+                        shard.style.setProperty('--ty',((j%3-1)*(35+j*4))+'px');
+                        shard.style.setProperty('--sc',j%2?'#ff7072':'#45d4ff');
+                        card.appendChild(shard);
+                        setTimeout(()=>shard.remove(),920);
+                    }
+                }
+            });
+        }
+        function fxTournamentNodes(changed=null) {
+            if (!goFx.enabled) return;
+            const view=document.getElementById('tournament-view');
+            if(!view?.classList.contains('active')) return;
+            const nodes=changed || [...view.querySelectorAll('.bracket-team:not(.empty),.semi-box:not(.empty),.podium-team')].filter(e=>fxReal(e.textContent));
+            nodes.forEach((node,i)=> {
+                node.style.setProperty('--fx-delay',Math.min(i*80,880)+'ms');
+                fxCleanupClass(node,'fx-bracket-enter',1950);
+            });
+            fxCleanupClass(view.querySelector('.bracket-wrapper'),'fx-route-active',2300);
+            if(nodes.some(e=>e.id==='t-winner')) fxCleanupClass(document.getElementById('step-winner'),'fx-champion-burst',1800);
+        }
+        function fxPlayoffTeams(changedWinnerIds=null) {
+            if (!goFx.enabled) return;
+            const view=document.getElementById('playoff-view');
+            if(!view?.classList.contains('active'))return;
+            view.querySelectorAll('.match-side .team').forEach((el,i)=>{
+                if(changedWinnerIds === null) {
+                    el.style.setProperty('--fx-delay',(i*90)+'ms');
+                    fxCleanupClass(el,'fx-playoff-enter',1800);
+                }
+            });
+            const ids=changedWinnerIds===null?['po-winnerL1','po-winnerR1','po-winnerL2','po-winnerR2']:changedWinnerIds;
+            ids.forEach((id,i)=> {
+                const el=document.getElementById(id);
+                if(el && !el.classList.contains('empty')){
+                    el.style.setProperty('--fx-delay',(i*160)+'ms');
+                    fxCleanupClass(el,'fx-winner-impact',1900);
+                }
+            });
+            fxCleanupClass(view.querySelector('.board'),'fx-playoff-wave',1600);
+        }
+        function fxEnterView(viewId) {
+            if (!goFx.enabled || goFx.intros.has(viewId)) return;
+            if(viewId==='matches-view') {
+                if (!globalMatches.length) return;
+                goFx.intros.add(viewId);
+                fxScreen('match','MATCH CENTER','LIVE SCORES • GO ROBOT 2026');
+                fxMatchCards(true);
+            } else if(viewId==='tournament-view') {
+                const hasContent=[...document.querySelectorAll('#tournament-view .bracket-team,#tournament-view .semi-box,#tournament-view .podium-team')].some(el=>fxReal(el.textContent));
+                if(!hasContent)return;
+                goFx.intros.add(viewId);
+                fxScreen('tournament','BRACKET ACTIVATED','TOURNAMENT • PATH TO VICTORY');
+                fxTournamentNodes();
+            } else if(viewId==='playoff-view') {
+                if(!goFx.playoffSig || ![...document.querySelectorAll('#playoff-view .match-side .team,#playoff-view .winner-box')].some(el=>fxReal(el.textContent)))return;
+                goFx.intros.add(viewId);
+                fxScreen('playoff','PLAY-OFF ARENA','SHOWDOWN • NEXT ROUND');
+                fxPlayoffTeams();
+            }
+        }
+        function fxTournamentChanged(nodes) {
+            if(!nodes.length || !document.getElementById('tournament-view')?.classList.contains('active'))return;
+            if(!goFx.intros.has('tournament-view')){fxEnterView('tournament-view');return;}
+            fxScreen('tournament',nodes.some(e=>e.id==='t-winner')?'CHAMPION REVEALED':'BRACKET UPDATED','NEW TOURNAMENT DATA');
+            fxTournamentNodes(nodes);
+        }
+        function fxPlayoffChanged(previous, now) {
+            if(!document.getElementById('playoff-view')?.classList.contains('active'))return;
+            if(!goFx.intros.has('playoff-view')){fxEnterView('playoff-view');return;}
+            const ids={l1_winner:'po-winnerL1',r1_winner:'po-winnerR1',l2_winner:'po-winnerL2',r2_winner:'po-winnerR2'};
+            const winners=Object.keys(ids).filter(k=>getTeam(now[k])&&getTeam(previous[k])!==getTeam(now[k])).map(k=>ids[k]);
+            fxScreen('playoff',winners.length?'WINNER REVEAL':'PLAY-OFF UPDATED',winners.length?'ADVANCING TO THE NEXT ROUND':'LIVE TOURNAMENT DATA');
+            if(winners.length) fxPlayoffTeams(winners);
+            else fxPlayoffTeams(null);
+        }
+        function fxHandleMatchData(matches) {
+            const nextMap=new Map(matches.map((m,i)=>[
+                String(m.matchTitle || i)+'#'+i,
+                [m.leftScore,m.rightScore,m.leftResult,m.rightResult,m.teamLeft,m.teamRight].map(v=>String(v??'').trim()).join('|')
+            ]));
+            const page=currentMatchPage;
+            const indices=[];
+            const teamIndices=[];
+            if(goFx.matchSig!==null){
+                matches.forEach((m,i)=>{
+                    const k=String(m.matchTitle||i)+'#'+i;
+                    const prev=goFx.matchMap.get(k);
+                    const next=nextMap.get(k);
+                    // Only score or result changes count as a scoreboard impact.
+                    if(prev!==undefined && prev!==next){
+                        const oldCols=prev.split('|'),newCols=next.split('|');
+                        const slot=i-(page-1)*MATCHES_PER_PAGE;
+                        if(i >= (page-1)*MATCHES_PER_PAGE && i<page*MATCHES_PER_PAGE) {
+                            if(oldCols.slice(0,4).join('|')!==newCols.slice(0,4).join('|')) indices.push(slot);
+                            else if(oldCols.slice(4).join('|')!==newCols.slice(4).join('|')) teamIndices.push(slot);
+                        }
+                    }
+                });
+            }
+            goFx.matchMap=nextMap;
+            goFx.matchSig='loaded';
+            if(!document.getElementById('matches-view')?.classList.contains('active'))return;
+            if(!goFx.intros.has('matches-view')){fxEnterView('matches-view');return;}
+            if(indices.length){
+                fxScreen('match','SCORE UPDATED','OFFICIAL MATCH RESULT');
+                fxMatchCards(false,indices);
+            } else if(teamIndices.length){
+                fxScreen('match','NEW MATCH DATA','TEAMS ARE READY');
+                fxMatchCards(false,teamIndices);
             }
         }
 
