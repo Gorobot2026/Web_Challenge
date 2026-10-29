@@ -1374,9 +1374,48 @@ body::-webkit-scrollbar{display:none}
 }
 
 </style>
+<style>
+/* GO ROBOT LIVE • shared spectator navigation, responsive refinements */
+.live-site-nav{position:relative;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:8px clamp(14px,3vw,32px);background:#080e20;border-bottom:1px solid rgba(80,174,255,.2);font-family:Kanit,Tahoma,sans-serif;color:#e9f5ff}
+.live-site-nav .site-brand{font-size:14px;font-weight:800;letter-spacing:.07em;white-space:nowrap}
+.live-site-nav .site-menu{display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+.live-site-nav a{font-size:13px;font-weight:600;color:#c8dcff;text-decoration:none;padding:6px 13px;border-radius:10px;white-space:nowrap;border:1px solid rgba(126,164,210,.19)}
+.live-site-nav a.active{background:linear-gradient(110deg,rgba(45,179,255,.24),rgba(153,95,255,.24));border-color:rgba(67,187,255,.58);color:#fff}
+.live-site-nav a:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.live-site-nav .site-readonly{font-size:11px;font-weight:700;color:#9ed7ff;white-space:nowrap}
+body[data-live-role="viewer"] #rankBtn,body[data-live-role="viewer"] #wedoRankBtn,body[data-live-role="viewer"] .rv-ctrl{display:none!important}
+body[data-live-role="viewer"] .pod-pick{pointer-events:none!important;cursor:default!important}
+body[data-live-role="viewer"] .pod-pick .pick-label{font-size:0!important}
+body[data-live-role="viewer"] .pod-pick .pick-label:after{content:'รอประกาศ';font:700 12px Kanit,Tahoma,sans-serif}
+body[data-live-role="viewer"] .pod-pick.ready{animation:none!important}
+.live-state-indicator{position:fixed;right:14px;bottom:13px;z-index:50;border:1px solid rgba(85,205,255,.3);border-radius:99px;background:rgba(8,20,45,.91);box-shadow:0 8px 25px rgba(0,0,0,.35);padding:7px 13px;color:#c8eaff;font:600 12px Kanit,Tahoma,sans-serif;max-width:min(330px,90vw);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body[data-live-role="viewer"] .live-state-indicator{pointer-events:none}
+/* prevent iPhone font autosizing and horizontal overflow */
+html{-webkit-text-size-adjust:100%;overflow-x:hidden}body{max-width:100vw} .boards,.board,.team,.board-title{min-width:0}
+.team-name,.member{overflow-wrap:anywhere}
+@media(max-width:720px){
+ .live-site-nav{padding:8px 10px;gap:6px;flex-wrap:wrap}
+ .live-site-nav .site-brand{font-size:12px}
+ .live-site-nav .site-menu{width:100%;order:3}
+ .live-site-nav a{font-size:12px;padding:5px 10px}
+ .live-site-nav .site-readonly{margin-left:auto;font-size:10px}
+ .live-state-indicator{bottom:7px;right:7px;font-size:11px}
+ .rv-feature-info .winner-name{overflow-wrap:anywhere}
+ .board-title{gap:5px}
+ .board-title h2{font-size:clamp(16px,5vw,23px)}
+ .board-title span{padding:4px 7px}
+ .head>div,.team>div{min-width:0}
+}
+</style>
+<script>window.liveCanControl=()=>false;</script>
 </head>
 
-<body>
+<body data-live-role="admin" data-rank-master="true">
+<nav class="live-site-nav" aria-label="เมนูถ่ายทอดสด">
+  <span class="site-brand">🤖 GO ROBOT <span style="color:#6fe0ff">LIVE 2026</span></span>
+  <div class="site-menu"><a href="index.html">🏠 หน้าหลัก</a><a href="tournament.html">🏆 ผลการแข่งขัน</a><a href="watch.html" class="active">⭐ WEDO / iDekTep</a></div>
+  <span class="site-readonly">🔐 ผู้ควบคุม · RANK</span>
+ </nav>
 
 <header class="topbar">
  <div class="brand">
@@ -1781,7 +1820,7 @@ const wait=ms=>new Promise((res,rej)=>{
  rejects.push(h);
 });
 
-function rvSkip(){skipped=true;rejects.slice().forEach(f=>f())}
+function rvSkip(){if(!window.liveCanControl?.())return;skipped=true;rejects.slice().forEach(f=>f())}
 document.addEventListener('keydown',e=>{
  if(!revealing)return;
  if(e.key==='Escape')rvSkip();
@@ -1790,9 +1829,11 @@ document.addEventListener('keydown',e=>{
 
 /* ผู้ดำเนินรายการกดเลขบนแท่นหรือแป้นพิมพ์ 3 → 2 → 1 */
 function rvPickRank(k){
+ if(!window.liveCanControl?.())return;
  const pick=activeRankPick;
  if(!pick||!revealing||skipped||pick.rank!==k||pick.runId!==revealGeneration)return;
  S.tick(k);
+ window.goLivePublish?.('pick',{rank:k});
  pick.resolve();
 }
 
@@ -1805,6 +1846,7 @@ function waitForRankPick(k){
  $('rvSub').textContent=`พร้อมประกาศอันดับ ${k} — กดเลข ${k} เพื่อเปิดตัวทีม`;
  $('rvPickHint').textContent=`คลิกเลข ${k} บนแท่น หรือกดเลข ${k} บนแป้นพิมพ์`;
  $('rvPickHint').classList.add('on');
+ window.goLivePublish?.('await',{rank:k});
  return new Promise((resolve,reject)=>{
   const runId=revealGeneration;
   const cleanup=()=>{
@@ -2246,6 +2288,7 @@ async function showPod(k){
  await wait(300);
  p.classList.remove('tease');
  p.classList.add('up');
+ window.goLivePublish?.('pod',{rank:k});
  p.querySelector('.pod-number').textContent=k;
  $('rvStage').classList.remove('focus');
  setTimeout(()=>{
@@ -2346,7 +2389,8 @@ async function startReveal(type='idek'){
  }
 
  activeRevealType=type;
- revealing=true;skipped=false;rejects=[];parts=[];revealGeneration++;
+ window.goLivePublish?.('start',{type,top:JSON.parse(JSON.stringify(top)),mid:JSON.parse(JSON.stringify(mid)),rankedVisible:rankMode});
+  revealing=true;skipped=false;rejects=[];parts=[];revealGeneration++;
  $('rankBtn').disabled=true;
  $('wedoRankBtn').disabled=true;
 
@@ -2415,7 +2459,8 @@ async function startReveal(type='idek'){
 }
 
 function endReveal(){
- const isIdek=activeRevealType==='idek';
+ window.goLivePublish?.('done',{rankedVisible:activeRevealType==='idek'?true:rankMode});
+  const isIdek=activeRevealType==='idek';
  revealGeneration++;
  activeRankPick=null;
  $('rvFeature').className='rv-feature';
@@ -2475,26 +2520,122 @@ function endReveal(){
 
 function setRank(on){
  rankMode=on;
- const btn=$('rankBtn');
+ if(!revealing)window.goLivePublish?.('visibility',{rankedVisible:on});
+  const btn=$('rankBtn');
  btn.classList.toggle('on',on);
  btn.textContent=on?'ซ่อนอันดับ':'RANK';
  renderIdektep();
 }
 
 function toggleRank(){
+ if(!window.liveCanControl?.())return;
  if(revealing)return;
  if(rankMode){setRank(false);return;}
  startReveal('idek');
 }
 
 function toggleWedoRank(){
+ if(!window.liveCanControl?.())return;
  if(revealing)return;
  /* ไม่สลับโหมดตาราง: WEDO แสดงอันดับปัจจุบันอยู่เสมอ */
  startReveal('wedo');
 }
 
+
+/* Spectator-only live mirror. Google Sheets remains the canonical score source.
+   The host sends authoritative ceremony snapshots and phase transitions. */
+let liveMirrorSession='',liveMirrorPhase='',liveMirrorPicked=new Set();
+let liveMirrorRunning=new Set();
+let liveMirrorCurrent=null;
+function liveMirrorPod(k){
+ const p=$('pod'+k);if(!p)return;
+ p.classList.remove('tease');p.classList.add('up');
+ const number=p.querySelector('.pod-number');if(number)number.textContent=String(k);
+ const button=p.querySelector('.pod-pick');if(button)button.disabled=true;
+ p.querySelectorAll('[data-f]').forEach(el=>{el.textContent=el.dataset.f||'';});
+}
+function liveMirrorStop(visible){
+ // Clear pending delays/feature animations without triggering admin actions.
+ skipped=true;rejects.slice().forEach(fn=>{try{fn()}catch(e){}});
+ revealGeneration++;rejects=[];activeRankPick=null;
+ $('rvFeature').className='rv-feature';$('rvFeature').innerHTML='';
+ $('rvCount').innerHTML='';$('rvList').className='rv-list';$('rvList').innerHTML='';
+ $('reveal').className='';
+ revealing=false;activeRevealType=null;liveMirrorCurrent=null;
+ liveMirrorRunning.clear();
+ if(pendingRaw){idektepRaw=pendingRaw;pendingRaw=null;}
+ if(pendingWedoRaw){wedoRaw=pendingWedoRaw;pendingWedoRaw=null;}
+ setRank(!!visible);renderWedo();
+}
+function liveMirrorBegin(s){
+ if(!Array.isArray(s.top)||!s.top.length)return;
+ if(revealing)liveMirrorStop(s.rankedVisible);
+ liveMirrorSession=s.sessionId;liveMirrorPhase='';liveMirrorPicked=new Set();
+ liveMirrorRunning.clear();liveMirrorCurrent=null;
+ skipped=false;rejects=[];parts=[];revealGeneration++;
+ revealing=true;activeRevealType=s.type;
+ soundOn=false; // Mobile browsers normally block automatic audio; keep spectators silent.
+ buildStage(s.top);
+ cv.width=innerWidth;cv.height=innerHeight;
+ const rv=$('reveal');rv.className=s.type==='wedo'?'show wedo-reveal':'show';
+ void rv.offsetWidth;rv.classList.add('in');
+ $('rvStage').classList.add('on');
+ $('rvTitle').textContent=s.type==='wedo'?'WEDO · TOP 3':'iDekTep · TOP 3';
+ $('rvCount').innerHTML='';
+ if(Array.isArray(s.mid)&&s.mid.length){
+  $('rvList').className='rv-list on';
+  $('rvList').innerHTML=s.mid.map((r,i)=>{
+   const score=r?.rounds?.[r.best]?.score??'-';
+   const time=s.type==='wedo'?'':(r?.rounds?.[r.best]?.time??'-');
+   return `<div class="mrow lock"><b class="mr">${i+4}</b><span class="mn">${escapeHtml(r.team)}</span><span class="mm">${escapeHtml(r.member)}</span><span class="ms">${escapeHtml(score)}<small>${escapeHtml(time)}</small></span></div>`;
+  }).join('');
+ }
+}
+function goLiveApplyState(s){
+ if(document.body.dataset.liveRole!=='viewer'||!s)return;
+ const active=!!s.active&&['start','await','pick','pod'].includes(s.phase);
+ if(!active){
+  if(revealing)liveMirrorStop(s.rankedVisible);
+  else if(rankMode!==!!s.rankedVisible)setRank(!!s.rankedVisible);
+  liveMirrorSession=s.sessionId||liveMirrorSession;
+  return;
+ }
+ if(liveMirrorSession!==s.sessionId||!revealing)liveMirrorBegin(s);
+ if(!revealing)return;
+ const oldPhase=liveMirrorPhase;
+ liveMirrorPhase=s.phase;
+ const shown=Array.isArray(s.revealed)?s.revealed.map(Number):[];
+ for(const k of shown){if(!liveMirrorRunning.has(k))liveMirrorPod(k);}
+ if(s.phase==='start'){
+  $('rvSub').textContent='กำลังเข้าสู่พิธีประกาศอันดับ...';
+ }else if(s.phase==='await'){
+  $('rvList').className='rv-list';
+  $('rvSub').textContent=`พร้อมประกาศอันดับ ${s.rank} · รอสัญญาณจากเวที`;
+ }else if(s.phase==='pick'){
+  $('rvList').className='rv-list';
+  const k=Number(s.rank);
+  if(!liveMirrorPicked.has(k)&&!shown.includes(k)){
+   liveMirrorPicked.add(k);liveMirrorRunning.add(k);
+   const record=Number(revealGeneration);
+   const r=s.top?.[k-1];
+   if(r&&r.rounds&&r.rounds[r.best]){
+    Promise.resolve().then(()=>revealCenter(k,r)).catch(e=>{if(e!==SKIP)console.warn('Mirror animation',e)}).finally(()=>{
+     liveMirrorRunning.delete(k);
+     if(record===revealGeneration&&revealing)liveMirrorPod(k);
+    });
+   }else{liveMirrorRunning.delete(k);liveMirrorPod(k);}
+  }
+ }else if(s.phase==='pod'){
+  $('rvList').className='rv-list';
+  if(!liveMirrorRunning.has(Number(s.rank)))liveMirrorPod(Number(s.rank));
+  $('rvSub').textContent=`อันดับ ${s.rank} เข้าประจำแท่นแล้ว`;
+ }
+}
+window.goLiveApplyState=goLiveApplyState;
+
 loadAll();
 
 </script>
+<script src="rank-host.js?v=20261029-sync"></script>
 </body>
 </html>
