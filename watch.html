@@ -35,6 +35,10 @@ h2:before{content:"";width:6px;height:22px;background:var(--neon);transform:skew
 .empty,.note{padding:26px;text-align:center;color:var(--dim)}
 .note{margin:0 0 12px;padding:12px 16px;border:1px dashed #6a58a8;border-radius:12px;background:rgba(177,125,255,.1);color:#e0cfff;font-size:15px}
 .note.ok{border-color:#3d9b6a;background:rgba(134,239,172,.1);color:#c9f7da}
+/* loading / connection feedback */
+.empty{border:1px dashed #315078;border-radius:12px;background:rgba(11,29,66,.42);margin-top:10px}
+.problem{border:1px solid #83516c;background:rgba(155,49,76,.13);color:#ffd2dd;border-radius:12px;padding:18px;text-align:center;margin:10px 0}
+.problem small{display:block;color:#f4a5bd;margin-top:5px;font-size:12px}
 /* groups */
 .gh{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(0,0,0,.2);font:700 22px 'Kanit'}
 .gb{width:40px;height:40px;border-radius:10px;background:var(--gc);display:grid;place-items:center;font:900 20px 'Orbitron'}
@@ -95,17 +99,17 @@ tr.r2 .rk,tr.r3 .rk{background:#ffa84d;color:#2b1300}
  <div class="live" id="live"><span class="dot"></span><span id="ut">กำลังเชื่อมต่อ</span></div>
 </header>
 <nav><div id="tabs">
- <button data-t="st">📊 คะแนนกลุ่ม</button><button data-t="mt">⚽ ผลการแข่งขัน</button>
+ <button data-t="st" class="on">📊 คะแนนกลุ่ม</button><button data-t="mt">⚽ ผลการแข่งขัน</button>
  <button data-t="tn">🏆 สายการแข่งขัน</button><button data-t="po">⚔️ Play-off</button>
  <button data-t="id">🤖 iDekTep</button><button data-t="we">🧩 WEDO</button>
 </div></nav>
 <main>
- <section class="p" id="st"><h2>สรุปคะแนนกลุ่ม</h2><div id="stB" class="grid"></div></section>
- <section class="p" id="mt"><h2>ผลการแข่งขัน</h2><div id="mtB" class="grid"></div></section>
- <section class="p" id="tn"><h2>สายการแข่งขัน</h2><div id="tnB"></div></section>
- <section class="p" id="po"><h2>Play-off</h2><div id="poB" class="grid"></div></section>
- <section class="p" id="id"><h2>iDekTep</h2><div id="idN"></div><div id="idB" class="list2"></div></section>
- <section class="p" id="we"><h2>WEDO</h2><div id="weN"></div><div id="weB" class="list2"></div></section>
+ <section class="p on" id="st"><h2>สรุปคะแนนกลุ่ม</h2><div id="stB" class="grid"><div class="empty">กำลังโหลดข้อมูลการแข่งขัน…</div></div></section>
+ <section class="p" id="mt"><h2>ผลการแข่งขัน</h2><div id="mtB" class="grid"><div class="empty">กำลังโหลดข้อมูลการแข่งขัน…</div></div></section>
+ <section class="p" id="tn"><h2>สายการแข่งขัน</h2><div id="tnB"><div class="empty">กำลังโหลดข้อมูลการแข่งขัน…</div></div></section>
+ <section class="p" id="po"><h2>Play-off</h2><div id="poB" class="grid"><div class="empty">กำลังโหลดข้อมูลการแข่งขัน…</div></div></section>
+ <section class="p" id="id"><h2>iDekTep</h2><div id="idN"></div><div id="idB" class="list2"><div class="empty">กำลังโหลดข้อมูลการแข่งขัน…</div></div></section>
+ <section class="p" id="we"><h2>WEDO</h2><div id="weN"></div><div id="weB" class="list2"><div class="empty">กำลังโหลดข้อมูลการแข่งขัน…</div></div></section>
  <div class="upd">หน้านี้ดูได้อย่างเดียว · ข้อมูลรีเฟรชอัตโนมัติ</div>
 </main>
 <script>
@@ -113,7 +117,7 @@ const API={
  main:"https://script.google.com/macros/s/AKfycbyW5ETY1czEn7LuM8Dxl_-V4LUYMJwg-sBuP4En7TfW3zHYFf6iROtvID6fRE032dxl/exec",
  idek:"https://script.google.com/macros/s/AKfycbwEKF6Pabk1pbEYdihWp1ouxwdCpoHjikhH4Q5F7AqFX4zharAWgB6_7JOME9H1KhDJIQ/exec",
  wedo:"https://script.google.com/macros/s/AKfycbzLrGq-lSyBgOlyqXDPlSHn_m0iW4PAWVr-DaGfDKY9iIWPL2hbkNP2gYb4CkoU-ZFndw/exec",
- rank:"" /* ← วาง URL ของ Apps Script ตัวใหม่ (rank-sync) */
+ rank:"https://script.google.com/macros/s/AKfycbyrdBcX_7G8Mz8xNlmRov9-4g7WiJ2laloBiG1evriNHHhGjVMG7KcGEdD1TDJcBnw/exec" /* ใส่ URL /exec ของ rank-sync.gs ที่ใช้งานอยู่ เพื่อซิงก์ปุ่ม RANK */
 };
 const HIDE_WEDO_SCORE=true; /* true = ซ่อนคะแนน WEDO จนกว่าจะประกาศอันดับ */
 const $=i=>document.getElementById(i);
@@ -144,7 +148,7 @@ function parseGroups(d){
  const c=(r,k)=>cl(d[r]&&d[r][k]),isL=t=>/^group\s*[A-Za-z0-9]+$/i.test(t),out=[];
  d.forEach((row,r)=>{for(let k=0;k<row.length;k++){
   if(!isL(c(r,k)))continue;
-  const head=[];for(let j=0;j<12&&String(d[r+1]&&d[r+1][k+j]??'').trim()!=='';j++)head.push(c(r+1,k+j));
+  const head=[];for(let j=0;j<12&&String((d[r+1]?.[k+j]) ?? '').trim()!=='';j++)head.push(c(r+1,k+j));
   if(head.length<2)continue;
   const rows=[];for(let q=r+2;q<d.length;q++){const t=c(q,k);if(!t||isL(t))break;rows.push(head.map((_,j)=>c(q,k+j)))}
   out.push({label:c(r,k),head,rows});
@@ -216,7 +220,7 @@ function renderIdek(raw){
   return{t,m,R,b,bs:b<0?-1:num(R[b].s),bt:b<0?Infinity:toSec(R[b].t)};
  });
  on?L.sort((a,b)=>b.bs-a.bs||a.bt-b.bt):L.sort((a,b)=>a.t.localeCompare(b.t,undefined,{numeric:true}));
- put('idN',on?'<div class="note ok">✅ ประกาศอันดับแล้ว</div>':'<div class="note">🔒 อันดับและผลรอบ 2 จะแสดงเมื่อพิธีกรประกาศผล</div>');
+ put('idN',on?'<div class="note ok">✅ ประกาศอันดับแล้ว</div>':'<div class="note">🔒 อันดับและผลรอบ 2 จะแสดงเมื่อพิธีกรประกาศผล'+(!API.rank?'<small style="display:block;color:#bcb3d3">ยังไม่ได้ตั้งค่า API.rank ใน watch.html</small>':'')+'</div>');
  put('idB',L.length?L.map((r,i)=>`<div class="row${on?cls(i):''}"><div class="bd">${on?i+1:'-'}</div><div><div class="nm">${esc(r.t)}</div><div class="mb">${esc(r.m)||'-'}</div>
   <div class="rds">${r.R.map((x,j)=>{const h=!on&&j===1;return `<div class="rd${on&&j===r.b?' best':''}"><small>รอบ ${j+1}</small><b>${h?maskS(x.s):esc(x.s)||'-'}</b><span>${h?maskT(x.t):esc(x.t)||'-'}</span></div>`}).join('')}</div></div></div>`).join(''):'<div class="empty">ยังไม่มีข้อมูล</div>');
 }
@@ -224,17 +228,67 @@ function renderWedo(raw){
  if(raw)renderWedo.raw=raw;
  const on=rk.wedo,L=rows(renderWedo.raw).map(r=>({t:r[0],m:r[1],s:r[2]}));
  on?L.sort((a,b)=>(num(b.s)||0)-(num(a.s)||0)):L.sort((a,b)=>a.t.localeCompare(b.t,undefined,{numeric:true}));
- put('weN',on?'<div class="note ok">✅ ประกาศอันดับแล้ว</div>':'<div class="note">🔒 อันดับจะแสดงเมื่อพิธีกรประกาศผล</div>');
+ put('weN',on?'<div class="note ok">✅ ประกาศอันดับแล้ว</div>':'<div class="note">🔒 อันดับจะแสดงเมื่อพิธีกรประกาศผล'+(!API.rank?'<small style="display:block;color:#bcb3d3">ยังไม่ได้ตั้งค่า API.rank ใน watch.html</small>':'')+'</div>');
  put('weB',L.length?L.map((r,i)=>`<div class="row${on?cls(i):''}"><div class="bd">${on?i+1:'-'}</div><div><div class="nm">${esc(r.t)}</div><div class="mb">${esc(r.m)||'-'}</div>${on||!HIDE_WEDO_SCORE?`<div class="big-sc" style="grid-column:auto">${esc(r.s)||'-'} <small style="font:400 14px Kanit;color:#b8caea">คะแนน</small></div>`:''}</div></div>`).join(''):'<div class="empty">ยังไม่มีข้อมูล</div>');
 }
+/* connection helper */
+function errorCard(board,error){
+ const message=String(error?.message||error||'ไม่สามารถดึงข้อมูลได้');
+ return `<div class="problem">⚠️ ยังโหลดข้อมูล ${esc(board)} ไม่สำเร็จ<small>ตรวจสอบ Google Apps Script, สิทธิ์ Anyone และการเชื่อมต่ออินเทอร์เน็ต<br>รายละเอียด: ${esc(message).slice(0,150)}</small></div>`;
+}
+const sourceReady={main:false,idek:false,wedo:false,rank:false};
+const sourceLast={main:0,idek:0,wedo:0,rank:0};
+function markSource(name,ok){sourceReady[name]=ok;if(ok)sourceLast[name]=Date.now();refreshStatus()}
+function refreshStatus(){
+ const primary=['main','idek','wedo'];
+ const count=primary.filter(s=>sourceReady[s]).length;
+ const status=$('ut');
+ if(count===3){status.textContent='LIVE · อัปเดต '+new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});$('live').classList.remove('off')}
+ else if(count>0){status.textContent=`เชื่อมต่อแล้ว ${count}/3 กระดาน`;$('live').classList.remove('off')}
+ else{status.textContent='ตรวจสอบการเชื่อมต่อ';$('live').classList.add('off')}
+}
+function showRankConfig(){
+ if(!API.rank){
+  const msg='<div class="note">🔒 รอประกาศอันดับจากเว็บหลัก <small style="display:block;color:#bcb3d3">ยังไม่ได้ใส่ URL ของ rank-sync.gs ในค่า API.rank ของไฟล์ watch.html</small></div>';
+  put('idN',msg);put('weN',msg);
+ }
+}
 /* loops */
-let okAt=0;
-function stamp(){okAt=Date.now();$('ut').textContent='อัปเดต '+new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});$('live').classList.remove('off')}
-const loop=(fn,ms)=>{const run=async()=>{try{await fn();stamp()}catch(e){if(Date.now()-okAt>20000){$('ut').textContent='ขาดการเชื่อมต่อ';$('live').classList.add('off')}}setTimeout(run,ms)};run()};
-loop(async()=>{const d=await get(API.main);renderStandings(d.standings);renderMatches(d.matches);renderTournament(d.tournament);renderPlayoff(d.playoffTournament)},4000);
-loop(async()=>renderIdek((await get(API.idek)).standings),5000);
-loop(async()=>renderWedo((await get(API.wedo)).standings),5000);
-if(API.rank)loop(async()=>{const d=await get(API.rank);rk={idek:!!d.idek,wedo:!!d.wedo};renderIdek();renderWedo()},3000);
+async function pollMain(){
+ try{
+  const d=await get(API.main);
+  if(!Array.isArray(d.standings)||!Array.isArray(d.matches))throw new Error('โครงสร้างข้อมูล main ไม่ถูกต้อง');
+  renderStandings(d.standings);renderMatches(d.matches);renderTournament(d.tournament);renderPlayoff(d.playoffTournament);
+  markSource('main',true);
+ }catch(e){console.warn('main load failed',e);if(!sourceLast.main){for(const [k,n] of [['stB','คะแนนกลุ่ม'],['mtB','ผลการแข่งขัน'],['tnB','สายการแข่งขัน'],['poB','Play-off']])put(k,errorCard(n,e))}markSource('main',false)}
+}
+async function pollIdek(){
+ try{const d=await get(API.idek);if(!Array.isArray(d.standings))throw new Error('ไม่พบข้อมูล standings ของ iDekTep');
+  renderIdek(d.standings);markSource('idek',true)
+ }catch(e){console.warn('iDekTep load failed',e);if(!sourceLast.idek)put('idB',errorCard('iDekTep',e));markSource('idek',false)}
+}
+async function pollWedo(){
+ try{const d=await get(API.wedo);if(!Array.isArray(d.standings))throw new Error('ไม่พบข้อมูล standings ของ WEDO');
+  renderWedo(d.standings);markSource('wedo',true)
+ }catch(e){console.warn('WEDO load failed',e);if(!sourceLast.wedo)put('weB',errorCard('WEDO',e));markSource('wedo',false)}
+}
+async function pollRank(){
+ if(!API.rank)return;
+ try{
+  const d=await get(API.rank);
+  if(typeof d.idek!=='boolean'||typeof d.wedo!=='boolean')throw new Error('สถานะอันดับไม่ถูกต้อง');
+  rk={idek:d.idek,wedo:d.wedo};
+  renderIdek();renderWedo();markSource('rank',true)
+ }catch(e){console.warn('Rank sync failed',e);markSource('rank',false);
+  for(const [id,label] of [['idN','iDekTep'],['weN','WEDO']]){
+   const n=$(id);if(n)n.innerHTML='<div class="note">⚠️ ไม่สามารถเชื่อมระบบประกาศอันดับ '+label+' ได้ · ตารางคะแนนยังดูได้</div>';
+  }
+ }
+}
+function loop(fn,ms){const run=async()=>{try{await fn()}finally{setTimeout(run,ms)}};run()}
+showRankConfig();
+loop(pollMain,8000);loop(pollIdek,8000);loop(pollWedo,8000);
+if(API.rank)loop(pollRank,3000);
 </script>
 </body>
 </html>
