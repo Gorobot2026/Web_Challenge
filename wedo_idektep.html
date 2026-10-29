@@ -1406,8 +1406,37 @@ html{-webkit-text-size-adjust:100%;overflow-x:hidden}body{max-width:100vw} .boar
  .board-title span{padding:4px 7px}
  .head>div,.team>div{min-width:0}
 }
+
+/* ===== HOST RANK CONTROLS — visible numbers 3 → 2 → 1 ===== */
+.rank-numpad{position:absolute;z-index:30;right:clamp(12px,2.3vw,36px);top:clamp(110px,15vh,165px);
+ display:flex;flex-direction:column;gap:8px;align-items:center;padding:13px 15px 12px;
+ border:1px solid rgba(199,153,255,.55);border-radius:16px;
+ background:linear-gradient(140deg,rgba(27,17,57,.96),rgba(7,14,35,.94));
+ box-shadow:0 15px 50px #000a,0 0 25px rgba(158,94,250,.16);backdrop-filter:blur(12px)}
+.rank-numpad .keypad-label{font-size:11px;color:#e1cfff;font-weight:700;letter-spacing:.12em}
+.rank-numpad .keypad-prompt{font-size:12px;color:#b8c9eb;min-height:1.4em;text-align:center}
+.rank-numpad .keypad-buttons{display:flex;gap:8px}
+.rank-numpad .keypad-buttons button{font:900 24px Orbitron,Kanit,sans-serif;color:#d6cbea;
+ width:57px;height:55px;border-radius:12px;border:1px solid rgba(209,173,255,.35);
+ background:rgba(111,74,160,.14);opacity:.5;cursor:not-allowed;touch-action:manipulation}
+.rank-numpad .keypad-buttons button.available{color:#1b1038;opacity:1;cursor:pointer;
+ background:linear-gradient(135deg,#fff,#d1a8ff 55%,#a36cff);
+ border-color:#efd8ff;box-shadow:0 0 20px rgba(201,148,255,.5);animation:keypulse 1.1s ease-in-out infinite}
+.rank-numpad .keypad-buttons button.available:focus-visible{outline:3px solid #fff;outline-offset:4px}
+@keyframes keypulse{50%{box-shadow:0 0 38px rgba(211,162,255,.85)}}
+.rank-btn{touch-action:manipulation;min-height:31px}
+@media(max-width:760px){
+ .rank-numpad{top:auto;bottom:max(8px,env(safe-area-inset-bottom));left:50%;right:auto;transform:translateX(-50%);
+  flex-direction:row;padding:7px 9px;gap:9px;max-width:98vw;border-radius:13px}
+ .rank-numpad .keypad-label{font-size:9px;max-width:58px;line-height:1.15}
+ .rank-numpad .keypad-prompt{display:none}
+ .rank-numpad .keypad-buttons{gap:6px}
+ .rank-numpad .keypad-buttons button{width:50px;height:48px;font-size:21px}
+}
+body[data-live-role="viewer"] .rank-numpad{display:none!important}
+@media(prefers-reduced-motion:reduce){.rank-numpad .keypad-buttons button.available{animation:none}}
 </style>
-<script>window.liveCanControl=()=>false;</script>
+<script>window.liveCanControl=()=>document.body?.dataset.liveRole==='admin';</script>
 </head>
 
 <body data-live-role="admin" data-rank-master="true">
@@ -1509,6 +1538,16 @@ html{-webkit-text-size-adjust:100%;overflow-x:hidden}body{max-width:100vw} .boar
  <div class="rv-list" id="rvList"></div>
  <div class="rv-stage" id="rvStage"></div>
  <div class="rv-pick-hint" id="rvPickHint"></div>
+ <!-- ปุ่มเลขของเครื่องหลัก: จะเปิดได้ทีละอันดับตามลำดับ 3 → 2 → 1 -->
+ <aside class="rank-numpad" id="rankNumpad" aria-label="ควบคุมการประกาศอันดับ">
+  <span class="keypad-label">🎛️ ควบคุม RANK</span>
+  <div class="keypad-buttons">
+   <button type="button" id="rankKey3" onclick="rvPickRank(3)" disabled title="เปิดอันดับที่ 3">3</button>
+   <button type="button" id="rankKey2" onclick="rvPickRank(2)" disabled title="เปิดอันดับที่ 2">2</button>
+   <button type="button" id="rankKey1" onclick="rvPickRank(1)" disabled title="เปิดอันดับที่ 1">1</button>
+  </div>
+  <span class="keypad-prompt" id="rankKeyPrompt" role="status">กำลังเตรียมพิธี...</span>
+ </aside>
  <div class="rv-feature" id="rvFeature" aria-live="polite"></div>
 </div>
 
@@ -1820,7 +1859,18 @@ const wait=ms=>new Promise((res,rej)=>{
  rejects.push(h);
 });
 
-function rvSkip(){if(!window.liveCanControl?.())return;skipped=true;rejects.slice().forEach(f=>f())}
+function updateHostRankKeys(available=0){
+ for(const n of [3,2,1]){
+  const b=document.getElementById('rankKey'+n);
+  if(!b)continue;
+  b.disabled=n!==available;
+  b.classList.toggle('available',n===available);
+  b.setAttribute('aria-disabled',String(n!==available));
+ }
+ const prompt=document.getElementById('rankKeyPrompt');
+ if(prompt)prompt.textContent=available?`กด ${available} เพื่อเปิดอันดับ`:'กำลังเตรียมพิธี...';
+}
+function rvSkip(){if(!window.liveCanControl?.())return;updateHostRankKeys(0);skipped=true;rejects.slice().forEach(f=>f())}
 document.addEventListener('keydown',e=>{
  if(!revealing)return;
  if(e.key==='Escape')rvSkip();
@@ -1833,6 +1883,7 @@ function rvPickRank(k){
  const pick=activeRankPick;
  if(!pick||!revealing||skipped||pick.rank!==k||pick.runId!==revealGeneration)return;
  S.tick(k);
+ updateHostRankKeys(0);
  window.goLivePublish?.('pick',{rank:k});
  pick.resolve();
 }
@@ -1846,6 +1897,7 @@ function waitForRankPick(k){
  $('rvSub').textContent=`พร้อมประกาศอันดับ ${k} — กดเลข ${k} เพื่อเปิดตัวทีม`;
  $('rvPickHint').textContent=`คลิกเลข ${k} บนแท่น หรือกดเลข ${k} บนแป้นพิมพ์`;
  $('rvPickHint').classList.add('on');
+ updateHostRankKeys(k);
  window.goLivePublish?.('await',{rank:k});
  return new Promise((resolve,reject)=>{
   const runId=revealGeneration;
@@ -2383,8 +2435,7 @@ async function startReveal(type='idek'){
 
  const all=rankedRows(type),top=all.slice(0,3),mid=all.slice(3,10);
  if(!top.length){
-  if(type==='idek')setRank(true);
-  else alert('ยังไม่มีผลคะแนน WEDO สำหรับประกาศอันดับ');
+  alert(type==='idek'?'ยังไม่มีคะแนน iDekTep สำหรับประกาศอันดับ':'ยังไม่มีผลคะแนน WEDO สำหรับประกาศอันดับ');
   return;
  }
 
@@ -2396,6 +2447,7 @@ async function startReveal(type='idek'){
 
  initAudio();
  buildStage(top);
+ updateHostRankKeys(0);
 
  cv.width=innerWidth;cv.height=innerHeight;
  const rv=$('reveal');
@@ -2459,6 +2511,7 @@ async function startReveal(type='idek'){
 }
 
 function endReveal(){
+ updateHostRankKeys(0);
  window.goLivePublish?.('done',{rankedVisible:activeRevealType==='idek'?true:rankMode});
   const isIdek=activeRevealType==='idek';
  revealGeneration++;
@@ -2636,6 +2689,23 @@ window.goLiveApplyState=goLiveApplyState;
 loadAll();
 
 </script>
-<script src="rank-host.js?v=20261029-sync"></script>
+<script src="rank-host.js?v=20261029-rankfix" onerror="window.GO_ROBOT_HOST_JS_ERROR=true"></script>
+<script>
+// เฉพาะเว็บหลัก: ต้องกด RANK และเลขบนเครื่องหลักได้เสมอ แม้การซิงก์ยังไม่ได้ตั้งค่า
+// เว็บผู้ชมใช้ไฟล์ watch.html และไม่มีปุ่มควบคุม
+if(document.body.dataset.liveRole==='admin'){
+ window.liveCanControl=()=>true;
+ if(typeof window.goLivePublish!=='function'){
+  const note=document.querySelector('.live-state-indicator')||document.createElement('div');
+  note.className='live-state-indicator';
+  note.style.borderColor='#fbbf24';
+  note.style.color='#ffe7a3';
+  note.textContent=window.GO_ROBOT_HOST_JS_ERROR
+   ? '⚠ เปิด RANK ในเครื่องนี้ได้ · ไม่พบไฟล์ rank-host.js (มือถือยังไม่ซิงก์)'
+   : '⚠ เปิด RANK ในเครื่องนี้ได้ · ยังไม่ได้ตั้งค่า RANK_API / RANK_KEY (มือถือยังไม่ซิงก์)';
+  if(!note.isConnected)document.body.appendChild(note);
+ }
+}
+</script>
 </body>
 </html>
