@@ -1794,27 +1794,54 @@ body.is-fs #matches-view.active .match-card{
         }
 
         /* =====================================================
-           STANDINGS: วิเคราะห์กลุ่ม + ไฮไลต์อันดับ 1 (เขียว) / 2-3 (ส้ม)
+           STANDINGS: เรียงอันดับคะแนน > ชนะ > แพ้ > น้ำหนัก + ไฮไลต์ Top 3
            ===================================================== */
         // จำนวนนัดที่แต่ละทีมต้องแข่งในกลุ่ม  null = อัตโนมัติ (จำนวนทีม - 1) / แข่งไปกลับใส่ 6
         const GAMES_PER_TEAM = null;
 
         function analyzeGroup(g) {
-            const find = re => g.head.findIndex(h => re.test(h));
-            const iW = find(/^win$|ชนะ/i), iD = find(/^draw$|เสมอ/i), iL = find(/^lose$|แพ้/i);
-            let iP = find(/^points?$|pts|คะแนน|แต้ม/i);
+            const find = re => g.head.findIndex(h => re.test(String(h).trim()));
+            const iW = find(/^win(s)?$|ชนะ/i);
+            const iD = find(/^draw(s)?$|เสมอ/i);
+            const iL = find(/^lose$|^loss(es)?$|แพ้/i);
+            const iWeight = find(/^weight$|น้ำหนัก/i);
+            let iP = find(/^points?$|^pts$|คะแนน|แต้ม/i);
             if (iP < 0) iP = g.head.length - 1;
-            const num = v => { const x = parseFloat(String(v).replace(/[^\d.\-]/g, '')); return isNaN(x) ? 0 : x; };
+            const num = v => {
+                const n = parseFloat(String(v ?? '').replace(/,/g, '').replace(/[^\d.\-]/g, ''));
+                return Number.isFinite(n) ? n : 0;
+            };
             const need = GAMES_PER_TEAM ?? (g.rows.length - 1);
 
-            const stats = g.rows.map(r => {
+            const stats = g.rows.map((r, index) => {
                 const w = iW >= 0 ? num(r[iW]) : 0;
                 const d = iD >= 0 ? num(r[iD]) : 0;
                 const l = iL >= 0 ? num(r[iL]) : 0;
-                return { pts: num(r[iP]), win: w, played: w + d + l };
+                const rawWeight = iWeight >= 0 ? String(r[iWeight] ?? '').trim() : '';
+                return {
+                    index,
+                    pts: num(r[iP]),
+                    win: w,
+                    lose: l,
+                    // น้ำหนักน้อยกว่าได้อันดับดีกว่า หากช่องว่างให้เรียงท้าย
+                    weight: rawWeight ? num(rawWeight) : Number.POSITIVE_INFINITY,
+                    played: w + d + l
+                };
             });
             const done = need > 0 && stats.length > 1 && stats.every(s => s.played >= need);
-            const ranks = stats.map(s => 1 + stats.filter(o => o.pts > s.pts || (o.pts === s.pts && o.win > s.win)).length);
+
+            // ตัดสินทีละเกณฑ์: คะแนนมาก > ชนะมาก > แพ้น้อย > น้ำหนักน้อย
+            // ถ้าทุกเกณฑ์ยังเท่ากัน จะคงลำดับเดิมจาก Google Sheets
+            const sorted = [...stats].sort((a, b) =>
+                (b.pts - a.pts) ||
+                (b.win - a.win) ||
+                (a.lose - b.lose) ||
+                (a.weight - b.weight || 0) ||
+                (a.index - b.index)
+            );
+            const ranks = Array(stats.length);
+            sorted.forEach((s, pos) => { ranks[s.index] = pos + 1; });
+
             const playedMatches = Math.round(stats.reduce((a, s) => a + s.played, 0) / 2);
             const totalMatches = Math.round(need * stats.length / 2);
             return { done, ranks, playedMatches, totalMatches };
