@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#ffffff"><title>GO ROBOT CHALLENGE 2026 | Live Scoreboard</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet"><style>
+<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#ffffff"><title>GO ROBOT CHALLENGE 2026 | Live Scoreboard • Sync V6</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet"><style>
 /* ==========================================================
    GO ROBOT CHALLENGE 2026 - Live scoreboard
    Corporate light theme. Brand colours come from the GO Robot mark:
@@ -1203,6 +1203,7 @@ const API={
  main:'https://script.google.com/macros/s/AKfycbyW5ETY1czEn7LuM8Dxl_-V4LUYMJwg-sBuP4En7TfW3zHYFf6iROtvID6fRE032dxl/exec',
  idek:'https://script.google.com/macros/s/AKfycbwEKF6Pabk1pbEYdihWp1ouxwdCpoHjikhH4Q5F7AqFX4zharAWgB6_7JOME9H1KhDJIQ/exec',
  wedo:'https://script.google.com/macros/s/AKfycbzLrGq-lSyBgOlyqXDPlSHn_m0iW4PAWVr-DaGfDKY9iIWPL2hbkNP2gYb4CkoU-ZFndw/exec',
+ // RANK SYNC V6: fixed endpoint; other Apps Script URLs are competition data sources.
  rank:'https://script.google.com/macros/s/AKfycbyrdBcX_7G8Mz8xNlmRov9-4g7WiJ2laloBiG1evriNHHhGjVMG7KcGEdD1TDJcBnw/exec'
 };
 const HIDE_WEDO_SCORE=true;
@@ -1882,7 +1883,41 @@ function goLiveApplyState(s){if(!s)return;const active=!!s.active&&['start','awa
 for(const k of shown)if(!liveMirrorRunning.has(k))podArrived(k);if(s.phase==='start'){$('rvSub').textContent='กำลังเข้าสู่พิธีประกาศอันดับ...'}else if(s.phase==='await'){$('rvList').className='rv-list';$('rvSub').textContent=`พร้อมประกาศอันดับ ${s.rank} · รอสัญญาณจากเวที`}else if(s.phase==='pick'){$('rvList').className='rv-list';const k=Number(s.rank);if(k>=1&&k<=3&&!liveMirrorPicked.has(k)&&!shown.includes(k)){liveMirrorPicked.add(k);liveMirrorRunning.add(k);const gen=revealGeneration,r=s.top[k-1];if(r?.rounds?.[r.best]){Promise.resolve().then(async()=>{await wait(k===1?1350:800);if(gen===revealGeneration)await revealCenter(k,r)}).catch(e=>{if(e!==SKIP)console.warn('mirror',e)}).finally(()=>{liveMirrorRunning.delete(k);if(gen===revealGeneration&&revealing)podArrived(k)})}else{liveMirrorRunning.delete(k);podArrived(k)}}}else if(s.phase==='pod'){const k=Number(s.rank);if(!liveMirrorRunning.has(k))podArrived(k);$('rvSub').textContent=`อันดับ ${k} เข้าประจำแท่นแล้ว`}}
 window.goLiveApplyState=goLiveApplyState;
 async function playLegacyReveal(type){if(revealing){legacyQueued=type;return}const rows=rankedRows(type),top=rows.slice(0,3),mid=rows.slice(3,10);if(!top.length)return;legacyRunning=true;if(!beginCeremony({type,top,mid,sessionId:'legacy-'+Date.now()}))return;legacyRunning=true;const gen=revealGeneration;try{$('rvSub').textContent='กำลังประกาศอันดับ...';for(const n of [3,2,1]){$('rvCount').innerHTML=`<span>${n}</span>`;await wait(950)}$('rvCount').innerHTML='';$('rvList').className='rv-list';await wait(350);for(let k=top.length;k>=1;k--){$('rvSub').textContent=`กำลังประกาศอันดับที่ ${k}...`;await wait(k===1?1350:850);if(gen!==revealGeneration)throw SKIP;await revealCenter(k,top[k-1]);await wait(650)}$('rvSub').textContent='ขอแสดงความยินดีกับ TOP 3 ทุกทีม';await wait(5000)}catch(e){if(e!==SKIP)console.warn(e)}finally{if(gen===revealGeneration){stopCeremony();if(legacyQueued){const next=legacyQueued;legacyQueued='';playLegacyReveal(next)}}}}
-async function pollRank(){if(!API.rank)return;try{const d=await get(API.rank);const before={...rk};if(typeof d.idek==='boolean')rk.idek=d.idek;if(typeof d.wedo==='boolean')rk.wedo=d.wedo;const s=normalizeCeremony(d);if(d.tournament)window.GRViewer?.applyTournament(d.tournament);if(d.timer)window.GRViewer?.applyTimer(d.timer);if(s){goLiveApplyState(s)}else{if(!firstRankPoll){if(!before.idek&&rk.idek)playLegacyReveal('idek');if(!before.wedo&&rk.wedo)playLegacyReveal('wedo')}}firstRankPoll=false;renderIdek();renderWedo();sourceReady.rank=true;sourceLast.rank=Date.now()}catch(e){console.warn('rank sync',e);sourceReady.rank=false;if(!sourceLast.rank){put('idN','<div class="notice">'+IC.warn+'<span>ระบบประกาศอันดับยังไม่เชื่อมต่อ: ตารางคะแนนยังดูได้</span></div>')}}}
+function grJsonpRequest(endpoint, args, timeoutMs=9500) {
+  return new Promise((resolve,reject)=>{
+    const cb='__grRankV5_'+Date.now()+'_'+Math.floor(Math.random()*1e8);
+    const url=new URL(endpoint);
+    for(const [k,v] of Object.entries(args||{}))url.searchParams.set(k,String(v));
+    url.searchParams.set('callback',cb);
+    url.searchParams.set('_',String(Date.now()));
+    const script=document.createElement('script');let ended=false;
+    const finish=(err,data)=>{
+      if(ended)return;ended=true;clearTimeout(timer);
+      script.remove();try{delete window[cb]}catch(e){window[cb]=undefined}
+      if(err)reject(err);else resolve(data);
+    };
+    const timer=setTimeout(()=>finish(new Error('หมดเวลารอ Apps Script: ตรวจ Deploy เวอร์ชัน V6')),timeoutMs);
+    window[cb]=data=>finish(null,data);
+    script.onerror=()=>finish(new Error('โหลด Apps Script ไม่สำเร็จ: ตรวจ URL และสิทธิ์ Anyone'));
+    script.async=true;script.src=url.toString();document.head.appendChild(script);
+  });
+}
+window.GO_ROBOT_RANK_SYNC_VERSION="V6";
+async function getRankSync(){
+  try { return await grJsonpRequest(API.rank,{},8000); }
+  catch(err){
+    // Legacy fallback: some older Apps Script deployments expose CORS JSON.
+    try { return await get(API.rank); }
+    catch(other){ throw new Error(err.message+' / '+other.message); }
+  }
+}
+function rankSyncHealth(message,ok){
+  let e=document.getElementById('gr-rank-sync-health');
+  if(!e){e=document.createElement('div');e.id='gr-rank-sync-health';e.style.cssText='position:fixed;right:12px;bottom:10px;max-width:min(450px,92vw);z-index:1000;border-radius:8px;padding:8px 12px;background:#481b29f0;border:1px solid #ff8ca5;color:white;font:500 12px IBM Plex Sans Thai,Arial,sans-serif;box-shadow:0 6px 18px #0004';document.body.appendChild(e)}
+  if(ok){e.hidden=true;e.textContent='';}
+  else{e.hidden=false;e.textContent=message;}
+}
+async function pollRank(){if(!API.rank)return;try{const d=await getRankSync();if(!d || d.success!==true)throw new Error(d?.error||'Apps Script ส่งสถานะผิดรูปแบบ');if(Number(d.serverVersion||0)<5)throw new Error('Apps Script ยังไม่ใช่เวอร์ชัน JSONP • Deploy V6');rankSyncHealth('',true);const before={...rk};if(typeof d.idek==='boolean')rk.idek=d.idek;if(typeof d.wedo==='boolean')rk.wedo=d.wedo;const s=normalizeCeremony(d);if(d.tournament)window.GRViewer?.applyTournament(d.tournament);if(d.timer)window.GRViewer?.applyTimer(d.timer);if(s){goLiveApplyState(s)}else{if(!firstRankPoll){if(!before.idek&&rk.idek)playLegacyReveal('idek');if(!before.wedo&&rk.wedo)playLegacyReveal('wedo')}}firstRankPoll=false;renderIdek();renderWedo();sourceReady.rank=true;sourceLast.rank=Date.now()}catch(e){console.warn('rank sync',e);rankSyncHealth('ซิงก์ RANK ไม่สำเร็จ: '+e.message+' • ตรวจ Deploy Apps Script V6',false);sourceReady.rank=false;if(!sourceLast.rank){put('idN','<div class="notice">'+IC.warn+'<span>ระบบประกาศอันดับยังไม่เชื่อมต่อ: ตารางคะแนนยังดูได้</span></div>')}}}
 function loopPoll(fn,ms){const run=async()=>{try{await fn()}finally{setTimeout(run,ms)}};run()}
 loopPoll(pollMain,8000);loopPoll(pollIdek,8000);loopPoll(pollWedo,8000);if(API.rank)loopPoll(pollRank,1200);
 addEventListener('resize',()=>{if(revealing){cv.width=innerWidth;cv.height=innerHeight}});
