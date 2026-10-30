@@ -1406,6 +1406,20 @@ body.is-fs #matches-view.active .match-card{
 .gr-sync-details{max-width:960px;margin:0 auto 15px;border:1px solid #ffffff24;background:#0e1c37;padding:10px 14px;border-radius:9px;color:#bddaf2}.gr-sync-details summary{cursor:pointer;font-size:14px;font-weight:600}.gr-sync-fields{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}.gr-sync-fields input{background:#0b1330;border:1px solid #537aab76;color:#fff;padding:10px;border-radius:6px;min-width:120px;flex:1}.gr-sync-fields button{background:#27618d;color:#fff;padding:10px 15px;border:0;border-radius:6px;cursor:pointer}.gr-sync-hint{font-size:12px;margin-top:6px;color:#b7d8f0}
 .gr-practice-panel{margin:16px 0 30px;min-height:290px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:22px;background:linear-gradient(135deg,#0a1938,#151a3f);border-radius:18px;border:1px solid #6ccbf944}.gr-practice-panel .practice-timer-bar{position:static;width:min(1100px,100%);margin:0;padding:22px 16px;gap:13px}.gr-practice-panel h2{text-align:center}
 .gr3-plain-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:6px 14px;color:#dceaff;background:rgba(30,47,80,.8);border:1px solid #2b5987;border-radius:8px;font-size:13px;font-weight:600}
+
+/* 2026 v4: compact Tournament heading controls, no oversized RANK panel */
+.tournament-titlebar{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:5px 0 2px}
+.tournament-titlebar .section-title{margin:0 0 3px}
+.tournament-titlebar .description-text{margin:0;color:#a9c5e2}
+.tournament-heading-text{min-width:0}
+.tournament-top-actions{display:flex;align-items:center;gap:7px;flex-shrink:0}
+#tournament-view .tournament-top-actions button{border-radius:5px;min-width:auto;border:1px solid #6fe2ff75;padding:7px 15px;cursor:pointer;transition:transform .2s,filter .2s}
+#tournament-view .tournament-rank-mini{font:900 14px Orbitron,Kanit,sans-serif;letter-spacing:1.5px;background:linear-gradient(112deg,#39d9f9,#9d76f3);color:#08132e;box-shadow:0 0 12px #46deff44}
+#tournament-view .tournament-rank-mini:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.13)}
+#tournament-view .tournament-rank-mini:disabled{opacity:.42;cursor:not-allowed}
+#tournament-view .tournament-reset-mini{font:600 12px Kanit,sans-serif;letter-spacing:0;background:#142548;color:#b8d9f8;border-color:#426287}
+.tournament-micro-status{font:500 11px Kanit,sans-serif;opacity:.75;color:#9cc8e7;margin:2px 0 9px;text-align:right}
+@media(max-width:700px){.tournament-titlebar{align-items:flex-start}.tournament-top-actions{gap:5px}#tournament-view .tournament-top-actions button{padding:6px 8px;font-size:11px}.tournament-titlebar .section-title{font-size:clamp(18px,4vw,24px)}.tournament-heading-text .description-text{font-size:11px}}
 </style>
 </head>
 <body>
@@ -1488,14 +1502,16 @@ body.is-fs #matches-view.active .match-card{
               <div class="timer-track" aria-hidden="true"><span id="timer-track-fill"></span></div>
             </section><p class="description-text">เลือกสนามและกำหนดเวลาเองได้ กดแสดงเวลาล้วนเพื่อฉายตัวเลขขนาดใหญ่บนจอ</p></div></div>
         <div id="tournament-view" class="view">
-            <h2 class="section-title">🏆 สายการแข่งขัน (Tournament Bracket)</h2>
-            <p class="description-text">แผนผังสายการแข่งขันในรอบน็อคเอาท์ และทำเนียบผู้ชนะ</p>
-            <div id="tournament-data-warning" hidden role="status" style="background:#38251b;color:#ffe2ae;border:1px solid #ae7e40;padding:8px 14px;margin-bottom:12px;border-radius:6px;font-size:13px"></div>
-            <div class="gr3-launch">
-                <button id="gor3-open-btn" type="button" onclick="GRHost.open()">RANK</button>
-                <button type="button" class="reset" onclick="GRHost.reset()">ซ่อนผล</button>
-                <small id="gor3-launch-status" aria-live="polite">รอข้อมูลอันดับจากตาราง ก่อนกด RANK เพื่อเปิดเวทีประกาศ</small>
+            <div class="tournament-titlebar">
+                <div class="tournament-heading-text"><h2 class="section-title">สายการแข่งขัน (Tournament Bracket)</h2>
+                <p class="description-text">แผนผังสายการแข่งขันในรอบน็อคเอาท์ และทำเนียบผู้ชนะ</p></div>
+                <div class="tournament-top-actions">
+                    <button id="gor3-open-btn" class="tournament-rank-mini" type="button" onclick="GRHost.open()" title="เริ่มพิธีประกาศอันดับ">RANK</button>
+                    <button id="gor3-reset-btn" class="tournament-reset-mini" type="button" onclick="GRHost.reset()" title="ซ่อนผลอีกครั้ง">ซ่อนผล</button>
+                </div>
             </div>
+            <div id="tournament-data-warning" hidden role="status" style="background:#38251b;color:#ffe2ae;border:1px solid #ae7e40;padding:8px 14px;margin-bottom:12px;border-radius:6px;font-size:13px"></div>
+            <div class="tournament-micro-status" id="gor3-launch-status" aria-live="polite">พร้อมประกาศ • กด RANK เพื่อเปิดเวที</div>
             <details class="gr-sync-details"><summary>ตั้งค่าการซิงก์เว็บผู้ชม (Google Apps Script)</summary><div class="gr-sync-fields"><input type="url" id="gr-sync-url" placeholder="URL Web App /exec" aria-label="Web App URL"><input type="password" id="gr-sync-key" placeholder="RANK_KEY ของผู้ควบคุม" autocomplete="off" aria-label="รหัสซิงก์"><button type="button" onclick="GRHost.saveConfig()">เชื่อมต่อ</button></div><div class="gr-sync-hint" id="gr-sync-feedback">เปิดเว็บเดียวกันในอีกแท็บจะซิงก์ทันที ส่วนการซิงก์คนละเครื่องต้องตั้งค่า Web App และ RANK_KEY</div></details>
             <div id="tournamentRevealOverlay" class="tournament-reveal-overlay" aria-hidden="true">
                 <div class="tournament-reveal-stage">
@@ -3231,7 +3247,7 @@ const GRHost=(()=>{
  let session='tour-'+Date.now(), stageOpened=false, busy=false, announced=[], generation=0, awaitingSound=null;
  let key='', url=urlDefault, syncQueue=Promise.resolve(), clockChannel=null, currentNames={1:'',2:'',3:''};
  try{const saved=localStorage.getItem('GR_SYNC_URL');if(saved)url=saved;}catch(e){}
- try{key=sessionStorage.getItem('GR_SYNC_KEY')||'';}catch(e){}
+ try{key=sessionStorage.getItem('GR_SYNC_KEY')||sessionStorage.getItem('GOROBOT_2026_RANK_ADMIN_KEY')||'';}catch(e){}
  try{clockChannel=new BroadcastChannel('GOROBOT_LIVE_V2');}catch(e){}
  const report=v=>{const out=E('gr-sync-feedback');if(out)out.textContent=v;};
  const getNames=()=>{const out={};for(const [n,k] of Object.entries(keys)){let v=E('t-'+k)?.dataset.actualValue||'';out[n]=v==='-'||v==='X'?'':v;}return out;};
@@ -3245,12 +3261,12 @@ const GRHost=(()=>{
    if(!url||!key){report('ซิงก์ในเครื่องเดียวกันได้แล้ว • โปรดตั้งค่า RANK_KEY เพื่อซิงก์ข้ามอุปกรณ์');return;}
    syncQueue=syncQueue.catch(()=>{}).then(async()=>{
      const qs=new URLSearchParams({action:'publish',event,payload:JSON.stringify(payload),key,nonce:String(Date.now())});
-     try{await fetch(url+(url.includes('?')?'&':'?')+qs.toString(),{method:'GET',mode:'no-cors',cache:'no-store'});report('ส่งสถานะซิงก์ไปยัง Web App แล้ว (ตรวจสอบได้จากหน้าผู้ชม)');}
+     try{await fetch(url+(url.includes('?')?'&':'?')+qs.toString(),{method:'GET',mode:'no-cors',cache:'no-store'});report('ส่งคำขอซิงก์แล้ว • ตรวจดูผลรับใน watch.html (ยังไม่ยืนยันว่าเซิร์ฟเวอร์รับข้อมูล)');}
      catch(e){report('ส่งซิงก์ไม่สำเร็จ: '+e.message)}
    });
  }
  function config(){const i=E('gr-sync-url'),k=E('gr-sync-key');if(i)i.value=url;if(k)k.value=key;}
- function saveConfig(){const u=E('gr-sync-url')?.value.trim(),p=E('gr-sync-key')?.value.trim();if(u&&!/^https:\/\/script\.google\.com\/macros\/s\/[^?#]+\/exec$/.test(u)){report('กรุณาใส่ URL Google Apps Script ที่ลงท้ายด้วย /exec');return;}url=u||urlDefault;key=p||'';try{localStorage.setItem('GR_SYNC_URL',url);sessionStorage.setItem('GR_SYNC_KEY',key)}catch(e){}report(key?'เชื่อมต่อเตรียมพร้อม • ทดสอบด้วยการกด RANK':'ใช้โหมดซิงก์เฉพาะเครื่องเดียวกัน (ยังไม่ได้ใส่รหัส)')}
+ function saveConfig(){const u=E('gr-sync-url')?.value.trim(),p=E('gr-sync-key')?.value.trim();if(u&&!/^https:\/\/script\.google\.com\/macros\/s\/[^?#]+\/exec$/.test(u)){report('กรุณาใส่ URL Google Apps Script ที่ลงท้ายด้วย /exec');return;}url=u||urlDefault;key=p||'';try{localStorage.setItem('GR_SYNC_URL',url);sessionStorage.setItem('GR_SYNC_KEY',key);sessionStorage.setItem('GOROBOT_2026_RANK_ADMIN_KEY',key)}catch(e){}report(key?'เชื่อมต่อเตรียมพร้อม • ทดสอบด้วยการกด RANK':'ใช้โหมดซิงก์เฉพาะเครื่องเดียวกัน (ยังไม่ได้ใส่รหัส)')}
  let audio;function tone(n,d=.28,delay=0,type='sine'){
    try{const A=window.AudioContext||window.webkitAudioContext;audio=audio||new A();audio.resume?.();const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime+delay;o.type=type;o.frequency.setValueAtTime(n,t);g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(.13,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(audio.destination);o.start(t);o.stop(t+d+.01)}catch(e){}
  }
