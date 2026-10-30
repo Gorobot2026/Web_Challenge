@@ -6,7 +6,7 @@
  */
 (() => {
   'use strict';
-  let RANK_API = 'https://script.google.com/macros/s/AKfycbyrdBcX_7G8Mz8xNlmRov9-4g7WiJ2laloBiG1evriNHHhGjVMG7KcGEdD1TDJcBnw/exec';
+  let RANK_API = 'https://script.google.com/macros/s/AKfycbxo-6lXH8K3uOC1hfnMh7zc6KuazF4H14q2BM2iS2xO6OdhRpXa0Vb_O5-16rhL1SfL/exec';
   // URL can stay unchanged IF the current Apps Script deployment is updated to rank-live-sync.gs.
   // For a new deployment, update the URL here AND API.rank in watch.html.
   const STORAGE_KEY = 'GOROBOT_2026_RANK_ADMIN_KEY';
