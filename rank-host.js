@@ -9,7 +9,7 @@
   let RANK_API = 'https://script.google.com/macros/s/AKfycbyrdBcX_7G8Mz8xNlmRov9-4g7WiJ2laloBiG1evriNHHhGjVMG7KcGEdD1TDJcBnw/exec';
   // URL can stay unchanged IF the current Apps Script deployment is updated to rank-live-sync.gs.
   // For a new deployment, update the URL here AND API.rank in watch.html.
-  const STORAGE_KEY = 'GOROBOT_2026_RANK_ADMIN_KEY';
+  const STORAGE_KEY = '12345678';
   try { const shared=localStorage.getItem('GR_SYNC_URL'); if(shared&&/^https:\/\/script\.google\.com\/macros\/s\/[^?#]+\/exec$/.test(shared)) RANK_API=shared; } catch(e) {}
   const status = (msg) => { const e=document.getElementById('rank-sync-admin-status'); if(e) e.textContent=msg; };
   function saveSettings(){
