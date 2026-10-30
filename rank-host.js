@@ -1,44 +1,71 @@
 /**
- * rank-host.js — ส่วนเสริมสำหรับเครื่องหลัก (wedo_idektep.html)
- * ส่งสถานะ "ประกาศอันดับแล้ว" ไปที่ rank-sync เพื่อให้ watch.html แสดงอันดับตาม
- *
- * วิธีติดตั้ง: วางไฟล์นี้ข้าง wedo_idektep.html แล้วเพิ่มบรรทัดเดียวก่อน </body>
- *   <script src="rank-host.js"></script>
- * (ต้องอยู่หลัง <script> หลักของหน้า)
+ * GO ROBOT CHALLENGE 2026 · Main website Rank bridge.
+ * Main HTML already calls window.goLivePublish('start'|'await'|'pick'|'pod'|'done'|'visibility', payload)
+ * Place this file NEXT TO the existing main wedo_idektep.html.
+ * Never put the admin password in watch.html, here, or GitHub source code.
  */
-(function () {
-  const RANK_API = 'https://script.google.com/macros/s/AKfycbyrdBcX_7G8Mz8xNlmRov9-4g7WiJ2laloBiG1evriNHHhGjVMG7KcGEdD1TDJcBnw/exec';
-  const RANK_KEY = '305306code';
-  const RESET_ON_LOAD = false; // true = ซ่อนอันดับของผู้ชมทุกครั้งที่เปิดเครื่องหลัก
+(() => {
+  'use strict';
+  let RANK_API = 'https://script.google.com/macros/s/AKfycbyrdBcX_7G8Mz8xNlmRov9-4g7WiJ2laloBiG1evriNHHhGjVMG7KcGEdD1TDJcBnw/exec';
+  // URL can stay unchanged IF the current Apps Script deployment is updated to rank-live-sync.gs.
+  // For a new deployment, update the URL here AND API.rank in watch.html.
+  const STORAGE_KEY = 'GOROBOT_2026_RANK_ADMIN_KEY';
+  try { const shared=localStorage.getItem('GR_SYNC_URL'); if(shared&&/^https:\/\/script\.google\.com\/macros\/s\/[^?#]+\/exec$/.test(shared)) RANK_API=shared; } catch(e) {}
+  const status = (msg) => { const e=document.getElementById('rank-sync-admin-status'); if(e) e.textContent=msg; };
+  function saveSettings(){
+    const url=document.getElementById('rank-sync-admin-url')?.value.trim();
+    const pwd=document.getElementById('rank-sync-admin-key')?.value.trim();
+    if(url&&!/^https:\/\/script\.google\.com\/macros\/s\/[^?#]+\/exec$/.test(url)){status('URL ต้องเป็น Apps Script /exec');return;}
+    if(url)RANK_API=url;
+    if(pwd)key=pwd;
+    try{localStorage.setItem('GR_SYNC_URL',RANK_API);if(key){sessionStorage.setItem(STORAGE_KEY,key);sessionStorage.setItem('GR_SYNC_KEY',key)}}catch(e){}
+    status(key?'บันทึกการซิงก์แล้ว • ให้กด RANK ทดสอบบนเว็บผู้ชม':'บันทึก URL แล้ว • ต้องกรอก RANK_KEY ก่อนส่งผล');
+  }
+  async function checkConnection(){
+    try{const res=await fetch(RANK_API+'?t='+Date.now(),{cache:'no-store'});const data=await res.json();status('อ่าน Apps Script ได้ • '+(data.success?'พร้อมรับสถานะ • โปรดกด RANK ทดสอบ':'เซิร์ฟเวอร์ตอบผิดพลาด'));}
+    catch(e){status('ตรวจสอบ URL ไม่สำเร็จ: '+e.message)}
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    const u=document.getElementById('rank-sync-admin-url');if(u)u.value=RANK_API;
+    const k=document.getElementById('rank-sync-admin-key');try{if(k)k.value=key||sessionStorage.getItem(STORAGE_KEY)||sessionStorage.getItem('GR_SYNC_KEY')||''}catch(e){}
+  });
+  window.GRRankConfig={saveSettings,checkConnection};
 
-  function pub(board, on) {
-    if (!RANK_API || RANK_API.indexOf('http') !== 0) return;
-    const url = RANK_API + '?action=set&board=' + board + '&on=' + (on ? 1 : 0) +
-                '&key=' + encodeURIComponent(RANK_KEY) + '&t=' + Date.now();
-    fetch(url, { mode: 'no-cors' }).catch(function () {});
+  let key = '';
+  let next = Promise.resolve();
+  function send(event, payload) {
+    const pw = getKey();
+    if (!pw) { status('ยังไม่ใส่ RANK_KEY • เว็บผู้ชมจึงไม่เปลี่ยน'); console.warn('[RANK SYNC] No admin key'); return; }
+    const url = new URL(RANK_API);
+    url.searchParams.set('action', 'publish');
+    url.searchParams.set('event', event);
+    url.searchParams.set('payload', JSON.stringify(payload || {}));
+    url.searchParams.set('key', pw);
+    url.searchParams.set('_', String(Date.now()));
+    // Keep order of start -> await -> pick -> pod -> done even across slow networks.
+    next = next.catch(() => {}).then(async () => {
+      try {
+        await fetch(url.toString(), {method:'GET',mode:'no-cors',cache:'no-store'});
+        status('ส่งสัญญาณแล้ว • ตรวจผลบน watch.html (คำตอบเซิร์ฟเวอร์ยังไม่ได้ยืนยัน)');
+      } catch (e) {
+        // Fallback for clients blocking cross-origin fetch; never claim server acknowledgement.
+        await new Promise(resolve => {
+          const img = new Image();
+          const timeout = setTimeout(resolve,8000);
+          img.onload = img.onerror = () => {clearTimeout(timeout);resolve()};
+          img.src = url.toString();
+        });
+        status('พยายามส่งสัญญาณสำรองแล้ว • กรุณาตรวจ watch.html');
+      }
+    });
   }
 
-  /* iDekTep: ทุกครั้งที่ตารางเปลี่ยนเป็นโหมด RANK / ซ่อน */
-  const baseSetRank = window.setRank;
-  window.setRank = function (on) {
-    baseSetRank(on);
-    pub('idek', !!on);
+  window.goLivePublish = function(event, payload) {
+    if (!window.liveCanControl?.()) return;
+    if (!['start','await','pick','pod','done','visibility'].includes(String(event))) return;
+    // FIFO invocation; each ceremony event is sent as a separate request.
+    send(String(event), payload);
   };
-
-  /* WEDO: เมื่อพิธีประกาศอันดับจบ */
-  const baseEndReveal = window.endReveal;
-  window.endReveal = function () {
-    const wasWedo = activeRevealType === 'wedo';
-    baseEndReveal();
-    if (wasWedo) pub('wedo', true);
-  };
-
-  /* WEDO: Shift + คลิกปุ่ม RANK = ซ่อนอันดับของผู้ชม */
-  const baseToggleWedo = window.toggleWedoRank;
-  window.toggleWedoRank = function () {
-    if (window.event && window.event.shiftKey) { pub('wedo', false); return; }
-    baseToggleWedo();
-  };
-
-  if (RESET_ON_LOAD) { pub('idek', false); pub('wedo', false); }
+  Object.defineProperty(window,'GO_ROBOT_RANK_API',{get:()=>RANK_API});
+  console.info('[RANK SYNC] Admin transmitter ready; viewer has read-only access.');
 })();
