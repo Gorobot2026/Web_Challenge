@@ -9,8 +9,9 @@
   let RANK_API = 'https://script.google.com/macros/s/AKfycbyrdBcX_7G8Mz8xNlmRov9-4g7WiJ2laloBiG1evriNHHhGjVMG7KcGEdD1TDJcBnw/exec';
   // URL can stay unchanged IF the current Apps Script deployment is updated to rank-live-sync.gs.
   // For a new deployment, update the URL here AND API.rank in watch.html.
-  const STORAGE_KEY = '12345678';
-  try { const shared=localStorage.getItem('GR_SYNC_URL'); if(shared&&/^https:\/\/script\.google\.com\/macros\/s\/[^?#]+\/exec$/.test(shared)) RANK_API=shared; } catch(e) {}
+  const STORAGE_KEY = 'GOROBOT_2026_RANK_ADMIN_KEY';
+  // URL is fixed by the administrator, not editable on the public website.
+  try { localStorage.setItem('GR_SYNC_URL', RANK_API); } catch(e) {}
   const status = (msg) => { const e=document.getElementById('rank-sync-admin-status'); if(e) e.textContent=msg; };
   function saveSettings(){
     const url=document.getElementById('rank-sync-admin-url')?.value.trim();
@@ -33,8 +34,19 @@
 
   let key = '';
   let next = Promise.resolve();
+  function getKey(event){
+    if(key)return key;
+    try { key=sessionStorage.getItem(STORAGE_KEY)||sessionStorage.getItem('GR_SYNC_KEY')||''; } catch(e) {}
+    if(key)return key;
+    if(event!=='start'&&event!=='visibility')return '';
+    const entered=window.prompt('ใส่ RANK_KEY สำหรับซิงก์ iDekTep / ESSENTIAL ไปเว็บผู้ชม\nURL ระบบเชื่อมต่อกำหนดไว้แล้ว ไม่ต้องกรอก URL');
+    if(!entered||!entered.trim()){status('ไม่ได้ใส่ RANK_KEY • เว็บผู้ชมยังไม่เปลี่ยน');return '';}
+    key=entered.trim();
+    try {sessionStorage.setItem(STORAGE_KEY,key);sessionStorage.setItem('GR_SYNC_KEY',key);} catch(e) {}
+    return key;
+  }
   function send(event, payload) {
-    const pw = getKey();
+    const pw = getKey(event);
     if (!pw) { status('ยังไม่ใส่ RANK_KEY • เว็บผู้ชมจึงไม่เปลี่ยน'); console.warn('[RANK SYNC] No admin key'); return; }
     const url = new URL(RANK_API);
     url.searchParams.set('action', 'publish');
