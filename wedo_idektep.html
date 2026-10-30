@@ -1612,7 +1612,7 @@ function rowHtml(r,rank,revealed=false){
    </div>
    <div class="team-name">${escapeHtml(r.team)||'-'}</div>
    <div class="member">${escapeHtml(r.member)||'-'}</div>
-   <div class="score${revealed?'':' masked-score'}" aria-label="${revealed?'คะแนนการแข่งขัน':'คะแนนยังไม่ประกาศ'}">${revealed?(escapeHtml(r.score)||'-'):'🔒 •••'}</div>
+   <div class="score${revealed?'':' masked-score'}" aria-label="${revealed?'คะแนนการแข่งขัน':'คะแนนยังไม่ประกาศ'}">${revealed?(escapeHtml(r.score)||'-'):'2xx'}</div>
   </div>`;
 }
 
