@@ -1605,7 +1605,82 @@ body.is-fs #matches-view.active .match-card{
   .timer-only-overlay .go-timer-theme{font-size:11px !important;}
 }
 
+
+/* 2026-10-31 — Comfort countdown: readable, fixed-size digits and generous spacing. */
+.timer-only-overlay .go-timer-live-board{
+  display:block !important;
+  box-sizing:border-box;
+  overflow:hidden;
+}
+.timer-only-overlay .go-timer-live-board .go-timer-theme{
+  position:absolute !important;
+  top:7.2% !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  margin:0 !important;
+  padding:.42em 1.25em !important;
+  font-family:'Kanit',sans-serif !important;
+  font-size:clamp(13px,1.06vw,20px) !important;
+  font-weight:700 !important;
+  letter-spacing:.07em !important;
+  line-height:1.25 !important;
+}
+.timer-only-overlay .go-timer-live-board .timer-only-number{
+  position:absolute !important;
+  top:49.5% !important;
+  left:50% !important;
+  transform:translate(-50%,-50%) !important;
+  margin:0 !important;
+  padding:.06em 0 !important;
+  font-family:'Chakra Petch','Roboto Mono',monospace !important;
+  font-weight:700 !important;
+  font-variant-numeric:tabular-nums lining-nums !important;
+  font-feature-settings:'tnum' 1 !important;
+  letter-spacing:.025em !important;
+  line-height:1.12 !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+  text-wrap:nowrap !important;
+  max-width:none !important;
+  width:max-content !important;
+  text-shadow:0 0 18px color-mix(in srgb,var(--clock-accent) 30%,transparent),0 0 42px color-mix(in srgb,var(--clock-accent) 16%,transparent) !important;
+}
+.timer-only-overlay .go-timer-live-board .go-timer-status{
+  position:absolute !important;
+  left:8% !important;
+  right:8% !important;
+  bottom:9.2% !important;
+  max-width:84% !important;
+  margin:0 !important;
+  font-family:'Kanit',sans-serif !important;
+  font-size:clamp(12px,1.05vw,17px) !important;
+  font-weight:500 !important;
+  line-height:1.55 !important;
+  letter-spacing:.015em !important;
+  text-align:center !important;
+  overflow-wrap:break-word !important;
+}
+.timer-only-overlay .go-timer-live-board .go-progress{
+  bottom:3.1% !important;
+}
+@media (max-aspect-ratio:10/9){
+  .timer-only-overlay .go-timer-live-board .go-timer-theme{
+    top:7% !important;
+    font-size:clamp(11px,2.9vw,16px) !important;
+  }
+  .timer-only-overlay .go-timer-live-board .go-timer-status{
+    bottom:10% !important;
+    font-size:clamp(10px,2.4vw,13px) !important;
+    line-height:1.5 !important;
+  }
+}
+@media (max-height:580px) and (min-aspect-ratio:11/10){
+  .timer-only-overlay .go-timer-live-board .go-timer-theme{top:4% !important;font-size:11px !important;}
+  .timer-only-overlay .go-timer-live-board .go-timer-status{bottom:8% !important;font-size:11px !important;}
+}
+
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -3320,40 +3395,46 @@ function renderPlayoff(data){
         function practiceTimerSave(){
             try { localStorage.setItem('go_practice_timer_v2',JSON.stringify({duration:practiceTimerDuration,theme:practiceTimerTheme})); } catch(e){}
         }
-        // Fit all clock digits inside the framed display at any screen size, including hh:mm:ss.
+        // Lock the countdown font size for the whole countdown, not every second.
+        // Measure the widest possible label once, so the width stays stable from 59 to 00.
+        function practiceTimerStageFormat(seconds){
+            const rendered=practiceTimerFormat(seconds);
+            return practiceTimerDuration>=3600 && rendered.length===5 ? '00:'+rendered : rendered;
+        }
         function practiceTimerFitOnly(){
             const number=practiceTimerById('timer-only-number');
             const board=practiceTimerById('go-timer-live-board');
-            if(!number||!board||board.clientWidth===0||board.clientHeight===0)return;
-            const label=board.querySelector('.go-timer-theme');
-            const status=board.querySelector('.go-timer-status');
-            const progress=board.querySelector('.go-progress');
-            // Reserve space for labels, progress, borders and a little breathing room.
-            const gap=board.clientWidth < 600 ? 24 : 42;
-            const availableWidth=Math.max(70,board.clientWidth-gap);
-            const fixedHeight=(label?.offsetHeight||0)+(status?.offsetHeight||0)+(progress?.offsetHeight||0)+28;
-            const availableHeight=Math.max(45,board.clientHeight-fixedHeight);
-            let size=Math.min(window.innerWidth*.42,window.innerHeight*.72,750);
-            number.style.fontSize=size+'px';
-            // Adjust by rendered dimensions, not guessed digit count; supports HH:MM:SS.
-            for(let i=0;i<4;i++){
-               const rect=number.getBoundingClientRect();
-               if(!rect.width||!rect.height)break;
-               const scale=Math.min(availableWidth/rect.width,availableHeight/rect.height);
-               if(Math.abs(scale-1)<.008)break;
-               size=Math.max(24,Math.min(750,size*scale*.985));
-               number.style.fontSize=size+'px';
-            }
+            if(!number||!board||board.clientWidth<40||board.clientHeight<40)return;
+            const sample=document.createElement('span');
+            sample.className='timer-only-number';
+            sample.textContent=practiceTimerDuration>=3600?'88:88:88':'88:88';
+            sample.setAttribute('aria-hidden','true');
+            sample.style.cssText='font-size:100px;visibility:hidden;pointer-events:none;';
+            board.appendChild(sample);
+            const bounding=sample.getBoundingClientRect();
+            sample.remove();
+            if(!(bounding.width>0&&bounding.height>0))return;
+            // Keep 8–12% clear space on each side and a dedicated heading/footer region.
+            const availableWidth=Math.max(80,board.clientWidth*.81);
+            const availableHeight=Math.max(60,board.clientHeight*.59);
+            const desired=Math.min(100*availableWidth/bounding.width,100*availableHeight/bounding.height,410);
+            number.style.fontSize=Math.max(24,Math.floor(desired))+'px';
         }
-        window.addEventListener('resize',()=>{if(practiceTimerById('timer-only-overlay')?.classList.contains('visible'))practiceTimerFitOnly()});
+        window.addEventListener('resize',()=>{
+            if(practiceTimerById('timer-only-overlay')?.classList.contains('visible'))practiceTimerFitOnly();
+        });
+        if(document.fonts&&document.fonts.ready){
+            document.fonts.ready.then(()=>{
+                if(practiceTimerById('timer-only-overlay')?.classList.contains('visible'))practiceTimerFitOnly();
+            });
+        }
         function practiceTimerRender(){
             const display=practiceTimerFormat(practiceTimerRemaining);
             const small=practiceTimerById('timer-inline-display'),big=practiceTimerById('timer-only-number');
             if(small)small.textContent=display;
-            if(big)big.textContent=display;
+            if(big)big.textContent=practiceTimerStageFormat(practiceTimerRemaining);
             const liveProgress=practiceTimerById('go-timer-stage-progress');
             if(liveProgress)liveProgress.style.width=`${Math.min(100,Math.max(0,practiceTimerRemaining/Math.max(1,practiceTimerDuration)*100))}%`;
-            if(big&&practiceTimerById('timer-only-overlay')?.classList.contains('visible'))practiceTimerFitOnly();
             const themeMeta={
                 sumo:{name:'SUMO ARENA',sub:'สนามซูโม่ • เวลาซ้อมการแข่งขัน',caption:'เตรียมพร้อมก่อนขึ้นสนาม Sumo • นับถอยหลังแบบเต็มจอ'},
                 idektep:{name:'iDekTep ARENA',sub:'สนาม iDekTep • เวลาซ้อมการแข่งขัน',caption:'เตรียมพร้อมสำหรับสนาม iDekTep • นับถอยหลังแบบเต็มจอ'},
@@ -3399,6 +3480,7 @@ function renderPlayoff(data){
             practiceTimerDuration=Math.max(1,practiceTimerInputs());
             practiceTimerRemaining=practiceTimerDuration;
             practiceTimerSave();practiceTimerRender();
+            if(practiceTimerById('timer-only-overlay')?.classList.contains('visible'))practiceTimerFitOnly();
         }
         function practiceTimerStart(){
             if(practiceTimerInterval)return;
