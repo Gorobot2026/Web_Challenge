@@ -3073,7 +3073,6 @@ function renderPlayoff(data){
         // ================================================================
         let rankSequenceActive = false;
         let rankSequenceTimeouts = [];
-        let rankAudioContext = null;
         let tournamentRevealResultSig = (() => { try { return localStorage.getItem('go_tournament_results_sig_v1') || ''; } catch(e){ return ''; } })();
         const tournamentRevealDefaults = { winner:false, runner1:false, runner2:false };
         let tournamentRevealState = (() => {
@@ -3183,36 +3182,7 @@ function renderPlayoff(data){
         }
         function rankSchedule(fn,ms){ const id=setTimeout(fn,ms); rankSequenceTimeouts.push(id); return id; }
         function rankClearSequence(){ rankSequenceActive=false; rankSequenceTimeouts.forEach(clearTimeout); rankSequenceTimeouts=[]; }
-        function rankAudioReady(){
-            try {
-                const Ctx=window.AudioContext||window.webkitAudioContext;
-                if (!Ctx) return;
-                rankAudioContext=rankAudioContext || new Ctx();
-                if (rankAudioContext.state === 'suspended') rankAudioContext.resume();
-            } catch(e) { rankAudioContext=null; }
-        }
-        function rankTone(freq=440,duration=.18,when=0,type='sine',vol=.065){
-            const ctx=rankAudioContext; if (!ctx) return;
-            try {
-                const now=ctx.currentTime+when, osc=ctx.createOscillator(), g=ctx.createGain();
-                osc.type=type; osc.frequency.setValueAtTime(freq,now);
-                if(type==='sawtooth') osc.frequency.exponentialRampToValueAtTime(Math.max(30,freq*.52),now+duration);
-                g.gain.setValueAtTime(.0001,now);
-                g.gain.exponentialRampToValueAtTime(Math.max(.0005,vol),now+.012);
-                g.gain.exponentialRampToValueAtTime(.0001,now+duration);
-                osc.connect(g).connect(ctx.destination);osc.start(now);osc.stop(now+duration+.02);
-            }catch(e){}
-        }
-        function rankSound(kind='charge',rank=3){
-            if(kind==='charge') {
-                [110,146,196,262].forEach((f,i)=>rankTone(f,.34,i*.16,'sawtooth',.025));
-            } else if(kind==='impact') {
-                rankTone(rank===1?90:110,.55,0,'sawtooth',.14);
-                [440,554,659,880].forEach((f,i)=>rankTone(f,.6,.11+i*.09,'triangle',rank===1?.13:.075));
-            } else if(kind==='final') {
-                [392,494,587,784,988,1175].forEach((f,i)=>rankTone(f,.45,i*.16,'triangle',.09));
-            }
-        }
+        // Award announcement audio intentionally disabled. Visual effects remain enabled.
         function rankFireworks(){
             const stage=document.querySelector('.tournament-reveal-overlay .tournament-reveal-stage');
             if(!stage)return;
@@ -3242,7 +3212,6 @@ function renderPlayoff(data){
             document.getElementById('tr-main-name').textContent='X';
             if(sub)sub.textContent='STANDBY • FINAL COUNTDOWN';
             document.getElementById('rank-show-status').textContent='กำลังประกาศ '+shown;
-            rankSound('charge');
         }
         function rankShowImpact(place,actual){
             const rankNumber=place==='winner'?1:place==='runner1'?2:3;
@@ -3258,7 +3227,6 @@ function renderPlayoff(data){
             if(sub)sub.textContent='OFFICIAL RESULT • REVEALED';
             const pillar=place==='runner2'?document.querySelector('.tr-pillar.small.right'):place==='runner1'?document.querySelector('.tr-pillar.small.left'):document.querySelector('.tr-pillar.main');
             pillar?.classList.add('awarded');
-            rankSound('impact',rankNumber);
             rankFireworks();
             rankSchedule(()=>overlay?.classList.remove('rank-impact'),520);
         }
@@ -3281,7 +3249,6 @@ function renderPlayoff(data){
             if(rankSequenceActive)return;
             rankClearSequence();
             hideTournamentSpotlight();
-            rankAudioReady();
             rankSequenceActive=true;
             tournamentRevealState={...tournamentRevealDefaults};
             const overlay=document.getElementById('tournamentRevealOverlay');
@@ -3311,7 +3278,6 @@ function renderPlayoff(data){
                 document.getElementById('tr-main-badge').textContent='RANK 01';
                 const sub=document.getElementById('tr-main-sub');if(sub)sub.textContent='TOURNAMENT AWARDS COMPLETE';
                 const status=document.getElementById('rank-show-status');if(status)status.textContent='ประกาศครบ 3 อันดับแล้ว • กด RANK เพื่อเล่นพิธีอีกครั้ง';
-                rankSound('final');
                 rankFireworks();
                 renderTournamentRevealMask();
                 if(status)status.textContent='ประกาศครบ 3 อันดับแล้ว • กด RANK เพื่อเล่นพิธีอีกครั้ง';
@@ -3580,15 +3546,13 @@ const GRHost=(()=>{
  }
  function config(){ /* Google Apps Script URL is preconfigured in the source file. */ }
  function saveConfig(){const p=E('gr-sync-key')?.value.trim();url=urlDefault;key=p||'';try{localStorage.setItem('GR_SYNC_URL',url);sessionStorage.setItem('GR_SYNC_KEY',key);sessionStorage.setItem('GOROBOT_2026_RANK_ADMIN_KEY',key)}catch(e){}report(key?'เชื่อมต่อเตรียมพร้อม • ทดสอบด้วยการกด RANK':'ใช้โหมดซิงก์เฉพาะเครื่องเดียวกัน (ยังไม่ได้ใส่รหัส)')}
- let audio;function tone(n,d=.28,delay=0,type='sine'){
-   try{const A=window.AudioContext||window.webkitAudioContext;audio=audio||new A();audio.resume?.();const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime+delay;o.type=type;o.frequency.setValueAtTime(n,t);g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(.13,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(audio.destination);o.start(t);o.stop(t+d+.01)}catch(e){}
- }
+ // 3D award reveal is silent; animation and synchronization are unchanged.
  function burst(){const scene=E('gor3-scene');if(!scene)return;const c=['#83ffff','#b994ff','#fff0a9','#ec8fff'];for(let i=0;i<90;i++){const s=document.createElement('i');s.className='gor3-particle';s.style.cssText=`--px:${25+i%11*5}%;--py:${18+i%9*6}%;--vx:${Math.cos(i*2.4)* (110+i%8*27)}px;--vy:${Math.sin(i*2.4)*(95+i%8*23)}px;--pc:${c[i%4]}`;scene.appendChild(s);setTimeout(()=>s.remove(),1300)}}
  function update(){const names=getNames();const btn=E('gor3-open-btn');if(btn)btn.disabled=!ready();const status=E('gor3-launch-status');if(status)status.textContent=!ready()?'รอข้อมูลอันดับ 1–3 ให้ครบก่อนเปิดเวที':stageOpened?'เปิดเวทีแล้ว • กดอันดับ 3 จากนั้น 2 และ 1':'พร้อมประกาศ • กด RANK เพื่อเปิดเวที'; for(const r of [1,2,3]){const node=E('gor3-name-'+r),col=E('gor3-podium')?.querySelector(`[data-rank="${r}"]`);if(node)node.textContent=announced.includes(r)?(names[r]||'X'):'X';col?.classList.toggle('awarded',announced.includes(r));const cmd=E('gor3-buttons')?.querySelector(`[data-r="${r}"]`);if(cmd)cmd.disabled=busy||announced.includes(r)||!names[r]||!stageOpened|| (r===2&&!announced.includes(3))||(r===1&&!announced.includes(2));}}
- function open(){if(!ready()){update();return}if(!ensureAdminKey())return;const newNames=getNames();if(announced.length===3||Object.values(currentNames).some((x,i)=>x&&x!==newNames[i+1])){announced=[];if(typeof tournamentRevealState!=='undefined'){tournamentRevealState={...tournamentRevealDefaults};renderTournamentRevealMask();}}currentNames=newNames;stageOpened=true;generation++;const overlay=E('gor3-mask');overlay?.classList.add('open');overlay?.setAttribute('aria-hidden','false');E('gor3-status').textContent='กด RANK 03 เพื่อประกาศอันดับสาม';E('gor3-hero').classList.remove('open','move');try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();audio.resume?.();}catch(e){}tone(160,.35,0,'sawtooth');tone(260,.5,.16,'triangle');publish('tournament',state('start'));update()}
- function pick(n){if(!stageOpened||busy||announced.includes(n)||!getNames()[n])return;if(n===2&&!announced.includes(3)||n===1&&!announced.includes(2))return;busy=true;const token=++generation;const name=getNames()[n],hero=E('gor3-hero'),team=E('gor3-hero-name'),rank=E('gor3-hero-rank');E('gor3-status').textContent='ANNOUNCING • RANK 0'+n;rank.textContent=n===1?'THE CHAMPION':'RANK 0'+n;team.textContent=name;hero.classList.remove('move');hero.style.removeProperty('--dx');hero.style.removeProperty('--dy');hero.classList.add('open');publish('tournament',state('pick',n));for(let i=0;i<6;i++)tone(180+i*73,.15,i*.09,'sawtooth');burst();update();
-   setTimeout(()=>{if(token!==generation)return;const target=E('gor3-name-'+n);const r1=hero.getBoundingClientRect(),r2=target.getBoundingClientRect();hero.style.setProperty('--dx',(r2.left+r2.width/2-r1.left-r1.width/2)+'px');hero.style.setProperty('--dy',(r2.top+r2.height/2-r1.top-r1.height/2)+'px');hero.classList.add('move');tone(n===1?104:145,.65,0,'sawtooth');tone(n===1?784:587,.7,.16,'triangle');},1900);
-   setTimeout(()=>{if(token!==generation)return;announced.push(n);const key=keys[n];if(typeof tournamentRevealState!=='undefined'){tournamentRevealState[key]=true;renderTournamentRevealMask();}hero.classList.remove('open','move');hero.style.removeProperty('--dx');hero.style.removeProperty('--dy');busy=false;E('gor3-status').textContent=n===1?'TOURNAMENT CHAMPIONS • OFFICIAL RESULTS':`ประกาศอันดับ ${n} แล้ว • กด RANK 0${n-1} ต่อ`;publish('tournament',state(n===1?'done':'pod',n));burst();update();if(n===1){tone(523,.35);tone(659,.35,.19);tone(784,.55,.36);}},3150);
+ function open(){if(!ready()){update();return}if(!ensureAdminKey())return;const newNames=getNames();if(announced.length===3||Object.values(currentNames).some((x,i)=>x&&x!==newNames[i+1])){announced=[];if(typeof tournamentRevealState!=='undefined'){tournamentRevealState={...tournamentRevealDefaults};renderTournamentRevealMask();}}currentNames=newNames;stageOpened=true;generation++;const overlay=E('gor3-mask');overlay?.classList.add('open');overlay?.setAttribute('aria-hidden','false');E('gor3-status').textContent='กด RANK 03 เพื่อประกาศอันดับสาม';E('gor3-hero').classList.remove('open','move');publish('tournament',state('start'));update()}
+ function pick(n){if(!stageOpened||busy||announced.includes(n)||!getNames()[n])return;if(n===2&&!announced.includes(3)||n===1&&!announced.includes(2))return;busy=true;const token=++generation;const name=getNames()[n],hero=E('gor3-hero'),team=E('gor3-hero-name'),rank=E('gor3-hero-rank');E('gor3-status').textContent='ANNOUNCING • RANK 0'+n;rank.textContent=n===1?'THE CHAMPION':'RANK 0'+n;team.textContent=name;hero.classList.remove('move');hero.style.removeProperty('--dx');hero.style.removeProperty('--dy');hero.classList.add('open');publish('tournament',state('pick',n));burst();update();
+   setTimeout(()=>{if(token!==generation)return;const target=E('gor3-name-'+n);const r1=hero.getBoundingClientRect(),r2=target.getBoundingClientRect();hero.style.setProperty('--dx',(r2.left+r2.width/2-r1.left-r1.width/2)+'px');hero.style.setProperty('--dy',(r2.top+r2.height/2-r1.top-r1.height/2)+'px');hero.classList.add('move');},1900);
+   setTimeout(()=>{if(token!==generation)return;announced.push(n);const key=keys[n];if(typeof tournamentRevealState!=='undefined'){tournamentRevealState[key]=true;renderTournamentRevealMask();}hero.classList.remove('open','move');hero.style.removeProperty('--dx');hero.style.removeProperty('--dy');busy=false;E('gor3-status').textContent=n===1?'TOURNAMENT CHAMPIONS • OFFICIAL RESULTS':`ประกาศอันดับ ${n} แล้ว • กด RANK 0${n-1} ต่อ`;publish('tournament',state(n===1?'done':'pod',n));burst();update();},3150);
  }
  function close(){generation++;busy=false;stageOpened=false;E('gor3-mask')?.classList.remove('open');E('gor3-mask')?.setAttribute('aria-hidden','true');E('gor3-hero')?.classList.remove('open','move');publish('tournament',state('close'));update()}
  function reset(){generation++;busy=false;stageOpened=false;announced=[];session='tour-'+Date.now();E('gor3-mask')?.classList.remove('open');E('gor3-mask')?.setAttribute('aria-hidden','true');E('gor3-hero')?.classList.remove('open','move');if(typeof tournamentRevealState!=='undefined'){tournamentRevealState={...tournamentRevealDefaults};renderTournamentRevealMask()}publish('tournament',state('reset'));update()}
