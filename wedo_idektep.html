@@ -1604,6 +1604,13 @@ function rankClass(rank){
  return rank<=3?`top-${rank}`:'';
 }
 
+// แสดงเฉพาะเลขหลักแรกของคะแนน WEDO / ESSENTIAL ก่อนประกาศ RANK
+// ตัวอย่าง 200 -> 2xx, 75 -> 7x, 9 -> 9; ไม่มีคะแนน -> –
+function maskWedoScore(value){
+ const digits=String(value??'').replace(/[^0-9]/g,'');
+ return digits ? digits.charAt(0)+'x'.repeat(digits.length-1) : '–';
+}
+
 function rowHtml(r,rank,revealed=false){
  return `
   <div class="team ${revealed?rankClass(rank):'score-locked'}">
@@ -1612,7 +1619,7 @@ function rowHtml(r,rank,revealed=false){
    </div>
    <div class="team-name">${escapeHtml(r.team)||'-'}</div>
    <div class="member">${escapeHtml(r.member)||'-'}</div>
-   <div class="score${revealed?'':' masked-score'}" aria-label="${revealed?'คะแนนการแข่งขัน':'คะแนนยังไม่ประกาศ'}">${revealed?(escapeHtml(r.score)||'-'):'2xx'}</div>
+   <div class="score${revealed?'':' masked-score'}" aria-label="${revealed?'คะแนนการแข่งขัน':'คะแนนยังไม่ประกาศ'}">${revealed?(escapeHtml(r.score)||'-'):maskWedoScore(r.score)}</div>
   </div>`;
 }
 
