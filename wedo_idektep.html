@@ -1524,7 +1524,6 @@ body[data-live-role="viewer"] .rank-numpad{display:none!important}
  <div class="rv-ambient right" aria-hidden="true"></div>
  <div class="rv-hero-word" aria-hidden="true">CHAMPIONS</div>
  <div class="rv-ctrl">
-  <button id="rvSound" onclick="rvToggleSound()">🔊</button>
   <button onclick="rvSkip()">ข้าม ⏭</button>
  </div>
  <div class="rv-head">
@@ -1870,7 +1869,7 @@ function toggleFullscreen(){
 /* ===== RANK REVEAL ===== */
 
 const $=id=>document.getElementById(id);
-let revealing=false,pendingRaw=null,soundOn=true,skipped=false,rejects=[],revealGeneration=0;
+let revealing=false,pendingRaw=null,soundOn=false,skipped=false,rejects=[],revealGeneration=0;
 let activeRankPick=null;
 let activeRevealType=null;
 const SKIP={};
@@ -1937,297 +1936,23 @@ function waitForRankPick(k){
  });
 }
 
-function rvToggleSound(){
- soundOn=!soundOn;
- $('rvSound').textContent=soundOn?'🔊':'🔇';
- $('rvSound').setAttribute('aria-label',soundOn?'ปิดเสียงประกาศอันดับ':'เปิดเสียงประกาศอันดับ');
- if(AC&&bus){
-  const t=AC.currentTime;
-  bus.gain.cancelScheduledValues(t);
-  bus.gain.setValueAtTime(bus.gain.value,t);
-  bus.gain.linearRampToValueAtTime(soundOn?1:0,t+.08);
- }
-}
-
-/* ---------- AUDIO (สังเคราะห์เสียงเอง ไม่ต้องใช้ไฟล์) ---------- */
-
-let AC=null,master=null,bus=null,noiseBuf=null;
-
-function initAudio(){
- try{
-  if(!AC){
-   const C=window.AudioContext||window.webkitAudioContext;
-   if(!C)return;
-   AC=new C();
-   master=AC.createGain();master.gain.value=.66;
-   const cp=AC.createDynamicsCompressor();
-   cp.threshold.value=-19;cp.knee.value=14;cp.ratio.value=7;
-   cp.attack.value=.005;cp.release.value=.23;
-   master.connect(cp);cp.connect(AC.destination);
-   noiseBuf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);
-   const d=noiseBuf.getChannelData(0);
-   for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
-  }
-  if(AC.state==='suspended')AC.resume();
-  bus=AC.createGain();bus.gain.value=soundOn?1:0;bus.connect(master);
- }catch(e){console.warn(e)}
-}
-
-function fadeBus(){
- if(!AC||!bus)return;
- const b=bus,t=AC.currentTime;
- b.gain.cancelScheduledValues(t);
- b.gain.setValueAtTime(b.gain.value,t);
- b.gain.linearRampToValueAtTime(0,t+.4);
- setTimeout(()=>{try{b.disconnect()}catch(e){}},600);
-}
-
-const S={};
-const def=(n,f)=>{S[n]=(...a)=>{if(AC&&bus&&soundOn){try{f(...a)}catch(e){console.warn(e)}}}};
-
-function env(g,t,a,peak,d){
- g.gain.setValueAtTime(.0001,t);
- g.gain.exponentialRampToValueAtTime(peak,t+a);
- g.gain.exponentialRampToValueAtTime(.0001,t+a+d);
-}
-function tone(type,f,t,a,d,peak,f2,dest){
- const o=AC.createOscillator(),g=AC.createGain();
- o.type=type;o.frequency.setValueAtTime(f,t);
- if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+a+d);
- env(g,t,a,peak,d);o.connect(g);g.connect(dest||bus);
- o.start(t);o.stop(t+a+d+.05);
-}
-function noise(t,dur,type,f,f2,peak,dest){
- const s=AC.createBufferSource(),fl=AC.createBiquadFilter(),g=AC.createGain();
- s.buffer=noiseBuf;s.loop=dur>noiseBuf.duration;
- fl.type=type;fl.frequency.setValueAtTime(f,t);
- if(f2)fl.frequency.exponentialRampToValueAtTime(f2,t+dur);
- env(g,t,.005,peak,dur);
- s.connect(fl);fl.connect(g);g.connect(dest||bus);
- s.start(t);s.stop(t+dur+.05);
-}
-function snare(t,v){
- noise(t,.13,'bandpass',1500,2200,v*.8);
- tone('triangle',142,t,.002,.08,v*.48,90);
-}
-
-/* Cinematic snare: ค่อย ๆ รัวเร็วและหนักขึ้นแบบงานประกาศรางวัล */
-def('roll',(dur,r0,r1,v0,v1)=>{
- const t0=AC.currentTime+.02;
- let t=t0;
- while(t<t0+dur){
-  const p=(t-t0)/dur;
-  snare(t,(v0+(v1-v0)*p)*.75);
-  t+=1/(r0+(r1-r0)*p);
- }
+/* RANK AUDIO DISABLED PERMANENTLY — iDekTep / ESSENTIAL.
+   Preserve animation and stage sequencing while generating no sound. */
+function rvToggleSound() {}  // Legacy compatibility only (no visible toggle)
+function initAudio() {}      // Never creates or resumes AudioContext
+function fadeBus() {}        // Nothing to fade
+function pop() {}            // Silent row animation
+const S = Object.freeze({
+  blip(){}, boom(){}, ding(){}, drone(){}, fanfare(){}, heartbeat(){},
+  lock(){}, riser(){}, roll(){}, sparkle(){}, swish(){}, tension(){},
+  tick(){}, whoosh(){}
 });
-
-def('tick',n=>{
- const t=AC.currentTime;
- tone('triangle',n===1?740:550,t,.003,.16,.16,n===1?520:370);
- tone('sine',82,t,.003,.27,.32,49);
-});
-
-/* เสียงหัวใจเต้นสองจังหวะ: ตุ้บ-ตุ้บ แบบลุ้นผล */
-function heartAt(t,v){
- tone('sine',100,t,.004,.19,v,48);
- tone('triangle',148,t,.004,.09,v*.23,83);
- tone('sine',93,t+.19,.004,.17,v*.78,43);
- tone('triangle',137,t+.19,.004,.08,v*.19,77);
-}
-def('heartbeat',(dur=3,slow=.83,fast=.48)=>{
- const start=AC.currentTime+.02;
- for(let t=start;t<start+dur;){
-  const progress=(t-start)/dur;
-  heartAt(t,.26+progress*.27);
-  t+=slow+(fast-slow)*progress;
- }
-});
-
-/* ดนตรีค้างต่ำ ๆ เป็นคอร์ดไมเนอร์ ช่วยสร้างความกดดัน */
-def('tension',(dur=2.6)=>{
- const t=AC.currentTime+.01;
- [110,130.81,164.81,220].forEach((freq,i)=>{
-  const osc=AC.createOscillator(),gain=AC.createGain(),filter=AC.createBiquadFilter();
-  osc.type=i===3?'sine':'triangle';osc.frequency.value=freq;
-  filter.type='lowpass';filter.frequency.setValueAtTime(430,t);
-  filter.frequency.linearRampToValueAtTime(1550,t+dur);
-  gain.gain.setValueAtTime(.0001,t);
-  gain.gain.linearRampToValueAtTime(i===0?.055:.028,t+Math.min(.7,dur*.3));
-  gain.gain.setValueAtTime(i===0?.055:.028,t+Math.max(.7,dur*.72));
-  gain.gain.exponentialRampToValueAtTime(.0001,t+dur);
-  osc.connect(filter);filter.connect(gain);gain.connect(bus);
-  osc.start(t);osc.stop(t+dur+.03);
- });
-});
-
-def('whoosh',()=>{
- const t=AC.currentTime;
- noise(t,.57,'bandpass',280,4300,.35);
- tone('sine',120,t,.003,.43,.13,245);
-});
-
-def('boom',big=>{
- const t=AC.currentTime;
- tone('sine',big?105:90,t,.003,big?1.2:.7,big?.78:.5,37);
- tone('triangle',big?165:130,t,.003,big?.42:.3,big?.3:.18,56);
- noise(t,big?1.1:.57,'lowpass',big?3100:1900,130,big?.55:.34);
- if(big){
-  noise(t+.06,.85,'bandpass',2700,600,.16);
-  tone('sine',44,t+.06,.009,1.5,.35,34);
- }
-});
-
-def('riser',d=>{
- const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain(),f=AC.createBiquadFilter();
- o.type='sawtooth';
- o.frequency.setValueAtTime(92,t);o.frequency.exponentialRampToValueAtTime(460,t+d);
- f.type='lowpass';
- f.frequency.setValueAtTime(280,t);f.frequency.exponentialRampToValueAtTime(3800,t+d);
- g.gain.setValueAtTime(.0001,t);
- g.gain.exponentialRampToValueAtTime(.13,t+d*.86);
- g.gain.setValueAtTime(.13,t+d*.92);
- g.gain.linearRampToValueAtTime(0,t+d+.04);
- o.connect(f);f.connect(g);g.connect(bus);o.start(t);o.stop(t+d+.1);
- noise(t,d,'bandpass',350,4500,.075);
-});
-
-def('drone',d=>{
- const t=AC.currentTime;
- [55,82.5,110].forEach(fr=>{
-  const o=AC.createOscillator(),g=AC.createGain(),l=AC.createBiquadFilter();
-  o.type='sawtooth';o.frequency.value=fr;
-  l.type='lowpass';l.frequency.value=380;
-  g.gain.setValueAtTime(.0001,t);
-  g.gain.linearRampToValueAtTime(.045,t+Math.min(1.5,d*.35));
-  g.gain.linearRampToValueAtTime(.0001,t+d);
-  o.connect(l);l.connect(g);g.connect(bus);o.start(t);o.stop(t+d+.1);
- });
-});
-
-function brass(f,t,d){
- [f,f*1.006].forEach(fr=>{
-  const o=AC.createOscillator(),g=AC.createGain(),l=AC.createBiquadFilter();
-  o.type='sawtooth';o.frequency.value=fr;
-  l.type='lowpass';
-  l.frequency.setValueAtTime(900,t);l.frequency.linearRampToValueAtTime(3500,t+.08);
-  g.gain.setValueAtTime(.0001,t);
-  g.gain.linearRampToValueAtTime(.055,t+.045);
-  g.gain.setValueAtTime(.055,t+d*.65);
-  g.gain.exponentialRampToValueAtTime(.0001,t+d);
-  o.connect(l);l.connect(g);g.connect(bus);o.start(t);o.stop(t+d+.05);
- });
-}
-
-def('fanfare',()=>{
- const t=AC.currentTime;
- /* ทำนองชัยชนะ C major แบบเวทีแชมป์ ไม่ใช้ไฟล์เสียงภายนอก */
- [[0,[392,523]],[.24,[440,587]],[.48,[494,659]],[.78,[523,659,784]],
-  [1.5,[523,659,784,1047]]].forEach(([dt,ns],i)=>ns.forEach(f=>brass(f,t+dt,i<3?.2:i===3?.65:2)));
- for(let i=0;i<7;i++)tone('sine',1047+i*115,t+.8+i*.11,.004,.4,.035);
-});
-
-def('sparkle',()=>{
- const t=AC.currentTime;
- for(let i=0;i<14;i++)tone('sine',1600+Math.random()*1800,t+i*.1+Math.random()*.05,.002,.24,.047);
-});
-
-def('ding',()=>{
- const t=AC.currentTime;
- tone('sine',880,t,.003,.55,.17);
- tone('sine',1320,t+.05,.003,.7,.12);
-});
-
-def('blip',f=>tone('square',f,AC.currentTime,.002,.07,.1));
-def('swish',()=>noise(AC.currentTime,.4,'bandpass',700,6000,.35));
-def('lock',k=>{
- const t=AC.currentTime;
- tone('sine',660+k*90,t,.003,.35,.28);
- tone('triangle',110,t,.002,.1,.4,60);
-});
-
-function pop(i){
- if(AC&&bus&&soundOn)tone('sine',480+i*45,AC.currentTime,.002,.12,.12,900);
-}
 
 /* ---------- CONFETTI ---------- */
 
 const cv=$('fx'),cx=cv.getContext('2d');
 
-/* ===== CYBER VICTORY AUDIO — new original synth sound design ===== */
-function cyberNote(f,t,len=.26,v=.15){
- if(!AC||!bus)return;
- const osc=AC.createOscillator(),gain=AC.createGain(),filter=AC.createBiquadFilter();
- osc.type='sawtooth';osc.frequency.setValueAtTime(f,t);
- filter.type='lowpass';filter.frequency.setValueAtTime(2500,t);
- filter.frequency.exponentialRampToValueAtTime(550,t+len);
- gain.gain.setValueAtTime(.0001,t);
- gain.gain.exponentialRampToValueAtTime(v,t+.012);
- gain.gain.exponentialRampToValueAtTime(.0001,t+len);
- osc.connect(filter);filter.connect(gain);gain.connect(bus);
- osc.start(t);osc.stop(t+len+.02);
-}
-def('tick',n=>{
- const t=AC.currentTime;
- cyberNote(n===1?987.77:659.25,t,.18,.12);
- tone('sine',n===1?1975.5:1318.5,t+.035,.002,.2,.075);
- tone('sine',69,t,.003,.23,.17,38);
-});
-def('roll',(dur=1.4,r0=6,r1=18,v0=.05,v1=.2)=>{
- const t=AC.currentTime+.02;
- for(let x=0,i=0;x<dur;i++){
-  const p=x/dur;
-  const f=[164.81,196,246.94,293.66,329.63,392][i%6]*(1+p*.45);
-  cyberNote(f,t+x,Math.min(.18,.14+(1-p)*.07),Math.min(.19,v0+(v1-v0)*p));
-  x+=1/(Math.max(3,r0)+(r1-r0)*p);
- }
-});
-def('heartbeat',(dur=1.6)=>{
- const t=AC.currentTime;
- for(let x=0;x<dur;x+=.48){
-  tone('sine',68,t+x,.003,.25,.23,37);
-  tone('triangle',132,t+x+.12,.002,.16,.10,80);
- }
-});
-def('tension',(dur=2.2)=>{
- const t=AC.currentTime;
- [110,164.81,220,329.63].forEach((f,i)=>{
-  const o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=f;
-  g.gain.setValueAtTime(.0001,t);
-  g.gain.linearRampToValueAtTime(i===0?.08:.04,t+Math.min(dur*.45,.75));
-  g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-  o.connect(g);g.connect(bus);o.start(t);o.stop(t+dur+.05);
- });
-});
-def('riser',d=>{
- const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain(),f=AC.createBiquadFilter();
- o.type='sawtooth';o.frequency.setValueAtTime(180,t);o.frequency.exponentialRampToValueAtTime(1440,t+d);
- f.type='lowpass';f.frequency.setValueAtTime(260,t);f.frequency.exponentialRampToValueAtTime(4500,t+d);
- g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.12,t+d*.75);g.gain.exponentialRampToValueAtTime(.0001,t+d+.05);
- o.connect(f);f.connect(g);g.connect(bus);o.start(t);o.stop(t+d+.09);
- noise(t,d,'highpass',450,3000,.055);
-});
-def('boom',big=>{
- const t=AC.currentTime;
- tone('sine',big?98:78,t,.003,big?1.15:.68,big?.65:.41,35);
- tone('triangle',big?220:164.81,t,.005,.28,big?.15:.10,100);
- noise(t,big?.75:.42,'lowpass',2100,140,big?.31:.19);
-});
-def('whoosh',()=>{noise(AC.currentTime,.48,'bandpass',500,3600,.27)});
-def('fanfare',()=>{
- const t=AC.currentTime+.01;
- // Original ascending major-mode victory stinger, not a borrowed melody.
- [[0,392],[.13,493.88],[.26,587.33],[.40,783.99],[.58,987.77],[.78,1174.66]].forEach(([dt,f],i)=>{
-  cyberNote(f,t+dt,i<3?.26:.85,i<3?.15:.19);
-  cyberNote(f/2,t+dt,i<3?.24:.86,i<3?.08:.12);
- });
- [392,493.88,587.33,783.99].forEach(f=>cyberNote(f,t+1.02,1.45,.13));
-});
-def('ding',()=>{
- const t=AC.currentTime;
- cyberNote(784,t,.22,.09);cyberNote(1174.66,t+.08,.34,.09);
-});
-
+/* Rank music, chimes, impact and victory synths removed. */
 let parts=[],raf=0;
 
 function burst(n,x,y,spread){
@@ -2736,7 +2461,6 @@ function liveMirrorBegin(s){
  liveMirrorRunning.clear();liveMirrorCurrent=null;
  skipped=false;rejects=[];parts=[];revealGeneration++;
  revealing=true;activeRevealType=s.type;
- soundOn=false; // Mobile browsers normally block automatic audio; keep spectators silent.
  buildStage(s.top);
  cv.width=innerWidth;cv.height=innerHeight;
  const rv=$('reveal');rv.className=s.type==='wedo'?'show wedo-reveal':'show';
