@@ -1540,7 +1540,7 @@ body.is-fs #matches-view.active .match-card{
 .go-timer-live-board::before{content:"";position:absolute;inset:8px;border:1px solid rgba(160,229,255,.14);border-radius:clamp(10px,1.5vw,30px);background:repeating-linear-gradient(125deg,transparent 0 27px,rgba(72,136,227,.03) 27px 29px);pointer-events:none}
 .go-timer-live-board::after{content:"";position:absolute;left:16%;right:16%;bottom:0;height:3px;background:linear-gradient(90deg,transparent,var(--clock-accent),transparent);box-shadow:0 0 15px var(--clock-accent)}
 .go-timer-theme{z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:.5em;white-space:nowrap;text-align:center;padding:.18em .85em;margin:0 0 clamp(0px,.65vh,9px);border:1px solid rgba(151,214,255,.25);border-radius:30px;background:rgba(0,22,49,.65);font-family:'Orbitron','Kanit',sans-serif;font-weight:800;font-size:clamp(10px,1.3vw,20px);letter-spacing:.06em;color:#ccefff;text-shadow:0 0 8px #0a6a9e}
-.go-timer-theme .go-live-dot{width:.5em;height:.5em;border-radius:50%;background:var(--clock-accent);box-shadow:0 0 12px var(--clock-accent);flex:none}
+.go-timer-theme .go-live-dot{width:.62em;height:.62em;border-radius:50%;background:linear-gradient(180deg,#ffd36b,#ff9d2f);box-shadow:0 0 10px #ffbf57,0 0 22px rgba(255,173,51,.55);flex:none}.go-timer-theme #timer-only-theme-name{display:inline-block;background:linear-gradient(180deg,#f8fdff 0%,#7ed9ff 48%,#ffffff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 10px rgba(83,206,255,.22))}
 .go-timer-live-board .timer-only-number{position:relative;z-index:1;flex:0 0 auto;display:inline-block;width:max-content;max-width:none;min-width:0;color:var(--clock-accent);font-family:'Orbitron',sans-serif;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.055em;line-height:1.06;font-size:clamp(68px,13vw,250px);text-align:center;text-shadow:0 0 18px color-mix(in srgb,var(--clock-accent) 52%,transparent),0 0 60px color-mix(in srgb,var(--clock-accent) 18%,transparent);transform:translateZ(0)}
 .go-timer-status{z-index:1;margin-top:clamp(0px,.5vh,8px);font-family:'Kanit',sans-serif;font-weight:600;letter-spacing:.08em;font-size:clamp(10px,1vw,16px);color:#b8d8fa;line-height:1.2;text-align:center}
 .go-timer-live-board .go-progress{position:absolute;left:10%;right:10%;bottom:clamp(7px,1.1vh,13px);height:clamp(3px,.5vh,7px);border-radius:200px;background:#103a68;overflow:hidden;z-index:2}
@@ -1614,16 +1614,24 @@ body.is-fs #matches-view.active .match-card{
 }
 .timer-only-overlay .go-timer-live-board .go-timer-theme{
   position:absolute !important;
-  top:7.2% !important;
+  top:6.2% !important;
   left:50% !important;
   transform:translateX(-50%) !important;
   margin:0 !important;
-  padding:.42em 1.25em !important;
-  font-family:'Kanit',sans-serif !important;
-  font-size:clamp(13px,1.06vw,20px) !important;
-  font-weight:700 !important;
-  letter-spacing:.07em !important;
-  line-height:1.25 !important;
+  padding:.5em 1.55em !important;
+  min-width:min(34vw, 460px) !important;
+  border-radius:999px !important;
+  border:1px solid rgba(128,226,255,.34) !important;
+  background:linear-gradient(135deg,rgba(5,20,54,.92),rgba(10,34,86,.88) 48%,rgba(28,10,76,.84)) !important;
+  box-shadow:0 0 0 1px rgba(27,112,191,.35) inset,0 0 22px rgba(66,182,255,.15),0 0 42px rgba(80,102,255,.14) !important;
+  font-family:'Orbitron','Chakra Petch','Kanit',sans-serif !important;
+  font-size:clamp(19px,1.7vw,34px) !important;
+  font-weight:900 !important;
+  letter-spacing:.1em !important;
+  line-height:1.15 !important;
+  text-transform:uppercase !important;
+  color:#eefbff !important;
+  text-shadow:0 0 10px rgba(88,218,255,.4),0 0 24px rgba(70,167,255,.28) !important;
 }
 .timer-only-overlay .go-timer-live-board .timer-only-number{
   position:absolute !important;
@@ -1665,8 +1673,11 @@ body.is-fs #matches-view.active .match-card{
 }
 @media (max-aspect-ratio:10/9){
   .timer-only-overlay .go-timer-live-board .go-timer-theme{
-    top:7% !important;
-    font-size:clamp(11px,2.9vw,16px) !important;
+    top:6.4% !important;
+    min-width:min(68vw, 360px) !important;
+    padding:.48em 1.15em !important;
+    font-size:clamp(14px,3.9vw,22px) !important;
+    letter-spacing:.08em !important;
   }
   .timer-only-overlay .go-timer-live-board .go-timer-status{
     bottom:10% !important;
@@ -1675,7 +1686,7 @@ body.is-fs #matches-view.active .match-card{
   }
 }
 @media (max-height:580px) and (min-aspect-ratio:11/10){
-  .timer-only-overlay .go-timer-live-board .go-timer-theme{top:4% !important;font-size:11px !important;}
+  .timer-only-overlay .go-timer-live-board .go-timer-theme{top:4.2% !important;padding:.42em 1.08em !important;font-size:15px !important;min-width:300px !important;}
   .timer-only-overlay .go-timer-live-board .go-timer-status{bottom:8% !important;font-size:11px !important;}
 }
 
